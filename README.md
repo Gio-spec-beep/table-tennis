@@ -1,25 +1,35 @@
-# Table Tennis World Tour — working copy
+# Tutoring Hub
 
-This repository contains a customizable HTML entry point and local copies of the game's JavaScript files.
+A purple-themed website that brings games and learning activities together in one place.
 
-## Files
+## Project structure
 
-- `index.html` — game page with the ability inventory, bottom-right HUD, cooldowns, and Hyper Charge fire effect.
-- `js/all.js` — main game engine copied from the upstream project.
-- `js/start.js` — startup framework copied from the upstream project.
-- `js/fix.js` — compatibility fixes.
-- `.github/workflows/pages.yml` — deploys the site to GitHub Pages on pushes to `main`.
+```
+.
+├── index.html
+├── games/
+│   ├── table-tennis/
+│   │   ├── index.html
+│   │   └── js/
+│   │       ├── all.js
+│   │       ├── fix.js
+│   │       └── start.js
+│   └── 8-ball-pool/
+│       └── index.html
+├── .github/workflows/pages.yml
+└── README.md
+```
 
-## Asset status
+## Add another game
 
-The original engine references image, audio, and other game assets from `thirstygithub/congenial-robot`. Those binary assets have **not** been copied into this repository, because the upstream license/redistribution permission has not been verified. The current page keeps the upstream asset base URL for those resources while loading the JavaScript from this repository.
+Create a folder under `games/`, place that game's entry page and related files inside it, then add a card to the game grid in the root `index.html`. Keep each game's assets and scripts inside its own folder wherever licensing and file structure allow.
 
-Before distributing a fully self-contained public copy, verify the original project's license or obtain permission, then migrate the assets and update the asset paths.
+## Deployment
 
-## GitHub Pages
+GitHub Pages deploys the repository root through the workflow in `.github/workflows/pages.yml`.
 
-The workflow deploys the repository root on every push to `main`. If Pages has not been enabled for this repository yet, open **Settings → Pages** and set the build/deployment source to **GitHub Actions**.
+Live site: https://gio-spec-beep.github.io/table-tennis/
 
-After deployment, the site URL should be:
+## External assets
 
-https://gio-spec-beep.github.io/table-tennis/
+Some games still load assets from their original CDN sources. The HTML and JavaScript folder structure has been organized here, but the games are not guaranteed to be fully offline/self-contained.

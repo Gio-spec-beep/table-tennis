@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#8b5cf6">
-<meta name="description" content="A purple-themed game hub. Play Table Tennis World Tour with the custom ability mod.">
-<title>Game Hub</title>
+<meta name="description" content="A purple-themed tutoring hub with a growing collection of games, study tools, and learning resources.">
+<title>Tutoring Hub</title>
 <style>
 :root{color-scheme:dark;--bg:#090611;--panel:#151020;--panel2:#1d1530;--purple:#a78bfa;--bright:#c4b5fd;--line:rgba(196,181,253,.22);--muted:#b6accb;--white:#faf7ff}
 *{box-sizing:border-box}
@@ -66,7 +66,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
 </head>
 <body>
 <div class="topbar"><div class="topbar-inner">
-  <div class="wordmark">GAME HUB</div>
+  <div class="wordmark">TUTORING HUB</div>
   <nav class="nav" aria-label="Main navigation">
     <button class="active" id="gamesTab" onclick="showTab('games')">GAMES</button>
     <button id="settingsTab" onclick="showTab('settings')">SETTINGS</button>
@@ -74,13 +74,13 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
 </div></div>
 <main>
   <section class="hero" id="hero">
-    <div class="eyebrow"><span class="pulse"></span> SMALL COLLECTION · MORE SOON</div>
-    <h1>PLAY <span>YOUR WAY.</span></h1>
-    <p>A growing collection of custom-modded sports games. Pick a game and jump straight in.</p>
+    <div class="eyebrow"><span class="pulse"></span> LEARN · PRACTICE · PLAY</div>
+    <h1>LEARN <span>YOUR WAY.</span></h1>
+    <p>Your home base for study tools and brain breaks. Explore learning resources, then take a quick game break when you need one.</p>
   </section>
   <section id="gamesPanel">
     <div class="section-head">
-      <div><h2>AVAILABLE GAMES</h2><p id="countText">2 games available</p></div>
+      <div><h2>GAMES & ACTIVITIES</h2><p id="countText">2 games available</p></div>
       <label class="search"><input id="searchInput" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"></label>
     </div>
     <div class="grid" id="gameGrid">
@@ -89,7 +89,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
         <div class="card-body">
           <h3>Table Tennis World Tour</h3>
           <p>Classic table tennis with a custom ability system. Equip abilities and bring some extra tricks to the match.</p>
-          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame('game.html','TABLE TENNIS WORLD TOUR')">PLAY NOW ↗</button></div>
+          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame('games/table-tennis/index.html','TABLE TENNIS WORLD TOUR')">PLAY NOW ↗</button></div>
         </div>
       </article>
       <article class="card" data-search="8 ball pool billiards cue sports pool mod abilities unlockable cues">
@@ -97,7 +97,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
         <div class="card-body">
           <h3>8-Ball Pool</h3>
           <p>Classic billiards with a cue collection, unlockable finishes, and optional visual aiming assists.</p>
-          <div class="card-foot"><span class="category">SPORTS · BILLIARDS</span><button class="play" onclick="openGame('pool.html','8-BALL POOL')">PLAY NOW ↗</button></div>
+          <div class="card-foot"><span class="category">SPORTS · BILLIARDS</span><button class="play" onclick="openGame('games/8-ball-pool/index.html','8-BALL POOL')">PLAY NOW ↗</button></div>
         </div>
       </article>
     </div>
@@ -105,22 +105,22 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
   </section>
   <section class="settings-panel" id="settingsPanel">
     <h2>SETTINGS</h2>
-    <p>This hub is currently using its purple theme. The game list has one available game for now.</p>
+    <p>Tutoring Hub brings games and study resources together in one organized place. More learning sections can be added as they are built.</p>
     <button class="play" onclick="showTab('games')">BACK TO GAMES</button>
   </section>
 </main>
-<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing.</footer>
+<footer>© 2026 · TUTORING HUB <span style="color:#a78bfa">/</span> Built for learning.</footer>
 <div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game player">
   <div class="game-bar">
     <div class="game-title" id="gameTitle">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
-    <div class="game-actions"><a id="gameNewTab" href="game.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
+    <div class="game-actions"><a id="gameNewTab" href="games/table-tennis/index.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
   </div>
-  <div class="game-frame-wrap"><iframe class="game-frame" id="gameFrame" title="Table Tennis World Tour game" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe></div>
+  <div class="game-frame-wrap"><iframe class="game-frame" id="gameFrame" title="Selected game" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe></div>
 </div>
 <script>
 const overlay=document.getElementById('gameOverlay');
-let currentGame='game.html';
-function openGame(file='game.html',title='TABLE TENNIS WORLD TOUR'){currentGame=file;const frame=document.getElementById('gameFrame');frame.src=file;document.getElementById('gameTitle').innerHTML=(file==='pool.html'?'🎱 &nbsp; ':'🏓 &nbsp; ')+title+' <span style="color:#a78bfa">· MODDED</span>';document.getElementById('gameNewTab').href=file;overlay.classList.add('open');document.body.style.overflow='hidden'}
+let currentGame='games/table-tennis/index.html';
+function openGame(file='games/table-tennis/index.html',title='TABLE TENNIS WORLD TOUR'){currentGame=file;const frame=document.getElementById('gameFrame');frame.src=file;document.getElementById('gameTitle').innerHTML=(file.includes('8-ball-pool')?'🎱 &nbsp; ':'🏓 &nbsp; ')+title+' <span style="color:#a78bfa">· MODDED</span>';document.getElementById('gameNewTab').href=file;overlay.classList.add('open');document.body.style.overflow='hidden'}
 function closeGame(){overlay.classList.remove('open');document.body.style.overflow='';}
 function showTab(tab){const games=tab==='games';document.getElementById('gamesPanel').style.display=games?'block':'none';document.getElementById('hero').style.display=games?'block':'none';document.getElementById('settingsPanel').style.display=games?'none':'block';document.getElementById('gamesTab').classList.toggle('active',games);document.getElementById('settingsTab').classList.toggle('active',!games);window.scrollTo({top:0,behavior:'smooth'})}
 document.getElementById('searchInput').addEventListener('input',function(){const q=this.value.trim().toLowerCase();const cards=[...document.querySelectorAll('.card')];let count=0;cards.forEach(card=>{const visible=card.dataset.search.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=visible?'':'none';if(visible)count++});document.getElementById('emptyState').style.display=count?'none':'block';document.getElementById('countText').textContent=count+' game'+(count===1?'':'s')+' available'});
