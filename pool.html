@@ -116,18 +116,18 @@
 #pool-aim-overlay{position:fixed;inset:0;width:100%;height:100%;z-index:999990;pointer-events:none;display:none}
 @media(max-width:520px){#pool-mod-toggle{top:auto;bottom:12px;left:10px}#pool-mod-panel{top:auto;bottom:58px;left:10px;max-height:75vh}.pm-grid{gap:6px}}
 </style>
-<button id="pool-mod-toggle" type="button" aria-expanded="false">✦ POOL MODS</button>
-<section id="pool-mod-panel" aria-label="Pool modifications">
+<button id="pool-mod-toggle" type="button" aria-expanded="true">✦ ABILITIES + CUES</button>
+<section id="pool-mod-panel" class="open" aria-label="Pool abilities and cue collection">
  <header class="pm-head"><div><strong>8-BALL MOD LAB</strong><div style="color:#b9a9d3;font-size:10px;margin-top:3px">CUES · ABILITIES · PROGRESS</div></div><button class="pm-close" id="pool-mod-close" type="button">✕</button></header>
  <div class="pm-body">
   <div class="pm-status" id="pm-status">Your collection saves on this device. Unlock cues with practice points.</div>
   <div class="pm-label">CUE COLLECTION</div><div class="pm-grid" id="pm-cues"></div>
-  <div class="pm-label">ABILITIES / ASSISTS</div>
-  <div class="pm-row"><div><b>Trajectory Guide</b><small>Draw a visual aim line from your pointer.</small></div><input class="pm-switch" id="pm-aim" type="checkbox" aria-label="Enable trajectory guide"></div>
-  <div class="pm-row"><div><b>Precision Focus</b><small>Highlight the area around your pointer.</small></div><input class="pm-switch" id="pm-focus" type="checkbox" aria-label="Enable precision focus"></div>
-  <div class="pm-row"><div><b>Power Break</b><small>Arms a power-shot reminder for your next break.</small></div><input class="pm-switch" id="pm-power" type="checkbox" aria-label="Enable power break"></div>
+  <div class="pm-label">ACTIVE ABILITIES — TAP TO TOGGLE</div>
+  <div class="pm-row"><div><b>🎯 AIM ASSIST</b><small>Show a projected aiming guide.</small></div><input class="pm-switch" id="pm-aim" type="checkbox" aria-label="Enable trajectory guide"></div>
+  <div class="pm-row"><div><b>🔮 PRECISION FOCUS</b><small>Highlight your pointer area.</small></div><input class="pm-switch" id="pm-focus" type="checkbox" aria-label="Enable precision focus"></div>
+  <div class="pm-row"><div><b>⚡ POWER BREAK</b><small>Enable a visible power-shot reminder.</small></div><input class="pm-switch" id="pm-power" type="checkbox" aria-label="Enable power break"></div>
   <div style="display:flex;gap:8px;margin-top:12px"><button class="pm-action" id="pm-practice" type="button">+ PRACTICE POINT</button><button class="pm-action" id="pm-reset" type="button">RESET MODS</button></div>
-  <div class="pm-note">The original game engine is loaded from its upstream CDN. Cue unlocks/equipped selection save on this device; guide and focus are visual assists. Physics-level abilities and recoloring the in-game cue model require engine hooks this HTML does not expose.</div>
+  <div class="pm-note">Abilities are shown as soon as the game opens. Aim Assist and Precision Focus are visual assists; Power Break is a reminder, not a physics modifier. Cue unlocks and selections save on this device. True shot-power or spin abilities require modifying the underlying game engine.</div>
  </div>
 </section>
 <canvas id="pool-aim-overlay" aria-hidden="true"></canvas>
