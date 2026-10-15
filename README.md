@@ -1,17 +1,25 @@
-# Table Tennis World Tour (working copy)
+# Table Tennis World Tour — working copy
 
-This repository contains a working copy of the game's JavaScript files so they can be edited independently of the original repository.
+This repository contains a customizable HTML entry point and local copies of the game's JavaScript files.
 
-## JavaScript files
+## Files
 
-- `js/all.js` — main game engine
-- `js/start.js` — game loader / startup framework
-- `js/fix.js` — compatibility fixes
+- `index.html` — game page with the ability inventory, bottom-right HUD, cooldowns, and Hyper Charge fire effect.
+- `js/all.js` — main game engine copied from the upstream project.
+- `js/start.js` — startup framework copied from the upstream project.
+- `js/fix.js` — compatibility fixes.
+- `.github/workflows/pages.yml` — deploys the site to GitHub Pages on pushes to `main`.
 
-## Source and assets
+## Asset status
 
-These JavaScript files were copied from the publicly accessible `thirstygithub/congenial-robot` repository. The game also references image/audio assets and startup resources from that original project. Before redistributing or publishing a public fork, review the original repository's license and attribution requirements.
+The original engine references image, audio, and other game assets from `thirstygithub/congenial-robot`. Those binary assets have **not** been copied into this repository, because the upstream license/redistribution permission has not been verified. The current page keeps the upstream asset base URL for those resources while loading the JavaScript from this repository.
 
-## Next step
+Before distributing a fully self-contained public copy, verify the original project's license or obtain permission, then migrate the assets and update the asset paths.
 
-The HTML entry point should load the scripts from this repository (for example, `https://cdn.jsdelivr.net/gh/Gio-spec-beep/table-tennis@main/js/all.js`) while retaining the original asset base URL until the required assets are copied and verified here. The customized abilities UI is currently in the separately generated HTML file, and has not yet been committed to this repository.
+## GitHub Pages
+
+The workflow deploys the repository root on every push to `main`. If Pages has not been enabled for this repository yet, open **Settings → Pages** and set the build/deployment source to **GitHub Actions**.
+
+After deployment, the site URL should be:
+
+https://gio-spec-beep.github.io/table-tennis/
