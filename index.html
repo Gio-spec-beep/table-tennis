@@ -1,252 +1,121 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <base href="https://cdn.jsdelivr.net/gh/thirstygithub/congenial-robot@main/">
-	<title>Table Tennis World Tour</title>
-	<meta charset="utf-8">
-	<meta name="apple-mobile-web-app-capable" content="no" />
-    <meta name="description" content="Table Tennis World Tour with an equipable ability system.">
-	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.01, minimal-ui" />
-	<style>
-		body {
-			margin: 0px;
-			padding: 0px;
-			width: 100%;
-			overflow:hidden;
-            background-color: #000;
-		}
-		canvas {
-			-ms-touch-action: none;
-			image-rendering: -o-crisp-edges;
-			image-rendering: optimize-contrast;
-			-ms-interpolation-mode: nearest-neighbor;
-			-webkit-tap-highlight-color: rgba(0,0,0,0);
-			-moz-tap-highlight-color: rgba(0,0,0,0);
-			tap-highlight-color: rgba(0,0,0,0);
-			user-select: none;
-			-webkit-touch-callout: none;
-			-webkit-user-select: none;
-			-moz-user-select: none;
-			-ms-user-select: none;
-		}
-	</style>
-
-	<script>
-	    window.famobi_gameID = "table-tennis-world-tour";
-	    window.famobi_gameJS = ['js/all.js',
-	        function(){
-	        	if(window.famobi && window.famobi.config && window.famobi.config.aid !== "A-CRAZYGAMES") {
-	        		window.famobi.config.features.lockPointer = false;
-	        	}
-				if (typeof extGameLoad !== 'undefined') extGameLoad();
-	        }
-	    ];
-
-	    (function (document, url, fgJS, firstJS) {
-	            fgJS = document.createElement('script');
-	            firstJS = document.getElementsByTagName('script')[0];
-	            fgJS.src = url;
-	            firstJS.parentNode.insertBefore(fgJS, firstJS);
-	    })(document, 'js/start.js');
-	</script>
-	<script src="js/fix.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#8b5cf6">
+<meta name="description" content="A purple-themed game hub. Play Table Tennis World Tour with the custom ability mod.">
+<title>Game Hub</title>
+<style>
+:root{color-scheme:dark;--bg:#090611;--panel:#151020;--panel2:#1d1530;--purple:#a78bfa;--bright:#c4b5fd;--line:rgba(196,181,253,.22);--muted:#b6accb;--white:#faf7ff}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -10%,rgba(124,58,237,.25),transparent 42%),radial-gradient(circle at 85% 65%,rgba(91,33,182,.13),transparent 30%),var(--bg);color:var(--white);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.2;background-image:radial-gradient(#c4b5fd 1px,transparent 1px);background-size:48px 48px;mask-image:linear-gradient(to bottom,#000,transparent 85%)}
+button,input,select{font:inherit}
+button,a{-webkit-tap-highlight-color:transparent}
+button{cursor:pointer}
+.topbar{position:sticky;top:0;z-index:5;border-bottom:1px solid var(--line);background:rgba(9,6,17,.82);backdrop-filter:blur(18px)}
+.topbar-inner{max-width:1180px;margin:auto;padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:18px}
+.wordmark{font-size:1rem;font-weight:850;letter-spacing:.2em;text-transform:uppercase;color:var(--bright)}
+.nav{display:flex;gap:8px}.nav button{border:1px solid transparent;border-radius:10px;background:transparent;color:var(--muted);padding:9px 15px;font-size:.78rem;font-weight:800;letter-spacing:.12em}.nav button.active,.nav button:hover{color:white;background:rgba(167,139,250,.13);border-color:var(--line)}
+main{position:relative;max-width:1180px;margin:0 auto;padding:54px 24px 80px}
+.hero{text-align:center;padding:22px 0 46px}
+.eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid var(--line);background:rgba(167,139,250,.08);color:var(--bright);border-radius:999px;padding:7px 13px;font-size:.72rem;font-weight:800;letter-spacing:.16em}
+.pulse{height:7px;width:7px;background:#c4b5fd;border-radius:50%;box-shadow:0 0 14px #a78bfa}
+h1{font-size:clamp(2.7rem,7vw,5.2rem);line-height:1.03;letter-spacing:-.055em;margin:22px 0 14px;font-weight:900}
+h1 span{background:linear-gradient(100deg,#ddd6fe,#a78bfa 48%,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:570px;margin:0 auto;color:var(--muted);font-size:1.04rem}
+.section-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:20px}
+.section-head h2{font-size:1rem;letter-spacing:.17em;margin:0;font-weight:850}
+.section-head p{margin:5px 0 0;color:var(--muted);font-size:.88rem}
+.search{width:min(100%,330px);position:relative}
+.search input{width:100%;background:rgba(21,16,32,.88);border:1px solid var(--line);border-radius:12px;padding:12px 15px;color:white;outline:none}
+.search input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(167,139,250,.13)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(265px,1fr));gap:20px}
+.card{overflow:hidden;background:linear-gradient(155deg,rgba(29,21,48,.96),rgba(17,12,26,.98));border:1px solid var(--line);border-radius:18px;transition:transform .22s,border-color .22s,box-shadow .22s}
+.card:hover{transform:translateY(-5px);border-color:rgba(196,181,253,.55);box-shadow:0 18px 50px rgba(76,29,149,.2)}
+.art{height:190px;display:grid;place-items:center;position:relative;overflow:hidden;background:radial-gradient(circle at 50% 48%,rgba(167,139,250,.26),transparent 35%),linear-gradient(135deg,#1c1230,#100b1c)}
+.art:before,.art:after{content:"";position:absolute;border:1px solid rgba(196,181,253,.15);border-radius:50%;width:210px;height:210px;transform:rotate(-22deg) scaleX(1.45)}
+.art:after{width:150px;height:150px;transform:rotate(30deg) scaleX(1.5)}
+.game-icon{font-size:5.1rem;filter:drop-shadow(0 0 24px rgba(167,139,250,.55));z-index:1}
+.tag{position:absolute;top:14px;left:14px;border:1px solid rgba(196,181,253,.28);background:rgba(12,8,20,.72);color:#ddd6fe;padding:5px 9px;border-radius:7px;font-size:.65rem;font-weight:850;letter-spacing:.12em}
+.card-body{padding:19px}
+.card h3{margin:0 0 7px;font-size:1.17rem;letter-spacing:-.02em}
+.card p{margin:0;color:var(--muted);font-size:.9rem;min-height:46px}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:18px}
+.category{font-size:.7rem;letter-spacing:.1em;color:#c4b5fd;font-weight:800;text-transform:uppercase}
+.play{border:1px solid #a78bfa;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white;border-radius:10px;padding:10px 16px;font-size:.8rem;font-weight:850;letter-spacing:.07em;box-shadow:0 5px 20px rgba(109,40,217,.2)}
+.play:hover{filter:brightness(1.13);transform:translateY(-1px)}
+.empty{display:none;border:1px dashed var(--line);border-radius:16px;text-align:center;color:var(--muted);padding:34px}
+footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;color:#847995;font-size:.78rem}
+.settings-panel{display:none;background:rgba(21,16,32,.8);border:1px solid var(--line);border-radius:18px;padding:24px;margin-top:8px}
+.settings-panel h2{margin-top:0}.settings-panel p{color:var(--muted)}
+/* Game overlay */
+.game-overlay{display:none;position:fixed;inset:0;z-index:20;background:#05030a}
+.game-overlay.open{display:flex;flex-direction:column}
+.game-bar{height:58px;flex:0 0 58px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 18px;background:#100a1b;border-bottom:1px solid var(--line)}
+.game-title{font-size:.8rem;letter-spacing:.1em;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.game-actions{display:flex;gap:8px}
+.game-actions button,.game-actions a{border:1px solid var(--line);background:rgba(167,139,250,.1);color:#eee7ff;border-radius:9px;padding:8px 12px;font-size:.75rem;font-weight:800;text-decoration:none}
+.game-actions button:hover,.game-actions a:hover{background:rgba(167,139,250,.22)}
+.game-frame-wrap{position:relative;flex:1;min-height:0}
+.game-frame{border:0;width:100%;height:100%;display:block;background:#000}
+@media(max-width:640px){.topbar-inner{padding:13px 16px}main{padding:34px 16px 55px}.hero{padding:16px 0 34px}.section-head{align-items:stretch;flex-direction:column}.search{width:100%}.grid{grid-template-columns:1fr}.art{height:175px}.game-bar{padding:0 10px}.game-actions button,.game-actions a{padding:8px}.game-title{font-size:.68rem}}
+</style>
 </head>
 <body>
-    <div id="canvas-wrapper" style="overflow:hidden; width:100%; height:100%; margin:0; padding:0; position:absolute;">
-        <canvas id="canvas" moz-opaque></canvas>
+<div class="topbar"><div class="topbar-inner">
+  <div class="wordmark">GAME HUB</div>
+  <nav class="nav" aria-label="Main navigation">
+    <button class="active" id="gamesTab" onclick="showTab('games')">GAMES</button>
+    <button id="settingsTab" onclick="showTab('settings')">SETTINGS</button>
+  </nav>
+</div></div>
+<main>
+  <section class="hero" id="hero">
+    <div class="eyebrow"><span class="pulse"></span> SMALL COLLECTION · MORE SOON</div>
+    <h1>PLAY <span>YOUR WAY.</span></h1>
+    <p>A simple game hub with a custom-modded Table Tennis World Tour. Pick a game and jump straight in.</p>
+  </section>
+  <section id="gamesPanel">
+    <div class="section-head">
+      <div><h2>AVAILABLE GAMES</h2><p id="countText">1 game available</p></div>
+      <label class="search"><input id="searchInput" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"></label>
     </div>
-
-<style>
-:root{--ability-cyan:#54dfff;--ability-panel:rgba(12,20,32,.94);--ability-line:rgba(84,223,255,.68)}
-#ability-hud{position:fixed;right:18px;bottom:18px;z-index:99990;width:260px;color:#f3f8ff;
- font:12px/1.35 Arial,Helvetica,sans-serif;user-select:none;filter:drop-shadow(0 5px 18px #0009)}
-.ah-head{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:linear-gradient(110deg,#152b3c,#111a2b);
- border:1px solid var(--ability-line);border-bottom:0;border-radius:10px 10px 0 0;font-weight:900;letter-spacing:1px}
-.ah-head small{color:#9baec4;font-weight:700;letter-spacing:.4px}
-.ah-slots{background:var(--ability-panel);border:1px solid var(--ability-line);border-radius:0 0 10px 10px;padding:7px}
-.ah-slot{position:relative;display:grid;grid-template-columns:35px 1fr;gap:8px;align-items:center;padding:7px 6px;margin:2px 0;border-radius:7px;background:rgba(255,255,255,.035);border:1px solid transparent;overflow:hidden}
-.ah-slot.armed{border-color:#baff8d;background:rgba(186,255,141,.11);box-shadow:inset 0 0 12px #baff8d14}
-.ah-key{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;background:linear-gradient(#f4fbff,#b9d6e8);color:#132334;font-weight:1000;font-size:15px;box-shadow:0 2px 0 #68869b}
-.ah-name{font-weight:800;font-size:12px}.ah-state{color:#a7bacd;font-size:10px;margin-top:2px}
-.ah-track{height:4px;margin-top:5px;background:#2b3a4d;border-radius:9px;overflow:hidden}.ah-fill{height:100%;width:100%;background:linear-gradient(90deg,#22bfff,#b5ffef);transition:width .1s linear}
-.ah-slot.armed .ah-fill{background:linear-gradient(90deg,#7de44e,#e5ff9b)}
-.ah-bottom{display:flex;gap:6px;margin-top:7px}
-.ah-btn{flex:1;border:1px solid #45657a;border-radius:6px;padding:8px 7px;color:#eaf8ff;background:linear-gradient(#294459,#182b3c);font-weight:900;cursor:pointer;font-size:10px;letter-spacing:.5px}
-.ah-btn:hover{border-color:#8deaff;filter:brightness(1.15)}.ah-btn:active{transform:translateY(1px)}
-#ability-inventory{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,7,15,.74);backdrop-filter:blur(5px);font-family:Arial,Helvetica,sans-serif;color:#f2f8ff}
-#ability-inventory.open{display:flex}
-.ai-panel{width:min(720px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#162b3b,#0b1321 72%);border:1px solid #5bdfff;border-radius:14px;box-shadow:0 18px 70px #000c}
-.ai-header{display:flex;justify-content:space-between;align-items:center;padding:17px 19px;border-bottom:1px solid #31485d;background:linear-gradient(100deg,#1e3b4e,#131e30)}
-.ai-title{font-size:20px;font-weight:1000;letter-spacing:1.4px}.ai-sub{font-size:11px;color:#a7bdcf;margin-top:4px}
-.ai-close{border:1px solid #4c6a7e;background:#172b3c;color:white;border-radius:7px;padding:8px 11px;font-weight:900;cursor:pointer}
-.ai-content{padding:16px 18px}.ai-equip-title{font-size:11px;color:#8deaff;font-weight:900;letter-spacing:1px;margin-bottom:8px}
-.ai-equipped{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:17px}
-.ai-equipped-slot{min-height:60px;border:1px solid #42647a;border-radius:8px;padding:9px;background:#142436}
-.ai-equipped-slot strong{display:block;font-size:12px}.ai-equipped-slot span{display:block;color:#a8bdcf;font-size:10px;margin-top:5px}
-.ai-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.ai-card{border:1px solid #354b60;border-radius:9px;background:rgba(255,255,255,.035);padding:12px;display:flex;gap:10px;align-items:flex-start}
-.ai-card.equipped{border-color:#73dfff;background:rgba(50,185,224,.09)}
-.ai-icon{flex:0 0 37px;height:37px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:21px;background:linear-gradient(145deg,#2a5971,#182c42);border:1px solid #4d9bb8}
-.ai-card h3{font-size:13px;margin:1px 0 5px}.ai-card p{font-size:11px;line-height:1.4;color:#b2c4d4;margin:0 0 9px}
-.ai-meta{font-size:10px;color:#80dff5;margin-bottom:8px}
-.ai-equip-btn{border:1px solid #5b8197;background:#1c3b50;color:#f1fbff;padding:7px 10px;border-radius:5px;font-size:10px;font-weight:900;cursor:pointer}
-.ai-equip-btn:disabled{opacity:.42;cursor:not-allowed}.ai-equip-btn.remove{background:#322634;border-color:#76515d}
-.ai-footer{padding:11px 18px 15px;color:#91a7bb;font-size:10px;border-top:1px solid #273b4d}
-#ability-vfx{position:fixed;inset:0;width:100vw;height:100vh;z-index:99980;pointer-events:none}
-@media(max-width:560px){#ability-hud{right:8px;bottom:8px;width:220px}.ah-slot{padding:5px}.ah-name{font-size:11px}.ai-grid{grid-template-columns:1fr}.ai-equipped{grid-template-columns:1fr}.ai-panel{max-height:92vh}.ai-title{font-size:17px}}
-</style>
-
-<canvas id="ability-vfx" aria-hidden="true"></canvas>
-<div id="ability-hud" aria-label="Equipped abilities">
- <div class="ah-head"><span>⚡ ABILITIES</span><small>READY / COOLDOWN</small></div>
- <div class="ah-slots" id="ability-slots"></div>
- <div class="ah-bottom">
-  <button class="ah-btn" id="open-ability-inventory">▦ INVENTORY / EQUIP</button>
- </div>
-</div>
-<div id="ability-inventory" role="dialog" aria-modal="true" aria-label="Ability inventory">
- <div class="ai-panel">
-  <div class="ai-header"><div><div class="ai-title">ABILITY INVENTORY</div><div class="ai-sub">Equip up to 3 abilities · Press the shown key to arm your next shot</div></div><button class="ai-close" id="close-ability-inventory">✕ CLOSE</button></div>
-  <div class="ai-content">
-   <div class="ai-equip-title">YOUR LOADOUT</div>
-   <div class="ai-equipped" id="ability-loadout"></div>
-   <div class="ai-equip-title">AVAILABLE ABILITIES</div>
-   <div class="ai-grid" id="ability-catalog"></div>
+    <div class="grid" id="gameGrid">
+      <article class="card" data-search="table tennis world tour sports ping pong ability mod">
+        <div class="art"><span class="tag">MODDED</span><div class="game-icon" aria-hidden="true">🏓</div></div>
+        <div class="card-body">
+          <h3>Table Tennis World Tour</h3>
+          <p>Classic table tennis with a custom ability system. Equip abilities and bring some extra tricks to the match.</p>
+          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame()">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+    </div>
+    <div class="empty" id="emptyState">No games match that search.</div>
+  </section>
+  <section class="settings-panel" id="settingsPanel">
+    <h2>SETTINGS</h2>
+    <p>This hub is currently using its purple theme. The game list has one available game for now.</p>
+    <button class="play" onclick="showTab('games')">BACK TO GAMES</button>
+  </section>
+</main>
+<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing.</footer>
+<div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Table Tennis World Tour">
+  <div class="game-bar">
+    <div class="game-title">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
+    <div class="game-actions"><a href="game.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
   </div>
-  <div class="ai-footer">Abilities activate on your next successful hit. Cooldowns start after use. Hyper Charge ignites the ball with a flame trail.</div>
- </div>
+  <div class="game-frame-wrap"><iframe class="game-frame" id="gameFrame" title="Table Tennis World Tour game" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe></div>
 </div>
-
 <script>
-(function(){
- 'use strict';
- const COOLDOWN=8000;
- const abilityDefs=[
-  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next shot at extreme speed. The ball catches fire and leaves a burning trail.',meta:'SPEED BURST · FIRE VFX'},
-  {id:'curve',name:'Curve Shot',icon:'🌀',key:'Q',cooldown:7,desc:'Adds heavy spin to your next hit, bending the ball harder across the table.',meta:'HEAVY SPIN · CURVE'},
-  {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit and keep it low for a tricky short drop.',meta:'LOW PACE · SHORT SHOT'},
-  {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'A hard, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
-  {id:'trick',name:'Trick Shot',icon:'✨',key:'T',cooldown:11,desc:'Combines extra speed with unpredictable spin for a deceptive return.',meta:'SPEED + SPIN'}
- ];
- const byId=Object.fromEntries(abilityDefs.map(a=>[a.id,a]));
- let equipped=['hyper','curve','smash'], armed=null, cooldowns={}, wrappedBall=null, originalSetBounce=null, fireUntil=0, particles=[];
- const hud=document.getElementById('ability-hud'), slots=document.getElementById('ability-slots');
- const inv=document.getElementById('ability-inventory'), catalog=document.getElementById('ability-catalog'), loadout=document.getElementById('ability-loadout');
- const vfx=document.getElementById('ability-vfx'), vctx=vfx.getContext('2d');
- function loadEquip(){
-  try{const saved=JSON.parse(localStorage.getItem('ttwt_ability_loadout')||'null');if(Array.isArray(saved)){const valid=saved.filter((x,i)=>byId[x]&&saved.indexOf(x)===i).slice(0,3);if(valid.length)equipped=valid;}}catch(e){}
- }
- function saveEquip(){try{localStorage.setItem('ttwt_ability_loadout',JSON.stringify(equipped));}catch(e){}}
- function getBall(){try{if(typeof ball!=='undefined'&&ball)return ball;}catch(e){}return window.ball||null;}
- function getGameCanvas(){return document.getElementById('canvas');}
- function openInventory(){renderInventory();inv.classList.add('open');}
- function closeInventory(){inv.classList.remove('open');}
- document.getElementById('open-ability-inventory').addEventListener('click',openInventory);
- document.getElementById('close-ability-inventory').addEventListener('click',closeInventory);
- inv.addEventListener('click',e=>{if(e.target===inv)closeInventory();});
- document.addEventListener('keydown',e=>{if(e.code==='Escape'&&inv.classList.contains('open'))closeInventory();});
- function renderInventory(){
-  loadout.innerHTML='';
-  for(let i=0;i<3;i++){
-   const id=equipped[i],a=id?byId[id]:null,el=document.createElement('div');
-   el.className='ai-equipped-slot';
-   el.innerHTML=a?'<strong>'+a.icon+' '+a.name+'</strong><span>Slot '+(i+1)+' · Key '+a.key+'</span>':'<strong>Empty slot</strong><span>Choose an ability below</span>';
-   loadout.appendChild(el);
-  }
-  catalog.innerHTML='';
-  abilityDefs.forEach(a=>{
-   const is=equipped.includes(a.id),el=document.createElement('div');el.className='ai-card'+(is?' equipped':'');
-   const action=is?'Unequip':'Equip',disabled=!is&&equipped.length>=3;
-   el.innerHTML='<div class="ai-icon">'+a.icon+'</div><div><h3>'+a.name+'</h3><div class="ai-meta">'+a.meta+' · '+a.cooldown+'s cooldown</div><p>'+a.desc+'</p><button class="ai-equip-btn '+(is?'remove':'')+'" '+(disabled?'disabled':'')+'>'+action+'</button></div>';
-   el.querySelector('button').addEventListener('click',()=>{
-    if(is){equipped=equipped.filter(x=>x!==a.id);if(armed===a.id)armed=null;}
-    else if(equipped.length<3)equipped.push(a.id);
-    saveEquip();renderInventory();renderHud();
-   });
-   catalog.appendChild(el);
-  });
- }
- function renderHud(){
-  slots.innerHTML='';
-  if(!equipped.length){slots.innerHTML='<div style="padding:10px;color:#a9bdcf;font-size:11px">No abilities equipped. Open inventory to choose up to 3.</div>';return;}
-  equipped.forEach(id=>{
-   const a=byId[id],el=document.createElement('div');el.className='ah-slot'+(armed===id?' armed':'');el.dataset.ability=id;
-   const left=Math.max(0,(cooldowns[id]||0)-performance.now()),pct=left>0?left/(a.cooldown*1000)*100:100;
-   let status=armed===id?'ARMED · NEXT HIT':left>0?'COOLDOWN · '+(left/1000).toFixed(1)+'s':'READY';
-   el.innerHTML='<div class="ah-key">'+a.key+'</div><div><div class="ah-name">'+a.icon+' '+a.name+'</div><div class="ah-state">'+status+'</div><div class="ah-track"><div class="ah-fill" style="width:'+pct+'%"></div></div></div>';
-   slots.appendChild(el);
-  });
- }
- function armAbility(id){
-  if(!equipped.includes(id))return;
-  if((cooldowns[id]||0)>performance.now()){renderHud();return;}
-  if(armed===id){armed=null;renderHud();return;}
-  armed=id;renderHud();
- }
- function wrapBall(){
-  const b=getBall();
-  if(!b||typeof b.setBouncePoint!=='function'||b===wrappedBall)return;
-  wrappedBall=b;originalSetBounce=b.setBouncePoint;
-  b.setBouncePoint=function(hitData){
-   let data=hitData;
-   if(armed&&this.lastHit==='user'&&data&&typeof data.speed==='number'){
-    const used=armed,a=byId[used];data=Object.assign({},data);
-    if(used==='hyper'){data.speed=Math.min(.88,data.speed*1.85);fireUntil=performance.now()+2600;spawnFireBurst(this);}
-    else if(used==='curve'){const sign=data.spin<0?-1:1;data.spin=Math.max(-1.7,Math.min(1.7,(Math.abs(data.spin)<.18?sign*.55:data.spin*2.2)));}
-    else if(used==='drop'){data.speed=Math.max(.22,data.speed*.62);data.y=Math.min(.4,Math.max(.08,(data.y||.3)*.58));}
-    else if(used==='smash'){data.speed=Math.min(.88,Math.max(.72,data.speed*1.62));data.spin*=.18;data.y=Math.min(.28,data.y||.25);}
-    else if(used==='trick'){data.speed=Math.min(.82,data.speed*1.32);data.spin=Math.max(-1.6,Math.min(1.6,(data.spin||.3)*-2.1));}
-    cooldowns[used]=performance.now()+a.cooldown*1000;armed=null;renderHud();
-   }
-   return originalSetBounce.call(this,data);
-  };
-  renderHud();
- }
- function spawnFireBurst(b){
-  const c=getGameCanvas(),r=c?c.getBoundingClientRect():{left:0,top:0,width:innerWidth,height:innerHeight};
-  const x=r.left+(b.x||innerWidth/2)*(r.width/(c&&c.width||r.width));
-  const y=r.top+(b.y||innerHeight/2)*(r.height/(c&&c.height||r.height));
-  for(let i=0;i<48;i++)particles.push({x,y,vx:(Math.random()-.5)*3,vy:-Math.random()*4-1,life:500+Math.random()*650,max:1150,size:2+Math.random()*5});
- }
- function resizeVfx(){const dpr=Math.min(devicePixelRatio||1,2);vfx.width=Math.round(innerWidth*dpr);vfx.height=Math.round(innerHeight*dpr);vfx.style.width=innerWidth+'px';vfx.style.height=innerHeight+'px';vctx.setTransform(dpr,0,0,dpr,0,0);}
- window.addEventListener('resize',resizeVfx);resizeVfx();
- let lastFrame=performance.now();
- function drawFire(now){
-  const dt=Math.min(40,now-lastFrame);lastFrame=now;vctx.clearRect(0,0,innerWidth,innerHeight);
-  const b=getBall(),c=getGameCanvas();
-  if(now<fireUntil&&b&&c){
-   const r=c.getBoundingClientRect(),x=r.left+(b.x||0)*(r.width/(c.width||r.width)),y=r.top+(b.y||0)*(r.height/(c.height||r.height));
-   const scale=Math.max(.6,Math.min(1.8,(b.scale||.5)*1.7));
-   for(let i=0;i<3;i++){
-    const ang=now/90+i*2.1,rad=(7+i*3)*scale;
-    vctx.beginPath();vctx.fillStyle=i===0?'rgba(255,238,125,.94)':i===1?'rgba(255,106,25,.82)':'rgba(220,35,15,.62)';
-    vctx.ellipse(x+Math.cos(ang)*rad*.4,y+Math.sin(ang)*rad*.35,rad*.62,rad*(1.25+Math.sin(now/70+i)*.25),ang*.25,0,Math.PI*2);vctx.fill();
-   }
-   if(Math.random()<.7)particles.push({x:x+(Math.random()-.5)*12,y:y+Math.random()*10,vx:(Math.random()-.5)*1.8,vy:-1-Math.random()*3,life:350+Math.random()*500,max:850,size:1.5+Math.random()*3.5});
-  }
-  particles=particles.filter(p=>p.life>0);
-  for(const p of particles){p.x+=p.vx*dt*.06;p.y+=p.vy*dt*.06;p.life-=dt;const alpha=Math.max(0,p.life/p.max);vctx.globalAlpha=alpha;vctx.fillStyle=Math.random()>.45?'#ffb52e':'#ff4a18';vctx.beginPath();vctx.arc(p.x,p.y,p.size*alpha,0,Math.PI*2);vctx.fill();}
-  vctx.globalAlpha=1;requestAnimationFrame(drawFire);
- }
- function update(){
-  wrapBall();
-  const now=performance.now();
-  document.querySelectorAll('.ah-slot').forEach(el=>{
-   const id=el.dataset.ability,a=byId[id];if(!a)return;
-   const left=Math.max(0,(cooldowns[id]||0)-now),fill=el.querySelector('.ah-fill'),state=el.querySelector('.ah-state');
-   if(fill)fill.style.width=(left>0?left/(a.cooldown*1000)*100:100)+'%';
-   if(state)state.textContent=armed===id?'ARMED · NEXT HIT':left>0?'COOLDOWN · '+(left/1000).toFixed(1)+'s':'READY';
-  });
-  requestAnimationFrame(update);
- }
- document.addEventListener('keydown',e=>{
-  if(e.repeat||e.ctrlKey||e.altKey||e.metaKey||inv.classList.contains('open'))return;
-  const key=e.code.replace('Key','').toUpperCase(),a=equipped.map(id=>byId[id]).find(x=>x&&x.key===key);
-  if(a){e.preventDefault();e.stopImmediatePropagation();armAbility(a.id);}
- },true);
- loadEquip();renderHud();renderInventory();update();requestAnimationFrame(drawFire);
-})();
+const overlay=document.getElementById('gameOverlay');
+function openGame(){if(!document.getElementById('gameFrame').src)document.getElementById('gameFrame').src='game.html';overlay.classList.add('open');document.body.style.overflow='hidden'}
+function closeGame(){overlay.classList.remove('open');document.body.style.overflow='';}
+function showTab(tab){const games=tab==='games';document.getElementById('gamesPanel').style.display=games?'block':'none';document.getElementById('hero').style.display=games?'block':'none';document.getElementById('settingsPanel').style.display=games?'none':'block';document.getElementById('gamesTab').classList.toggle('active',games);document.getElementById('settingsTab').classList.toggle('active',!games);window.scrollTo({top:0,behavior:'smooth'})}
+document.getElementById('searchInput').addEventListener('input',function(){const q=this.value.trim().toLowerCase();const card=document.querySelector('.card');const visible=card.dataset.search.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=visible?'':'none';document.getElementById('emptyState').style.display=visible?'none':'block';document.getElementById('countText').textContent=visible?'1 game available':'0 games available'});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
 </script>
-
 </body>
 </html>
