@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="https://cdn.jsdelivr.net/gh/thirstygithub/congenial-robot@main/">
+	<title>Table Tennis World Tour</title>
+	<meta charset="utf-8">
+	<meta name="apple-mobile-web-app-capable" content="no" />
+    <meta name="description" content="Table Tennis World Tour with an equipable ability system.">
+	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.01, minimal-ui" />
+	<style>
+		body {
+			margin: 0px;
+			padding: 0px;
+			width: 100%;
+			overflow:hidden;
+            background-color: #000;
+		}
+		canvas {
+			-ms-touch-action: none;
+			image-rendering: -o-crisp-edges;
+			image-rendering: optimize-contrast;
+			-ms-interpolation-mode: nearest-neighbor;
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+			-moz-tap-highlight-color: rgba(0,0,0,0);
+			tap-highlight-color: rgba(0,0,0,0);
+			user-select: none;
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+		}
+	</style>
+
+	<script>
+	    window.famobi_gameID = "table-tennis-world-tour";
+	    window.famobi_gameJS = ['https://cdn.jsdelivr.net/gh/Gio-spec-beep/table-tennis@main/js/all.js',
+	        function(){
+	        	if(window.famobi && window.famobi.config && window.famobi.config.aid !== "A-CRAZYGAMES") {
+	        		window.famobi.config.features.lockPointer = false;
+	        	}
+				if (typeof extGameLoad !== 'undefined') extGameLoad();
+	        }
+	    ];
+
+	    (function (document, url, fgJS, firstJS) {
+	            fgJS = document.createElement('script');
+	            firstJS = document.getElementsByTagName('script')[0];
+	            fgJS.src = url;
+	            firstJS.parentNode.insertBefore(fgJS, firstJS);
+	    })(document, 'https://cdn.jsdelivr.net/gh/Gio-spec-beep/table-tennis@main/js/start.js');
+	</script>
+	<script src="https://cdn.jsdelivr.net/gh/Gio-spec-beep/table-tennis@main/js/fix.js"></script>
+</head>
+<body>
+    <div id="canvas-wrapper" style="overflow:hidden; width:100%; height:100%; margin:0; padding:0; position:absolute;">
+        <canvas id="canvas" moz-opaque></canvas>
+    </div>
+
+<style>
+:root{--ability-cyan:#54dfff;--ability-panel:rgba(12,20,32,.94);--ability-line:rgba(84,223,255,.68)}
+#ability-hud{position:fixed;right:18px;bottom:18px;z-index:99990;width:260px;color:#f3f8ff;
+ font:12px/1.35 Arial,Helvetica,sans-serif;user-select:none;filter:drop-shadow(0 5px 18px #0009)}
+.ah-head{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;background:linear-gradient(110deg,#152b3c,#111a2b);
+ border:1px solid var(--ability-line);border-bottom:0;border-radius:10px 10px 0 0;font-weight:900;letter-spacing:1px}
+.ah-head small{color:#9baec4;font-weight:700;letter-spacing:.4px}
+.ah-slots{background:var(--ability-panel);border:1px solid var(--ability-line);border-radius:0 0 10px 10px;padding:7px}
+.ah-slot{position:relative;display:grid;grid-template-columns:35px 1fr;gap:8px;align-items:center;padding:7px 6px;margin:2px 0;border-radius:7px;background:rgba(255,255,255,.035);border:1px solid transparent;overflow:hidden}
+.ah-slot.armed{border-color:#baff8d;background:rgba(186,255,141,.11);box-shadow:inset 0 0 12px #baff8d14}
+.ah-key{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:6px;background:linear-gradient(#f4fbff,#b9d6e8);color:#132334;font-weight:1000;font-size:15px;box-shadow:0 2px 0 #68869b}
+.ah-name{font-weight:800;font-size:12px}.ah-state{color:#a7bacd;font-size:10px;margin-top:2px}
+.ah-track{height:4px;margin-top:5px;background:#2b3a4d;border-radius:9px;overflow:hidden}.ah-fill{height:100%;width:100%;background:linear-gradient(90deg,#22bfff,#b5ffef);transition:width .1s linear}
+.ah-slot.armed .ah-fill{background:linear-gradient(90deg,#7de44e,#e5ff9b)}
+.ah-bottom{display:flex;gap:6px;margin-top:7px}
+.ah-btn{flex:1;border:1px solid #45657a;border-radius:6px;padding:8px 7px;color:#eaf8ff;background:linear-gradient(#294459,#182b3c);font-weight:900;cursor:pointer;font-size:10px;letter-spacing:.5px}
+.ah-btn:hover{border-color:#8deaff;filter:brightness(1.15)}.ah-btn:active{transform:translateY(1px)}
+#ability-inventory{position:fixed;inset:0;z-index:100000;display:none;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(2,7,15,.74);backdrop-filter:blur(5px);font-family:Arial,Helvetica,sans-serif;color:#f2f8ff}
+#ability-inventory.open{display:flex}
+.ai-panel{width:min(720px,96vw);max-height:88vh;overflow:auto;background:linear-gradient(145deg,#162b3b,#0b1321 72%);border:1px solid #5bdfff;border-radius:14px;box-shadow:0 18px 70px #000c}
+.ai-header{display:flex;justify-content:space-between;align-items:center;padding:17px 19px;border-bottom:1px solid #31485d;background:linear-gradient(100deg,#1e3b4e,#131e30)}
+.ai-title{font-size:20px;font-weight:1000;letter-spacing:1.4px}.ai-sub{font-size:11px;color:#a7bdcf;margin-top:4px}
+.ai-close{border:1px solid #4c6a7e;background:#172b3c;color:white;border-radius:7px;padding:8px 11px;font-weight:900;cursor:pointer}
+.ai-content{padding:16px 18px}.ai-equip-title{font-size:11px;color:#8deaff;font-weight:900;letter-spacing:1px;margin-bottom:8px}
+.ai-equipped{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:17px}
+.ai-equipped-slot{min-height:60px;border:1px solid #42647a;border-radius:8px;padding:9px;background:#142436}
+.ai-equipped-slot strong{display:block;font-size:12px}.ai-equipped-slot span{display:block;color:#a8bdcf;font-size:10px;margin-top:5px}
+.ai-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.ai-card{border:1px solid #354b60;border-radius:9px;background:rgba(255,255,255,.035);padding:12px;display:flex;gap:10px;align-items:flex-start}
+.ai-card.equipped{border-color:#73dfff;background:rgba(50,185,224,.09)}
+.ai-icon{flex:0 0 37px;height:37px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:21px;background:linear-gradient(145deg,#2a5971,#182c42);border:1px solid #4d9bb8}
+.ai-card h3{font-size:13px;margin:1px 0 5px}.ai-card p{font-size:11px;line-height:1.4;color:#b2c4d4;margin:0 0 9px}
+.ai-meta{font-size:10px;color:#80dff5;margin-bottom:8px}
+.ai-equip-btn{border:1px solid #5b8197;background:#1c3b50;color:#f1fbff;padding:7px 10px;border-radius:5px;font-size:10px;font-weight:900;cursor:pointer}
+.ai-equip-btn:disabled{opacity:.42;cursor:not-allowed}.ai-equip-btn.remove{background:#322634;border-color:#76515d}
+.ai-footer{padding:11px 18px 15px;color:#91a7bb;font-size:10px;border-top:1px solid #273b4d}
+#ability-vfx{position:fixed;inset:0;width:100vw;height:100vh;z-index:99980;pointer-events:none}
+@media(max-width:560px){#ability-hud{right:8px;bottom:8px;width:220px}.ah-slot{padding:5px}.ah-name{font-size:11px}.ai-grid{grid-template-columns:1fr}.ai-equipped{grid-template-columns:1fr}.ai-panel{max-height:92vh}.ai-title{font-size:17px}}
+</style>
+
+<canvas id="ability-vfx" aria-hidden="true"></canvas>
+<div id="ability-hud" aria-label="Equipped abilities">
+ <div class="ah-head"><span>⚡ ABILITIES</span><small>READY / COOLDOWN</small></div>
+ <div class="ah-slots" id="ability-slots"></div>
+ <div class="ah-bottom">
+  <button class="ah-btn" id="open-ability-inventory">▦ INVENTORY / EQUIP</button>
+ </div>
+</div>
+<div id="ability-inventory" role="dialog" aria-modal="true" aria-label="Ability inventory">
+ <div class="ai-panel">
+  <div class="ai-header"><div><div class="ai-title">ABILITY INVENTORY</div><div class="ai-sub">Equip up to 3 abilities · Press the shown key to arm your next shot</div></div><button class="ai-close" id="close-ability-inventory">✕ CLOSE</button></div>
+  <div class="ai-content">
+   <div class="ai-equip-title">YOUR LOADOUT</div>
+   <div class="ai-equipped" id="ability-loadout"></div>
+   <div class="ai-equip-title">AVAILABLE ABILITIES</div>
+   <div class="ai-grid" id="ability-catalog"></div>
+  </div>
+  <div class="ai-footer">Abilities activate on your next successful hit. Cooldowns start after use. Hyper Charge ignites the ball with a flame trail.</div>
+ </div>
+</div>
+
+<script>
+(function(){
+ 'use strict';
+ const COOLDOWN=8000;
+ const abilityDefs=[
+  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next shot at extreme speed. The ball catches fire and leaves a burning trail.',meta:'SPEED BURST · FIRE VFX'},
+  {id:'curve',name:'Curve Shot',icon:'🌀',key:'Q',cooldown:7,desc:'Adds heavy spin to your next hit, bending the ball harder across the table.',meta:'HEAVY SPIN · CURVE'},
+  {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit and keep it low for a tricky short drop.',meta:'LOW PACE · SHORT SHOT'},
+  {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'A hard, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
+  {id:'trick',name:'Trick Shot',icon:'✨',key:'T',cooldown:11,desc:'Combines extra speed with unpredictable spin for a deceptive return.',meta:'SPEED + SPIN'}
+ ];
+ const byId=Object.fromEntries(abilityDefs.map(a=>[a.id,a]));
+ let equipped=['hyper','curve','smash'], armed=null, cooldowns={}, wrappedBall=null, originalSetBounce=null, fireUntil=0, particles=[];
+ const hud=document.getElementById('ability-hud'), slots=document.getElementById('ability-slots');
+ const inv=document.getElementById('ability-inventory'), catalog=document.getElementById('ability-catalog'), loadout=document.getElementById('ability-loadout');
+ const vfx=document.getElementById('ability-vfx'), vctx=vfx.getContext('2d');
+ function loadEquip(){
+  try{const saved=JSON.parse(localStorage.getItem('ttwt_ability_loadout')||'null');if(Array.isArray(saved)){const valid=saved.filter((x,i)=>byId[x]&&saved.indexOf(x)===i).slice(0,3);if(valid.length)equipped=valid;}}catch(e){}
+ }
+ function saveEquip(){try{localStorage.setItem('ttwt_ability_loadout',JSON.stringify(equipped));}catch(e){}}
+ function getBall(){try{if(typeof ball!=='undefined'&&ball)return ball;}catch(e){}return window.ball||null;}
+ function getGameCanvas(){return document.getElementById('canvas');}
+ function openInventory(){renderInventory();inv.classList.add('open');}
+ function closeInventory(){inv.classList.remove('open');}
+ document.getElementById('open-ability-inventory').addEventListener('click',openInventory);
+ document.getElementById('close-ability-inventory').addEventListener('click',closeInventory);
+ inv.addEventListener('click',e=>{if(e.target===inv)closeInventory();});
+ document.addEventListener('keydown',e=>{if(e.code==='Escape'&&inv.classList.contains('open'))closeInventory();});
+ function renderInventory(){
+  loadout.innerHTML='';
+  for(let i=0;i<3;i++){
+   const id=equipped[i],a=id?byId[id]:null,el=document.createElement('div');
+   el.className='ai-equipped-slot';
+   el.innerHTML=a?'<strong>'+a.icon+' '+a.name+'</strong><span>Slot '+(i+1)+' · Key '+a.key+'</span>':'<strong>Empty slot</strong><span>Choose an ability below</span>';
+   loadout.appendChild(el);
+  }
+  catalog.innerHTML='';
+  abilityDefs.forEach(a=>{
+   const is=equipped.includes(a.id),el=document.createElement('div');el.className='ai-card'+(is?' equipped':'');
+   const action=is?'Unequip':'Equip',disabled=!is&&equipped.length>=3;
+   el.innerHTML='<div class="ai-icon">'+a.icon+'</div><div><h3>'+a.name+'</h3><div class="ai-meta">'+a.meta+' · '+a.cooldown+'s cooldown</div><p>'+a.desc+'</p><button class="ai-equip-btn '+(is?'remove':'')+'" '+(disabled?'disabled':'')+'>'+action+'</button></div>';
+   el.querySelector('button').addEventListener('click',()=>{
+    if(is){equipped=equipped.filter(x=>x!==a.id);if(armed===a.id)armed=null;}
+    else if(equipped.length<3)equipped.push(a.id);
+    saveEquip();renderInventory();renderHud();
+   });
+   catalog.appendChild(el);
+  });
+ }
+ function renderHud(){
+  slots.innerHTML='';
+  if(!equipped.length){slots.innerHTML='<div style="padding:10px;color:#a9bdcf;font-size:11px">No abilities equipped. Open inventory to choose up to 3.</div>';return;}
+  equipped.forEach(id=>{
+   const a=byId[id],el=document.createElement('div');el.className='ah-slot'+(armed===id?' armed':'');el.dataset.ability=id;
+   const left=Math.max(0,(cooldowns[id]||0)-performance.now()),pct=left>0?left/(a.cooldown*1000)*100:100;
+   let status=armed===id?'ARMED · NEXT HIT':left>0?'COOLDOWN · '+(left/1000).toFixed(1)+'s':'READY';
+   el.innerHTML='<div class="ah-key">'+a.key+'</div><div><div class="ah-name">'+a.icon+' '+a.name+'</div><div class="ah-state">'+status+'</div><div class="ah-track"><div class="ah-fill" style="width:'+pct+'%"></div></div></div>';
+   slots.appendChild(el);
+  });
+ }
+ function armAbility(id){
+  if(!equipped.includes(id))return;
+  if((cooldowns[id]||0)>performance.now()){renderHud();return;}
+  if(armed===id){armed=null;renderHud();return;}
+  armed=id;renderHud();
+ }
+ function wrapBall(){
+  const b=getBall();
+  if(!b||typeof b.setBouncePoint!=='function'||b===wrappedBall)return;
+  wrappedBall=b;originalSetBounce=b.setBouncePoint;
+  b.setBouncePoint=function(hitData){
+   let data=hitData;
+   if(armed&&this.lastHit==='user'&&data&&typeof data.speed==='number'){
+    const used=armed,a=byId[used];data=Object.assign({},data);
+    if(used==='hyper'){data.speed=Math.min(.88,data.speed*1.85);fireUntil=performance.now()+2600;spawnFireBurst(this);}
+    else if(used==='curve'){const sign=data.spin<0?-1:1;data.spin=Math.max(-1.7,Math.min(1.7,(Math.abs(data.spin)<.18?sign*.55:data.spin*2.2)));}
+    else if(used==='drop'){data.speed=Math.max(.22,data.speed*.62);data.y=Math.min(.4,Math.max(.08,(data.y||.3)*.58));}
+    else if(used==='smash'){data.speed=Math.min(.88,Math.max(.72,data.speed*1.62));data.spin*=.18;data.y=Math.min(.28,data.y||.25);}
+    else if(used==='trick'){data.speed=Math.min(.82,data.speed*1.32);data.spin=Math.max(-1.6,Math.min(1.6,(data.spin||.3)*-2.1));}
+    cooldowns[used]=performance.now()+a.cooldown*1000;armed=null;renderHud();
+   }
+   return originalSetBounce.call(this,data);
+  };
+  renderHud();
+ }
+ function spawnFireBurst(b){
+  const c=getGameCanvas(),r=c?c.getBoundingClientRect():{left:0,top:0,width:innerWidth,height:innerHeight};
+  const x=r.left+(b.x||innerWidth/2)*(r.width/(c&&c.width||r.width));
+  const y=r.top+(b.y||innerHeight/2)*(r.height/(c&&c.height||r.height));
+  for(let i=0;i<48;i++)particles.push({x,y,vx:(Math.random()-.5)*3,vy:-Math.random()*4-1,life:500+Math.random()*650,max:1150,size:2+Math.random()*5});
+ }
+ function resizeVfx(){const dpr=Math.min(devicePixelRatio||1,2);vfx.width=Math.round(innerWidth*dpr);vfx.height=Math.round(innerHeight*dpr);vfx.style.width=innerWidth+'px';vfx.style.height=innerHeight+'px';vctx.setTransform(dpr,0,0,dpr,0,0);}
+ window.addEventListener('resize',resizeVfx);resizeVfx();
+ let lastFrame=performance.now();
+ function drawFire(now){
+  const dt=Math.min(40,now-lastFrame);lastFrame=now;vctx.clearRect(0,0,innerWidth,innerHeight);
+  const b=getBall(),c=getGameCanvas();
+  if(now<fireUntil&&b&&c){
+   const r=c.getBoundingClientRect(),x=r.left+(b.x||0)*(r.width/(c.width||r.width)),y=r.top+(b.y||0)*(r.height/(c.height||r.height));
+   const scale=Math.max(.6,Math.min(1.8,(b.scale||.5)*1.7));
+   for(let i=0;i<3;i++){
+    const ang=now/90+i*2.1,rad=(7+i*3)*scale;
+    vctx.beginPath();vctx.fillStyle=i===0?'rgba(255,238,125,.94)':i===1?'rgba(255,106,25,.82)':'rgba(220,35,15,.62)';
+    vctx.ellipse(x+Math.cos(ang)*rad*.4,y+Math.sin(ang)*rad*.35,rad*.62,rad*(1.25+Math.sin(now/70+i)*.25),ang*.25,0,Math.PI*2);vctx.fill();
+   }
+   if(Math.random()<.7)particles.push({x:x+(Math.random()-.5)*12,y:y+Math.random()*10,vx:(Math.random()-.5)*1.8,vy:-1-Math.random()*3,life:350+Math.random()*500,max:850,size:1.5+Math.random()*3.5});
+  }
+  particles=particles.filter(p=>p.life>0);
+  for(const p of particles){p.x+=p.vx*dt*.06;p.y+=p.vy*dt*.06;p.life-=dt;const alpha=Math.max(0,p.life/p.max);vctx.globalAlpha=alpha;vctx.fillStyle=Math.random()>.45?'#ffb52e':'#ff4a18';vctx.beginPath();vctx.arc(p.x,p.y,p.size*alpha,0,Math.PI*2);vctx.fill();}
+  vctx.globalAlpha=1;requestAnimationFrame(drawFire);
+ }
+ function update(){
+  wrapBall();
+  const now=performance.now();
+  document.querySelectorAll('.ah-slot').forEach(el=>{
+   const id=el.dataset.ability,a=byId[id];if(!a)return;
+   const left=Math.max(0,(cooldowns[id]||0)-now),fill=el.querySelector('.ah-fill'),state=el.querySelector('.ah-state');
+   if(fill)fill.style.width=(left>0?left/(a.cooldown*1000)*100:100)+'%';
+   if(state)state.textContent=armed===id?'ARMED · NEXT HIT':left>0?'COOLDOWN · '+(left/1000).toFixed(1)+'s':'READY';
+  });
+  requestAnimationFrame(update);
+ }
+ document.addEventListener('keydown',e=>{
+  if(e.repeat||e.ctrlKey||e.altKey||e.metaKey||inv.classList.contains('open'))return;
+  const key=e.code.replace('Key','').toUpperCase(),a=equipped.map(id=>byId[id]).find(x=>x&&x.key===key);
+  if(a){e.preventDefault();e.stopImmediatePropagation();armAbility(a.id);}
+ },true);
+ loadEquip();renderHud();renderInventory();update();requestAnimationFrame(drawFire);
+})();
+</script>
+
+</body>
+</html>
