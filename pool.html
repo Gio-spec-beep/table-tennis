@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui" />
+    <title>8 Ball Billiards Classic</title>
+    <style>
+       html,body { background: #000000; margin: 0; padding: 0; overflow: hidden; width: 100%; height: 100%; }
+       #mygame { width: 100%; height: 100%; }
+    </style>
+    <script>
+       window.famobi_analytics = new Proxy({}, {
+           get: function() { return function() { return Promise.resolve(); }; }
+       });
+       var famobiBase = {
+           getVolume: function() { return 1; },
+           getOrientation: function() { return window.innerWidth > window.innerHeight ? 'landscape' : 'portrait'; },
+           getBrandingButtonImage: function() { return "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"; },
+           moreGamesLink: function() { return ""; },
+           onOrientationChange: function(cb) { window.addEventListener("resize", cb); },
+           localStorage: window.localStorage || {},
+           log: function() {},
+           config: { features: {}, aid: "offline" },
+           hasFeature: function(f) { return true; },
+           __ : function(str) { return str; },
+           menuConfig: {}
+       };
+       window.famobi = new Proxy(famobiBase, {
+           get: function(target, prop) {
+               if (prop in target) return target[prop];
+               return function(callback) {
+                   if (typeof callback === 'function') setTimeout(callback, 100);
+                   return Promise.resolve();
+               };
+           }
+       });
+       window.fenster = window;
+       window.fenster.subscribeToOffsetUpdates = function() {};
+    </script>
+</head>
+<body>
+    <div id="mygame"></div>
+    <script src="https://cdn.jsdelivr.net/gh/thirstygithub/shiny-disco@main/src/01phaser.js"></script>
+    <script>
+        var originalLoadImage = Phaser.Loader.prototype.image;
+        var originalLoadAudio = Phaser.Loader.prototype.audio;
+        var originalLoadSpritesheet = Phaser.Loader.prototype.spritesheet;
+        var originalLoadBitmapFont = Phaser.Loader.prototype.bitmapFont;
+        var originalLoadAtlasJSONHash = Phaser.Loader.prototype.atlasJSONHash;
+        var originalLoadAtlasJSONArray = Phaser.Loader.prototype.atlasJSONArray;
+        var originalLoadAtlas = Phaser.Loader.prototype.atlas;
+        var originalLoadJSON = Phaser.Loader.prototype.json;
+        var originalLoadXML = Phaser.Loader.prototype.xml;
+        var originalLoadText = Phaser.Loader.prototype.text;
+
+        var CDN = "https://cdn.jsdelivr.net/gh/thirstygithub/shiny-disco@main/";
+
+        function rewrite(url) {
+            if (typeof url === 'string' && url.startsWith('assets/')) {
+                return CDN + url.replace('assets/', '');
+            }
+            return url;
+        }
+
+        Phaser.Loader.prototype.image = function(key, url) {
+            return originalLoadImage.call(this, key, rewrite(url));
+        };
+        Phaser.Loader.prototype.audio = function(key, urls) {
+            if (Array.isArray(urls)) urls = urls.map(rewrite);
+            else urls = rewrite(urls);
+            return originalLoadAudio.call(this, key, urls);
+        };
+        Phaser.Loader.prototype.spritesheet = function(key, url, w, h, f, m, s) {
+            return originalLoadSpritesheet.call(this, key, rewrite(url), w, h, f, m, s);
+        };
+        Phaser.Loader.prototype.bitmapFont = function(key, textureURL, atlasURL, atlasData, xSpacing, ySpacing) {
+            return originalLoadBitmapFont.call(this, key, rewrite(textureURL), rewrite(atlasURL), atlasData, xSpacing, ySpacing);
+        };
+        Phaser.Loader.prototype.atlasJSONHash = function(key, textureURL, atlasURL, atlasData) {
+            return originalLoadAtlasJSONHash.call(this, key, rewrite(textureURL), rewrite(atlasURL), atlasData);
+        };
+        if (originalLoadAtlasJSONArray) {
+            Phaser.Loader.prototype.atlasJSONArray = function(key, textureURL, atlasURL, atlasData) {
+                return originalLoadAtlasJSONArray.call(this, key, rewrite(textureURL), rewrite(atlasURL), atlasData);
+            };
+        }
+        if (originalLoadAtlas) {
+            Phaser.Loader.prototype.atlas = function(key, textureURL, atlasURL, atlasData, format) {
+                return originalLoadAtlas.call(this, key, rewrite(textureURL), rewrite(atlasURL), atlasData, format);
+            };
+        }
+        if (originalLoadJSON) {
+            Phaser.Loader.prototype.json = function(key, url, overwrite) {
+                return originalLoadJSON.call(this, key, rewrite(url), overwrite);
+            };
+        }
+        if (originalLoadXML) {
+            Phaser.Loader.prototype.xml = function(key, url, overwrite) {
+                return originalLoadXML.call(this, key, rewrite(url), overwrite);
+            };
+        }
+        if (originalLoadText) {
+            Phaser.Loader.prototype.text = function(key, url, overwrite) {
+                return originalLoadText.call(this, key, rewrite(url), overwrite);
+            };
+        }
+    </script>
+
+<style>
+:root{--mod-purple:#a78bfa;--mod-dark:rgba(14,9,25,.94);--mod-line:rgba(196,181,253,.6)}
+#pool-mod-toggle{position:fixed;left:12px;top:12px;z-index:999999;border:1px solid var(--mod-line);border-radius:10px;padding:10px 13px;color:#f5efff;background:linear-gradient(135deg,#6d28d9,#312052);font:800 12px/1.2 system-ui,sans-serif;letter-spacing:.08em;box-shadow:0 5px 22px #0008;cursor:pointer}
+#pool-mod-panel{position:fixed;left:12px;top:58px;z-index:999999;width:min(340px,calc(100vw - 24px));max-height:calc(100vh - 74px);overflow:auto;display:none;color:#f8f5ff;background:var(--mod-dark);border:1px solid var(--mod-line);border-radius:14px;box-shadow:0 18px 60px #000b;font:13px/1.45 system-ui,sans-serif;backdrop-filter:blur(14px)}
+#pool-mod-panel.open{display:block}.pm-head{padding:14px 15px;background:linear-gradient(110deg,#2a1945,#171024);border-bottom:1px solid #45315e;display:flex;align-items:center;justify-content:space-between}.pm-head strong{letter-spacing:.12em}.pm-close{background:#2c1b43;border:1px solid #604785;color:white;border-radius:7px;padding:5px 9px;cursor:pointer}
+.pm-body{padding:13px}.pm-label{font-size:10px;color:#c4b5fd;letter-spacing:.15em;font-weight:900;margin:3px 0 8px}.pm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}.pm-card{border:1px solid #3f3154;border-radius:9px;padding:10px;background:#1b1329}.pm-card.selected{border-color:#c4b5fd;background:#34204f;box-shadow:inset 0 0 0 1px #a78bfa}.pm-card.locked{opacity:.55}.pm-card b{display:block;font-size:12px}.pm-card small{display:block;color:#bdb0d2;font-size:10px;margin:4px 0 8px}.pm-card button,.pm-action{border:1px solid #72539b;border-radius:6px;padding:6px 8px;color:#fff;background:#39245a;font-size:10px;font-weight:800;cursor:pointer}.pm-card button:disabled{opacity:.4;cursor:not-allowed}.pm-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #30243f}.pm-row:last-child{border-bottom:0}.pm-row small{display:block;color:#bdb0d2;font-size:10px}.pm-switch{accent-color:#a78bfa;width:17px;height:17px}.pm-note{color:#aa9abb;font-size:10px;margin-top:12px;line-height:1.5}.pm-status{border:1px solid #49355f;border-radius:8px;background:#1b1229;padding:9px;margin:0 0 12px;color:#ddd1f3;font-size:11px}
+#pool-aim-overlay{position:fixed;inset:0;width:100%;height:100%;z-index:999990;pointer-events:none;display:none}
+@media(max-width:520px){#pool-mod-toggle{top:auto;bottom:12px;left:10px}#pool-mod-panel{top:auto;bottom:58px;left:10px;max-height:75vh}.pm-grid{gap:6px}}
+</style>
+<button id="pool-mod-toggle" type="button" aria-expanded="false">✦ POOL MODS</button>
+<section id="pool-mod-panel" aria-label="Pool modifications">
+ <header class="pm-head"><div><strong>8-BALL MOD LAB</strong><div style="color:#b9a9d3;font-size:10px;margin-top:3px">CUES · ABILITIES · PROGRESS</div></div><button class="pm-close" id="pool-mod-close" type="button">✕</button></header>
+ <div class="pm-body">
+  <div class="pm-status" id="pm-status">Your collection saves on this device. Unlock cues with practice points.</div>
+  <div class="pm-label">CUE COLLECTION</div><div class="pm-grid" id="pm-cues"></div>
+  <div class="pm-label">ABILITIES / ASSISTS</div>
+  <div class="pm-row"><div><b>Trajectory Guide</b><small>Draw a visual aim line from your pointer.</small></div><input class="pm-switch" id="pm-aim" type="checkbox" aria-label="Enable trajectory guide"></div>
+  <div class="pm-row"><div><b>Precision Focus</b><small>Highlight the area around your pointer.</small></div><input class="pm-switch" id="pm-focus" type="checkbox" aria-label="Enable precision focus"></div>
+  <div class="pm-row"><div><b>Power Break</b><small>Arms a power-shot reminder for your next break.</small></div><input class="pm-switch" id="pm-power" type="checkbox" aria-label="Enable power break"></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="pm-action" id="pm-practice" type="button">+ PRACTICE POINT</button><button class="pm-action" id="pm-reset" type="button">RESET MODS</button></div>
+  <div class="pm-note">The original game engine is loaded from its upstream CDN. Cue unlocks/equipped selection save on this device; guide and focus are visual assists. Physics-level abilities and recoloring the in-game cue model require engine hooks this HTML does not expose.</div>
+ </div>
+</section>
+<canvas id="pool-aim-overlay" aria-hidden="true"></canvas>
+<script>
+(function(){
+ const key='poolModLabV1',cues=[
+  {id:'classic',name:'Classic Maple',desc:'Default cue · free',cost:0,color:'#d9b783',glow:'#d9b783'},
+  {id:'amethyst',name:'Amethyst',desc:'Purple glow finish',cost:3,color:'#b69aff',glow:'#a78bfa'},
+  {id:'neon',name:'Neon Pulse',desc:'Electric violet finish',cost:7,color:'#ee8cff',glow:'#e879f9'},
+  {id:'royal',name:'Royal Gold',desc:'Premium gold finish',cost:12,color:'#f6ce72',glow:'#f59e0b'},
+  {id:'void',name:'Void Crystal',desc:'Rare dark-purple finish',cost:20,color:'#8c72ff',glow:'#7c3aed'}
+ ],defaults={points:0,unlocked:['classic'],selected:'classic',aim:false,focus:false,power:false};
+ let state;try{state={...defaults,...JSON.parse(localStorage.getItem(key)||'{}')};}catch(e){state={...defaults};}
+ if(!Array.isArray(state.unlocked))state.unlocked=['classic'];if(!state.unlocked.includes('classic'))state.unlocked.unshift('classic');
+ const panel=document.getElementById('pool-mod-panel'),toggle=document.getElementById('pool-mod-toggle');
+ function render(){document.getElementById('pm-status').textContent='Practice points: '+state.points+' · Cues unlocked: '+state.unlocked.length+'/'+cues.length;
+ document.getElementById('pm-cues').innerHTML=cues.map(c=>{const u=state.unlocked.includes(c.id),sel=state.selected===c.id;return '<article class="pm-card '+(sel?'selected ':'')+(!u?'locked':'')+'"><b><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:'+c.color+';box-shadow:0 0 10px '+c.glow+';margin-right:6px"></span>'+c.name+'</b><small>'+c.desc+'</small><button type="button" data-cue="'+c.id+'" '+(!u&&state.points<c.cost?'disabled':'')+'>'+(sel?'EQUIPPED':u?'EQUIP':'UNLOCK · '+c.cost+' PTS')+'</button></article>';}).join('');
+ document.getElementById('pm-aim').checked=!!state.aim;document.getElementById('pm-focus').checked=!!state.focus;document.getElementById('pm-power').checked=!!state.power;toggle.style.borderColor=(cues.find(c=>c.id===state.selected)||cues[0]).color;}
+ function save(){try{localStorage.setItem(key,JSON.stringify(state));}catch(e){}render();}
+ document.getElementById('pm-cues').addEventListener('click',e=>{const b=e.target.closest('[data-cue]');if(!b)return;const c=cues.find(x=>x.id===b.dataset.cue);if(!c)return;if(state.unlocked.includes(c.id))state.selected=c.id;else if(state.points>=c.cost){state.points-=c.cost;state.unlocked.push(c.id);state.selected=c.id;}save();});
+ toggle.addEventListener('click',()=>{panel.classList.toggle('open');toggle.setAttribute('aria-expanded',panel.classList.contains('open')?'true':'false');});
+ document.getElementById('pool-mod-close').addEventListener('click',()=>{panel.classList.remove('open');toggle.setAttribute('aria-expanded','false');});
+ document.getElementById('pm-aim').addEventListener('change',e=>{state.aim=e.target.checked;save();});
+ document.getElementById('pm-focus').addEventListener('change',e=>{state.focus=e.target.checked;save();});
+ document.getElementById('pm-power').addEventListener('change',e=>{state.power=e.target.checked;save();});
+ document.getElementById('pm-practice').addEventListener('click',()=>{state.points++;save();});
+ document.getElementById('pm-reset').addEventListener('click',()=>{if(confirm('Reset cue unlocks and ability settings?')){state={...defaults,unlocked:['classic']};save();}});
+ const canvas=document.getElementById('pool-aim-overlay'),ctx=canvas.getContext('2d');function resize(){canvas.width=Math.max(1,innerWidth*devicePixelRatio);canvas.height=Math.max(1,innerHeight*devicePixelRatio);ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}resize();addEventListener('resize',resize);
+ let pointer={x:innerWidth/2,y:innerHeight/2,inside:false};document.addEventListener('pointermove',e=>{pointer={x:e.clientX,y:e.clientY,inside:true};});document.addEventListener('pointerleave',()=>{pointer.inside=false;});
+ function draw(){ctx.clearRect(0,0,innerWidth,innerHeight);canvas.style.display=(state.aim||state.focus)?'block':'none';if(pointer.inside&&(state.aim||state.focus)){const cue=cues.find(c=>c.id===state.selected)||cues[0];ctx.save();ctx.strokeStyle=cue.glow;ctx.fillStyle=cue.glow;ctx.shadowColor=cue.glow;ctx.shadowBlur=state.focus?16:5;ctx.lineWidth=state.focus?2:1.3;if(state.aim){ctx.setLineDash([8,7]);ctx.beginPath();ctx.moveTo(pointer.x,pointer.y);ctx.lineTo(pointer.x+Math.cos(-.55)*Math.min(innerWidth,380),pointer.y+Math.sin(-.55)*Math.min(innerWidth,380));ctx.stroke();ctx.setLineDash([]);}if(state.focus){ctx.beginPath();ctx.arc(pointer.x,pointer.y,34,0,Math.PI*2);ctx.stroke();ctx.beginPath();ctx.arc(pointer.x,pointer.y,4,0,Math.PI*2);ctx.fill();}ctx.restore();}requestAnimationFrame(draw);}draw();render();
+ if(state.power){const tip=document.createElement('div');tip.style.cssText='position:fixed;left:50%;top:12px;transform:translateX(-50%);z-index:999998;padding:8px 12px;border:1px solid #c4b5fd;border-radius:9px;background:#1b1230;color:#f5efff;font:800 11px system-ui;pointer-events:none';tip.textContent='POWER BREAK ARMED · Use your strongest opening shot';document.body.appendChild(tip);}
+})();
+</script>
+
+</body>
+</html>
