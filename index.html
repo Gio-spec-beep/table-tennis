@@ -76,11 +76,11 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
   <section class="hero" id="hero">
     <div class="eyebrow"><span class="pulse"></span> SMALL COLLECTION · MORE SOON</div>
     <h1>PLAY <span>YOUR WAY.</span></h1>
-    <p>A simple game hub with a custom-modded Table Tennis World Tour. Pick a game and jump straight in.</p>
+    <p>A growing collection of custom-modded sports games. Pick a game and jump straight in.</p>
   </section>
   <section id="gamesPanel">
     <div class="section-head">
-      <div><h2>AVAILABLE GAMES</h2><p id="countText">1 game available</p></div>
+      <div><h2>AVAILABLE GAMES</h2><p id="countText">2 games available</p></div>
       <label class="search"><input id="searchInput" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"></label>
     </div>
     <div class="grid" id="gameGrid">
@@ -89,7 +89,15 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
         <div class="card-body">
           <h3>Table Tennis World Tour</h3>
           <p>Classic table tennis with a custom ability system. Equip abilities and bring some extra tricks to the match.</p>
-          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame()">PLAY NOW ↗</button></div>
+          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame('game.html','TABLE TENNIS WORLD TOUR')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="8 ball pool billiards cue sports pool mod abilities unlockable cues">
+        <div class="art"><span class="tag">MODDED</span><div class="game-icon" aria-hidden="true">🎱</div></div>
+        <div class="card-body">
+          <h3>8-Ball Pool</h3>
+          <p>Classic billiards with a cue collection, unlockable finishes, and optional visual aiming assists.</p>
+          <div class="card-foot"><span class="category">SPORTS · BILLIARDS</span><button class="play" onclick="openGame('pool.html','8-BALL POOL')">PLAY NOW ↗</button></div>
         </div>
       </article>
     </div>
@@ -102,19 +110,20 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
   </section>
 </main>
 <footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing.</footer>
-<div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Table Tennis World Tour">
+<div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game player">
   <div class="game-bar">
-    <div class="game-title">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
-    <div class="game-actions"><a href="game.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
+    <div class="game-title" id="gameTitle">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
+    <div class="game-actions"><a id="gameNewTab" href="game.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
   </div>
   <div class="game-frame-wrap"><iframe class="game-frame" id="gameFrame" title="Table Tennis World Tour game" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe></div>
 </div>
 <script>
 const overlay=document.getElementById('gameOverlay');
-function openGame(){if(!document.getElementById('gameFrame').src)document.getElementById('gameFrame').src='game.html';overlay.classList.add('open');document.body.style.overflow='hidden'}
+let currentGame='game.html';
+function openGame(file='game.html',title='TABLE TENNIS WORLD TOUR'){currentGame=file;const frame=document.getElementById('gameFrame');frame.src=file;document.getElementById('gameTitle').innerHTML=(file==='pool.html'?'🎱 &nbsp; ':'🏓 &nbsp; ')+title+' <span style="color:#a78bfa">· MODDED</span>';document.getElementById('gameNewTab').href=file;overlay.classList.add('open');document.body.style.overflow='hidden'}
 function closeGame(){overlay.classList.remove('open');document.body.style.overflow='';}
 function showTab(tab){const games=tab==='games';document.getElementById('gamesPanel').style.display=games?'block':'none';document.getElementById('hero').style.display=games?'block':'none';document.getElementById('settingsPanel').style.display=games?'none':'block';document.getElementById('gamesTab').classList.toggle('active',games);document.getElementById('settingsTab').classList.toggle('active',!games);window.scrollTo({top:0,behavior:'smooth'})}
-document.getElementById('searchInput').addEventListener('input',function(){const q=this.value.trim().toLowerCase();const card=document.querySelector('.card');const visible=card.dataset.search.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=visible?'':'none';document.getElementById('emptyState').style.display=visible?'none':'block';document.getElementById('countText').textContent=visible?'1 game available':'0 games available'});
+document.getElementById('searchInput').addEventListener('input',function(){const q=this.value.trim().toLowerCase();const cards=[...document.querySelectorAll('.card')];let count=0;cards.forEach(card=>{const visible=card.dataset.search.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=visible?'':'none';if(visible)count++});document.getElementById('emptyState').style.display=count?'none':'block';document.getElementById('countText').textContent=count+' game'+(count===1?'':'s')+' available'});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
 </script>
 </body>
