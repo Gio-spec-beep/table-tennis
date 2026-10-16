@@ -18,11 +18,31 @@
   state.cooldowns=state.cooldowns||{}; state.active=state.active||{};
   const $=id=>document.getElementById(id), panel=$("pool-mod-panel"),toggle=$("pool-mod-toggle"),canvas=$("pool-aim-overlay"),ctx=canvas.getContext("2d");
   let pointer={x:innerWidth/2,y:innerHeight/2,inside:false},noticeTimer=0,lastRender=0;
+  let turnSeen=false,lastTurn=null,sawOpponentTurn=false,usedThisTurn=false,gameStatus={inGame:false,myTurn:false,shotRunning:false};
   function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}render();}
   function notify(message,color="#c4b5fd"){const el=$("pool-ability-notice");el.textContent=message;el.style.borderColor=color;el.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>el.classList.remove("show"),2100);}
   function remaining(id){return Math.max(0,(state.cooldowns[id]||0)-Date.now());}
+  function readGameStatus(){
+    // The billiards game exposes its Phaser play-state and turn flags from its own script.
+    try {
+      const g=window.game, p=window.projectInfo, scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
+      const isPlay=!!(scene&&scene.turn!==undefined&&scene.ballArray&&scene.gameRunning!==undefined);
+      const active=!!(isPlay&&scene.gameRunning&&!scene.gameOver&&!(p&&p.levelComplete));
+      const turn=scene&&scene.turn;
+      if(!active){gameStatus={inGame:false,myTurn:false,shotRunning:!!(scene&&scene.shotRunning)};lastTurn=null;turnSeen=false;sawOpponentTurn=false;usedThisTurn=false;return gameStatus;}
+      if(!turnSeen){turnSeen=true;lastTurn=turn;usedThisTurn=false;}
+      else if(turn!==lastTurn){
+        if(turn!=="p1")sawOpponentTurn=true;
+        if(turn==="p1"&&sawOpponentTurn){usedThisTurn=false;sawOpponentTurn=false;}
+        lastTurn=turn;
+      }
+      gameStatus={inGame:true,myTurn:turn==="p1"&&!scene.shotRunning&&!(scene.foulWindow&&scene.foulWindow.visible),shotRunning:!!scene.shotRunning};
+      return gameStatus;
+    } catch(_){gameStatus={inGame:false,myTurn:false,shotRunning:false};return gameStatus;}
+  }
   function render(){
-    $("pm-status").textContent="✦ "+state.points+" ability points · "+state.unlocked.length+"/"+abilities.length+" unlocked";
+    const gs=readGameStatus();
+    $("pm-status").textContent=(gs.inGame?(gs.myTurn?(usedThisTurn?"✦ Ability used this turn":"✦ YOUR TURN · ABILITY READY"):"⏳ WAITING FOR YOUR TURN"):"🔒 Start a game to use abilities")+" · "+state.points+" points · "+state.unlocked.length+"/"+abilities.length+" unlocked";
     $("pm-abilities").innerHTML=abilities.map(a=>{
       const unlocked=state.unlocked.includes(a.id),equipped=state.equipped.includes(a.id);
       return '<article class="pm-card '+(equipped?'selected ':'')+(!unlocked?'locked':'')+'"><div class="pm-card-title"><span class="pm-icon" style="color:'+a.color+'">'+a.icon+'</span><b>'+a.name+'</b></div><small>'+a.desc+'</small><div class="pm-card-foot"><span>'+(a.cooldown)+'s cooldown</span><button type="button" data-ability="'+a.id+'" '+(!unlocked&&state.points<a.cost?'disabled':'')+'>'+(equipped?'UNEQUIP':unlocked?'EQUIP':'UNLOCK · '+a.cost+' PTS')+'</button></div></article>';
@@ -30,8 +50,8 @@
     $("pm-slots").innerHTML=[0,1,2].map(i=>{
       const a=abilities.find(x=>x.id===state.equipped[i]);
       if(!a)return '<div class="pm-slot empty"><span>'+(i+1)+'</span><b>EMPTY SLOT</b><small>Equip in menu</small></div>';
-      const cd=remaining(a.id),active=(state.active[a.id]||0)>Date.now();
-      return '<button type="button" class="pm-slot '+(active?'active':'')+'" data-cast="'+a.id+'" style="--ability-color:'+a.color+'" title="'+a.name+' — press '+(i+1)+'"><span class="pm-slot-key">'+(i+1)+'</span><span class="pm-slot-icon">'+a.icon+'</span><b>'+a.name+'</b><small>'+(active?'ACTIVE':cd>0?'COOLDOWN '+Math.ceil(cd/1000)+'s':'READY')+'</small><i style="width:'+Math.max(0,Math.min(100,cd/a.cooldown/1000*100))+'%"></i></button>';
+      const cd=remaining(a.id),active=(state.active[a.id]||0)>Date.now(),gs=readGameStatus(),blocked=!gs.inGame||!gs.myTurn||usedThisTurn;
+      return '<button type="button" class="pm-slot '+(active?'active ':'')+(blocked?'blocked':'')+'" data-cast="'+a.id+'" '+(blocked?'aria-disabled="true"':'')+' style="--ability-color:'+a.color+'" title="'+a.name+' — press '+(i+1)+'"><span class="pm-slot-key">'+(i+1)+'</span><span class="pm-slot-icon">'+a.icon+'</span><b>'+a.name+'</b><small>'+(!gs.inGame?'NOT IN GAME':!gs.myTurn?'NOT YOUR TURN':usedThisTurn?'TURN USED':active?'ACTIVE':cd>0?'COOLDOWN '+Math.ceil(cd/1000)+'s':'READY')+'</small><i style="width:'+Math.max(0,Math.min(100,cd/a.cooldown/1000*100))+'%"></i></button>';
     }).join("");
     toggle.style.borderColor=(abilities.find(a=>state.equipped.includes(a.id))||abilities[0]).color;
   }
@@ -47,7 +67,12 @@
   }
   function cast(id){
     const a=abilities.find(x=>x.id===id);if(!a||!state.equipped.includes(id))return;
+    const gs=readGameStatus();
+    if(!gs.inGame){notify("Start a pool game before using abilities","#fca5a5");return;}
+    if(!gs.myTurn){notify("Abilities are only available on your turn","#fca5a5");return;}
+    if(usedThisTurn){notify("One ability per turn — wait for your next turn","#fca5a5");return;}
     const cd=remaining(id);if(cd>0){notify(a.name+" ready in "+Math.ceil(cd/1000)+"s",a.color);return;}
+    usedThisTurn=true;
     state.active[id]=Date.now()+a.duration*1000;state.cooldowns[id]=Date.now()+a.cooldown*1000;
     save();notify(a.icon+" "+a.name+" activated!",a.color);
   }
@@ -68,8 +93,8 @@
   function resize(){canvas.width=Math.max(1,innerWidth*devicePixelRatio);canvas.height=Math.max(1,innerHeight*devicePixelRatio);ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);}
   addEventListener("resize",resize);resize();
   function draw(){
-    const now=Date.now();ctx.clearRect(0,0,innerWidth,innerHeight);
-    const active=state.equipped.map(id=>abilities.find(a=>a.id===id)).filter(a=>a&&(state.active[a.id]||0)>now);
+    const now=Date.now(),gs=readGameStatus();ctx.clearRect(0,0,innerWidth,innerHeight);
+    const active=state.equipped.map(id=>abilities.find(a=>a.id===id)).filter(a=>a&&gs.inGame&&gs.myTurn&&(state.active[a.id]||0)>now);
     canvas.style.display=active.length?"block":"none";
     if(pointer.inside&&active.length){
       const a=active[active.length-1],color=a.color,x=pointer.x,y=pointer.y,len=Math.min(innerWidth,420);
