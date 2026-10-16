@@ -57,6 +57,18 @@
         (turn==="p1"||turn==="p2")
       );
       if(!hasLiveTable){
+        // The original game can hide its playState inside a closure. If its
+        // canvas is running, do not falsely disable every ability.
+        const poolCanvas=!!document.querySelector("#mygame canvas");
+        if(poolCanvas){
+          const knownTurn=turn==="p1"||turn==="p2";
+          const shooting=!!(scene&&scene.shotRunning);
+          gameStatus={inGame:true,myTurn:!shooting&&(!knownTurn||turn==="p1")&&!(scene&&scene.foulWindow&&scene.foulWindow.visible),shotRunning:shooting};
+          if(!gameSessionActive){gameSessionActive=true;turnSeen=knownTurn;lastTurn=knownTurn?turn:null;sawOpponentTurn=false;usedThisTurn=false;}
+          else if(knownTurn&&turn!==lastTurn){if(turn!=="p1")sawOpponentTurn=true;if(turn==="p1"&&sawOpponentTurn){usedThisTurn=false;sawOpponentTurn=false;}lastTurn=turn;}
+          previousShotRunning=shooting;
+          return gameStatus;
+        }
         gameStatus={inGame:false,myTurn:false,shotRunning:false};
         gameSessionActive=false;
         previousShotRunning=false;
@@ -102,7 +114,7 @@
   }
   function render(){
     const gs=readGameStatus();
-    $("pm-status").textContent=(gs.inGame?(gs.myTurn?(usedThisTurn?"✦ Ability used this turn":"✦ YOUR TURN · ABILITY READY"):"⏳ WAITING FOR YOUR TURN"):"🔒 Start a game to use abilities")+" · "+state.points+" points · "+state.unlocked.length+"/"+abilities.length+" unlocked";
+    $("pm-status").textContent=(gs.inGame?(gs.myTurn?"✦ ABILITIES READY":"⏳ WAITING FOR YOUR TURN"):"🔒 Open the pool game to use abilities")+" · "+state.points+" points · "+state.unlocked.length+"/"+abilities.length+" unlocked";
     $("pm-abilities").innerHTML=abilities.map(a=>{
       const unlocked=state.unlocked.includes(a.id),equipped=state.equipped.includes(a.id);
       return '<article class="pm-card '+(equipped?'selected ':'')+(!unlocked?'locked':'')+'"><div class="pm-card-title"><span class="pm-icon" style="color:'+a.color+'">'+a.icon+'</span><b>'+a.name+'</b></div><small>'+a.desc+'</small><div class="pm-card-foot"><span>'+(a.cooldown)+'s cooldown</span><button type="button" data-ability="'+a.id+'" '+(!unlocked&&state.points<a.cost?'disabled':'')+'>'+(equipped?'UNEQUIP':unlocked?'EQUIP':'UNLOCK · '+a.cost+' PTS')+'</button></div></article>';
@@ -110,8 +122,8 @@
     $("pm-slots").innerHTML=[0,1,2].map(i=>{
       const a=abilities.find(x=>x.id===state.equipped[i]);
       if(!a)return '<div class="pm-slot empty"><span>'+(i+1)+'</span><b>EMPTY SLOT</b><small>Equip in menu</small></div>';
-      const cd=remaining(a.id),active=(state.active[a.id]||0)>Date.now(),gs=readGameStatus(),blocked=!gs.inGame||!gs.myTurn||usedThisTurn;
-      return '<button type="button" class="pm-slot '+(active?'active ':'')+(blocked?'blocked':'')+'" data-cast="'+a.id+'" '+(blocked?'aria-disabled="true"':'')+' style="--ability-color:'+a.color+'" title="'+a.name+' — press '+(i+1)+'"><span class="pm-slot-key">'+(i+1)+'</span><span class="pm-slot-icon">'+a.icon+'</span><b>'+a.name+'</b><small>'+(!gs.inGame?'NOT IN GAME':!gs.myTurn?'NOT YOUR TURN':usedThisTurn?'TURN USED':active?'ACTIVE':cd>0?'COOLDOWN '+Math.ceil(cd/1000)+'s':'READY')+'</small><i style="width:'+Math.max(0,Math.min(100,cd/a.cooldown/1000*100))+'%"></i></button>';
+      const cd=remaining(a.id),active=(state.active[a.id]||0)>Date.now(),gs=readGameStatus(),blocked=!gs.inGame||!gs.myTurn;
+      return '<button type="button" class="pm-slot '+(active?'active ':'')+(blocked?'blocked':'')+'" data-cast="'+a.id+'" '+(blocked?'aria-disabled="true"':'')+' style="--ability-color:'+a.color+'" title="'+a.name+' — press '+(i+1)+'"><span class="pm-slot-key">'+(i+1)+'</span><span class="pm-slot-icon">'+a.icon+'</span><b>'+a.name+'</b><small>'+(!gs.inGame?'NOT IN GAME':!gs.myTurn?'NOT YOUR TURN':active?'ACTIVE':cd>0?'COOLDOWN '+Math.ceil(cd/1000)+'s':'READY')+'</small><i style="width:'+Math.max(0,Math.min(100,cd/a.cooldown/1000*100))+'%"></i></button>';
     }).join("");
     toggle.style.borderColor=(abilities.find(a=>state.equipped.includes(a.id))||abilities[0]).color;
     renderCurveControls();
@@ -134,9 +146,11 @@
     if(usedThisTurn){notify("One ability per turn — wait for your next turn","#fca5a5");return;}
     const cd=remaining(id);if(cd>0){notify(a.name+" ready in "+Math.ceil(cd/1000)+"s",a.color);return;}
     usedThisTurn=true;
-    pendingAbility=id;
-    state.active[id]=0;
-    save();notify(a.icon+" "+a.name+" armed — cooldown starts when you strike the cue ball",a.color);
+    pendingAbility=null;
+    const now=Date.now();
+    state.active[id]=now+a.duration*1000;
+    state.cooldowns[id]=now+a.cooldown*1000;
+    save();notify(a.icon+" "+a.name+" activated",a.color);
   }
   $("pm-abilities").addEventListener("click",e=>{const b=e.target.closest("[data-ability]");if(b)equip(b.dataset.ability);});
   const curveControls=document.createElement("div");
