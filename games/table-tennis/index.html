@@ -120,6 +120,21 @@
  </div>
 </div>
 
+<style>
+#local-2p-panel{position:fixed;left:16px;top:16px;z-index:99995;width:min(300px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(118,226,255,.7);border-radius:10px;background:rgba(10,20,32,.94);color:#effaff;font:12px/1.4 Arial,Helvetica,sans-serif;box-shadow:0 6px 24px #0008}
+#local-2p-panel strong{display:block;font-size:12px;letter-spacing:.8px;margin-bottom:5px}
+#local-2p-panel p{margin:0 0 9px;color:#b6cbd9}
+#local-2p-toggle{width:100%;padding:9px;border:1px solid #56c9ed;border-radius:7px;background:linear-gradient(#23546b,#163446);color:white;font-weight:900;cursor:pointer}
+#local-2p-toggle.active{background:linear-gradient(#38762b,#244a20);border-color:#a5f58d}
+#local-2p-status{display:block;margin-top:7px;color:#a9e9ff;font-size:10px}
+@media(max-width:560px){#local-2p-panel{left:8px;top:8px;width:210px;padding:8px;font-size:10px}#local-2p-panel p{margin-bottom:6px}}
+</style>
+<div id="local-2p-panel">
+ <strong>🏓 LOCAL 2-PLAYER</strong>
+ <p>Player 1: <b>A / D</b> · Player 2: <b>← / →</b><br>Two players share this keyboard. Abilities remain Player 1-only.</p>
+ <button id="local-2p-toggle" type="button">ENABLE 2-PLAYER MODE</button>
+ <span id="local-2p-status">Current mode: single player</span>
+</div>
 <script>
 (function(){
  'use strict';
@@ -362,21 +377,7 @@
 </script>
 
 
-<style>
-#local-2p-panel{position:fixed;left:16px;top:16px;z-index:99995;width:min(300px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(118,226,255,.7);border-radius:10px;background:rgba(10,20,32,.94);color:#effaff;font:12px/1.4 Arial,Helvetica,sans-serif;box-shadow:0 6px 24px #0008}
-#local-2p-panel strong{display:block;font-size:12px;letter-spacing:.8px;margin-bottom:5px}
-#local-2p-panel p{margin:0 0 9px;color:#b6cbd9}
-#local-2p-toggle{width:100%;padding:9px;border:1px solid #56c9ed;border-radius:7px;background:linear-gradient(#23546b,#163446);color:white;font-weight:900;cursor:pointer}
-#local-2p-toggle.active{background:linear-gradient(#38762b,#244a20);border-color:#a5f58d}
-#local-2p-status{display:block;margin-top:7px;color:#a9e9ff;font-size:10px}
-@media(max-width:560px){#local-2p-panel{left:8px;top:8px;width:210px;padding:8px;font-size:10px}#local-2p-panel p{margin-bottom:6px}}
-</style>
-<div id="local-2p-panel">
- <strong>🏓 LOCAL 2-PLAYER</strong>
- <p>Player 1: <b>A / D</b> · Player 2: <b>← / →</b><br>Two players share this keyboard. Abilities remain Player 1-only.</p>
- <button id="local-2p-toggle" type="button">ENABLE 2-PLAYER MODE</button>
- <span id="local-2p-status">Current mode: single player</span>
-</div>
+
 
 </body>
 </html>
