@@ -24,19 +24,19 @@
   function notify(message,color="#c4b5fd"){const el=$("pool-ability-notice");el.textContent=message;el.style.borderColor=color;el.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>el.classList.remove("show"),2100);}
   function remaining(id){return Math.max(0,(state.cooldowns[id]||0)-Date.now());}
   function findPoolScene(){
+    // This game's source keeps turn, gameRunning, shotRunning, and ballArray
+    // inside playState.gameInfo, not directly on the Phaser state object.
     const candidates=[];
-    try{if(window.game)candidates.push(window.game);}catch(_){}
-    try{if(window.Phaser&&window.Phaser.GAMES)Array.prototype.push.apply(candidates,window.Phaser.GAMES);}catch(_){}
-    // Some Phaser builds keep the game instance under a different global name.
-    try{Object.keys(window).forEach(k=>{if(/game/i.test(k)){let v;try{v=window[k];}catch(_){}if(v&&v.state&&v.state.getCurrentState)candidates.push(v);}});}catch(_){}
-    for(const g of candidates){
+    const add=(v)=>{if(!v)return;candidates.push(v);try{if(v.gameInfo)candidates.push(v.gameInfo);}catch(_){} };
+    try{add(window.playState);}catch(_){}
+    try{if(window.game){add(window.game);if(window.game.state&&typeof window.game.state.getCurrentState==="function")add(window.game.state.getCurrentState());}}catch(_){}
+    try{if(window.Phaser&&window.Phaser.GAMES)Array.prototype.forEach.call(window.Phaser.GAMES,g=>{add(g);try{if(g.state&&typeof g.state.getCurrentState==="function"){add(g.state.getCurrentState());const states=g.state.states;if(states)Object.keys(states).forEach(k=>add(states[k]));}}catch(_){}});}catch(_){}
+    // The game may expose its play state under a nonstandard global name.
+    try{Object.keys(window).forEach(k=>{if(/playstate|game/i.test(k)){let v;try{v=window[k];}catch(_){}if(v){add(v);try{if(v.state&&typeof v.state.getCurrentState==="function"){add(v.state.getCurrentState());const states=v.state.states;if(states)Object.keys(states).forEach(key=>add(states[key]));}}catch(_){}}}});}catch(_){}
+    for(const s of candidates){
       try{
-        if(!g||!g.state||typeof g.state.getCurrentState!=="function")continue;
-        const scene=g.state.getCurrentState();
-        if(scene&&scene.ballArray&&scene.turn!==undefined&&scene.gameRunning!==undefined)return scene;
-        // State managers sometimes return the menu as current while the play state is retained in states.
-        const states=g.state.states;
-        if(states)for(const k of Object.keys(states)){const s=states[k];if(s&&s.ballArray&&s.turn!==undefined&&s.gameRunning!==undefined&&s.gameRunning)return s;}
+        const balls=s.ballArray, turn=s.turn;
+        if(balls && turn!==undefined && s.gameRunning!==undefined) return s;
       }catch(_){}
     }
     return null;
