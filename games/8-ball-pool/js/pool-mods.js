@@ -23,20 +23,35 @@
   function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}render();}
   function notify(message,color="#c4b5fd"){const el=$("pool-ability-notice");el.textContent=message;el.style.borderColor=color;el.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>el.classList.remove("show"),2100);}
   function remaining(id){return Math.max(0,(state.cooldowns[id]||0)-Date.now());}
+  function findPoolScene(){
+    const candidates=[];
+    try{if(window.game)candidates.push(window.game);}catch(_){}
+    try{if(window.Phaser&&window.Phaser.GAMES)Array.prototype.push.apply(candidates,window.Phaser.GAMES);}catch(_){}
+    // Some Phaser builds keep the game instance under a different global name.
+    try{Object.keys(window).forEach(k=>{if(/game/i.test(k)){let v;try{v=window[k];}catch(_){}if(v&&v.state&&v.state.getCurrentState)candidates.push(v);}});}catch(_){}
+    for(const g of candidates){
+      try{
+        if(!g||!g.state||typeof g.state.getCurrentState!=="function")continue;
+        const scene=g.state.getCurrentState();
+        if(scene&&scene.ballArray&&scene.turn!==undefined&&scene.gameRunning!==undefined)return scene;
+        // State managers sometimes return the menu as current while the play state is retained in states.
+        const states=g.state.states;
+        if(states)for(const k of Object.keys(states)){const s=states[k];if(s&&s.ballArray&&s.turn!==undefined&&s.gameRunning!==undefined&&s.gameRunning)return s;}
+      }catch(_){}
+    }
+    return null;
+  }
   function readGameStatus(){
-    // Require a live billiards table, not merely a menu/loading scene with a turn flag.
     try {
-      const g=window.game||(window.Phaser&&window.Phaser.GAMES&&window.Phaser.GAMES[0]);
-      const scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
+      const scene=findPoolScene();
       const balls=scene&&scene.ballArray;
-      const cue=balls&&balls[0];
+      const cue=balls&&(balls[0]||(typeof balls.getAt==="function"?balls.getAt(0):null));
       const turn=scene&&scene.turn;
       const hasLiveTable=!!(
-        scene &&
-        Array.isArray(balls) && balls.length >= 2 &&
+        scene && balls && Number(balls.length||balls.total||0)>=2 &&
         cue && cue.body &&
-        scene.gameRunning === true &&
-        (turn === "p1" || turn === "p2")
+        !!scene.gameRunning &&
+        turn!==undefined && turn!==null
       );
       if(!hasLiveTable){
         gameStatus={inGame:false,myTurn:false,shotRunning:false};
@@ -155,7 +170,7 @@
   function applyCurveToCueBall(){
     if(!gameStatus.inGame||!gameStatus.shotRunning||(state.active.curve||0)<=Date.now())return;
     try{
-      const g=window.game||(window.Phaser&&window.Phaser.GAMES&&window.Phaser.GAMES[0]),scene=g&&g.state&&g.state.getCurrentState();
+      const scene=findPoolScene();
       const cue=scene&&scene.ballArray&&scene.ballArray[0],v=cue&&cue.body&&cue.body.velocity;
       if(!v)return;
       const vx=Number(v[0]!==undefined?v[0]:v.x),vy=Number(v[1]!==undefined?v[1]:v.y),speed=Math.hypot(vx,vy);
