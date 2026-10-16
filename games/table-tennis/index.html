@@ -125,7 +125,7 @@
  'use strict';
  const COOLDOWN=8000;
  const abilityDefs=[
-  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next hit at extreme speed. The ball catches fire and leaves a flame trail.',meta:'SPEED BURST · FIRE TRAIL'},
+  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next hit with a speed boost and flame trail, while keeping a safe bounce on the opponent’s table.',meta:'SAFE SPEED BURST · FIRE TRAIL'},
   {id:'curve',name:'Curve Control',icon:'🌀',key:'Q',cooldown:7,desc:'After you hit the ball, move your paddle LEFT or RIGHT for 1 second. The ball bends in the same direction as your paddle movement. Keep moving to steer it.',meta:'PADDLE-TRACKED CURVE · 1 SECOND'},
   {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit for a softer, shorter drop shot.',meta:'SLOW SHOT · SHORT DROP'},
   {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'Hit a fast, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
@@ -217,6 +217,13 @@
     }
     else if(used==='ghost'){data.speed=Math.max(.18,data.speed*.48);data.y=clamp((data.y||.28)*.42,.06,.22);data.spin*=.3;}
     else if(used==='sidewinder'){data.spin=clamp((direction||1)*1.35,-1.6,1.6);}
+    // Safety guard for EVERY ability: always aim at a legal point on the
+    // opponent's half of the table, inside the sidelines, and keep speed in
+    // the original game's normal range. This preserves its normal table-bounce
+    // and scoring logic instead of allowing a special move to fly off-table.
+    data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.88,0.88);
+    data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0.22,0.06,0.38);
+    data.speed=clamp(Number.isFinite(Number(data.speed))?Number(data.speed):0.45,0.30,0.60);
     cooldowns[used]=performance.now()+a.cooldown*1000;armed=null;renderHud();
    }
    return originalSetBounce.call(this,data);
