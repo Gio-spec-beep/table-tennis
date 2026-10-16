@@ -38,11 +38,11 @@
   function equip(id){
     const a=abilities.find(x=>x.id===id);if(!a)return;
     if(state.equipped.includes(id)){state.equipped=state.equipped.filter(x=>x!==id);save();notify(a.name+" unequipped",a.color);return;}
+    if(state.equipped.length>=3){notify("All 3 slots are full — unequip one first");return;}
     if(!state.unlocked.includes(id)){
       if(state.points<a.cost){notify("Need "+a.cost+" points to unlock "+a.name,a.color);return;}
       state.points-=a.cost;state.unlocked.push(id);
     }
-    if(state.equipped.length>=3){notify("All 3 slots are full — unequip one first");return;}
     state.equipped.push(id);save();notify(a.name+" equipped",a.color);
   }
   function cast(id){
