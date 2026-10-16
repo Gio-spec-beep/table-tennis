@@ -106,14 +106,14 @@
 </div>
 <div id="ability-inventory" role="dialog" aria-modal="true" aria-label="Ability inventory">
  <div class="ai-panel">
-  <div class="ai-header"><div><div class="ai-title">ABILITY INVENTORY</div><div class="ai-sub">Equip up to 3 abilities · Press the shown key to arm your next shot</div></div><button class="ai-close" id="close-ability-inventory">✕ CLOSE</button></div>
+  <div class="ai-header"><div><div class="ai-title">ABILITY INVENTORY</div><div class="ai-sub">Equip up to 3 · Press its key to arm it · For Curve Control, move your paddle left/right for 1 second after impact</div></div><button class="ai-close" id="close-ability-inventory">✕ CLOSE</button></div>
   <div class="ai-content">
    <div class="ai-equip-title">YOUR LOADOUT</div>
    <div class="ai-equipped" id="ability-loadout"></div>
    <div class="ai-equip-title">AVAILABLE ABILITIES</div>
    <div class="ai-grid" id="ability-catalog"></div>
   </div>
-  <div class="ai-footer">Abilities activate on your next successful hit. Cooldowns start after use. Hyper Charge ignites the ball with a flame trail.</div>
+  <div class="ai-footer">HOW TO USE: Equip up to 3 abilities, then press its key before your shot. The ability arms for your next hit. Curve Control is special: after impact, move the paddle left/right for 1 second and the ball bends in that direction. Cooldowns begin when the ability triggers.</div>
  </div>
 </div>
 
@@ -122,14 +122,17 @@
  'use strict';
  const COOLDOWN=8000;
  const abilityDefs=[
-  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next shot at extreme speed. The ball catches fire and leaves a burning trail.',meta:'SPEED BURST · FIRE VFX'},
-  {id:'curve',name:'Curve Shot',icon:'🌀',key:'Q',cooldown:7,desc:'Adds heavy spin to your next hit, bending the ball harder across the table.',meta:'HEAVY SPIN · CURVE'},
-  {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit and keep it low for a tricky short drop.',meta:'LOW PACE · SHORT SHOT'},
-  {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'A hard, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
-  {id:'trick',name:'Trick Shot',icon:'✨',key:'T',cooldown:11,desc:'Combines extra speed with unpredictable spin for a deceptive return.',meta:'SPEED + SPIN'}
+  {id:'hyper',name:'Hyper Charge',icon:'🔥',key:'E',cooldown:8,desc:'Launch your next hit at extreme speed. The ball catches fire and leaves a flame trail.',meta:'SPEED BURST · FIRE TRAIL'},
+  {id:'curve',name:'Curve Control',icon:'🌀',key:'Q',cooldown:7,desc:'After you hit the ball, move your paddle LEFT or RIGHT for 1 second. The ball bends in the same direction as your paddle movement. Keep moving to steer it.',meta:'PADDLE-TRACKED CURVE · 1 SECOND'},
+  {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit for a softer, shorter drop shot.',meta:'SLOW SHOT · SHORT DROP'},
+  {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'Hit a fast, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
+  {id:'trick',name:'Trick Shot',icon:'✨',key:'T',cooldown:11,desc:'Combine extra speed with a sharp spin reversal for a deceptive return.',meta:'SPEED + REVERSE SPIN'},
+  {id:'corner',name:'Corner Sniper',icon:'🎯',key:'G',cooldown:9,desc:'Aim your next bounce toward the far left or right corner based on the direction your paddle is moving at impact.',meta:'CORNER AIM · PADDLE DIRECTION'},
+  {id:'ghost',name:'Ghost Drop',icon:'👻',key:'V',cooldown:12,desc:'A very soft, low bounce designed to land short and disrupt your opponent’s timing.',meta:'ULTRA-SOFT · LOW BOUNCE'},
+  {id:'sidewinder',name:'Sidewinder',icon:'🌪️',key:'C',cooldown:10,desc:'Apply strong side spin in the direction your paddle is moving when you hit the ball.',meta:'STRONG SIDE SPIN'}
  ];
  const byId=Object.fromEntries(abilityDefs.map(a=>[a.id,a]));
- let equipped=['hyper','curve','smash'], armed=null, cooldowns={}, wrappedBall=null, originalSetBounce=null, fireUntil=0, particles=[];
+ let equipped=['hyper','curve','smash'], armed=null, cooldowns={}, wrappedBall=null, originalSetBounce=null, fireUntil=0, particles=[], curveTracking=null, paddleLastX=null, paddleMoveSign=0;
  const hud=document.getElementById('ability-hud'), slots=document.getElementById('ability-slots');
  const inv=document.getElementById('ability-inventory'), catalog=document.getElementById('ability-catalog'), loadout=document.getElementById('ability-loadout');
  const vfx=document.getElementById('ability-vfx'), vctx=vfx.getContext('2d');
@@ -138,6 +141,8 @@
  }
  function saveEquip(){try{localStorage.setItem('ttwt_ability_loadout',JSON.stringify(equipped));}catch(e){}}
  function getBall(){try{if(typeof ball!=='undefined'&&ball)return ball;}catch(e){}return window.ball||null;}
+ function getPaddle(){try{if(typeof userBat!=='undefined'&&userBat)return userBat;}catch(e){}return window.userBat||null;}
+ function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
  function getGameCanvas(){return document.getElementById('canvas');}
  function openInventory(){renderInventory();inv.classList.add('open');}
  function closeInventory(){inv.classList.remove('open');}
@@ -190,12 +195,25 @@
   b.setBouncePoint=function(hitData){
    let data=hitData;
    if(armed&&this.lastHit==='user'&&data&&typeof data.speed==='number'){
-    const used=armed,a=byId[used];data=Object.assign({},data);
+    const used=armed,a=byId[used],p=getPaddle();
+    data=Object.assign({},data);
+    const direction=p&&Number.isFinite(p.x)&&Number.isFinite(paddleLastX)?Math.sign(p.x-paddleLastX):paddleMoveSign;
     if(used==='hyper'){data.speed=Math.min(.88,data.speed*1.85);fireUntil=performance.now()+2600;spawnFireBurst(this);}
-    else if(used==='curve'){const sign=data.spin<0?-1:1;data.spin=Math.max(-1.7,Math.min(1.7,(Math.abs(data.spin)<.18?sign*.55:data.spin*2.2)));}
+    else if(used==='curve'){
+     // Start a one-second steering window after the actual paddle contact.
+     data.spin=0;
+     curveTracking={ball:this,until:performance.now()+1000,lastPaddleX:p&&Number.isFinite(p.x)?p.x:null};
+    }
     else if(used==='drop'){data.speed=Math.max(.22,data.speed*.62);data.y=Math.min(.4,Math.max(.08,(data.y||.3)*.58));}
     else if(used==='smash'){data.speed=Math.min(.88,Math.max(.72,data.speed*1.62));data.spin*=.18;data.y=Math.min(.28,data.y||.25);}
-    else if(used==='trick'){data.speed=Math.min(.82,data.speed*1.32);data.spin=Math.max(-1.6,Math.min(1.6,(data.spin||.3)*-2.1));}
+    else if(used==='trick'){data.speed=Math.min(.82,data.speed*1.32);data.spin=clamp((data.spin||.3)*-2.1,-1.6,1.6);}
+    else if(used==='corner'){
+     const dir=direction||1;
+     data.x=dir>0?-0.82:0.82;
+     data.speed=Math.min(.82,data.speed*1.15);
+    }
+    else if(used==='ghost'){data.speed=Math.max(.18,data.speed*.48);data.y=clamp((data.y||.28)*.42,.06,.22);data.spin*=.3;}
+    else if(used==='sidewinder'){data.spin=clamp((direction||1)*1.35,-1.6,1.6);}
     cooldowns[used]=performance.now()+a.cooldown*1000;armed=null;renderHud();
    }
    return originalSetBounce.call(this,data);
@@ -230,7 +248,25 @@
  }
  function update(){
   wrapBall();
-  const now=performance.now();
+  const now=performance.now(),p=getPaddle();
+  if(p&&Number.isFinite(p.x)){
+   if(paddleLastX!==null){const dx=p.x-paddleLastX;if(Math.abs(dx)>.05)paddleMoveSign=Math.sign(dx);}
+   paddleLastX=p.x;
+  }
+  if(curveTracking){
+   const ct=curveTracking,b=ct.ball,active=now<ct.until&&b===getBall()&&b&&b.lastHit==='user';
+   if(active&&p&&Number.isFinite(p.x)&&ct.lastPaddleX!==null){
+    const dx=p.x-ct.lastPaddleX;
+    if(Math.abs(dx)>.05){
+     // Positive paddle movement bends right; negative movement bends left.
+     b.spin=clamp(dx*.16,-1.45,1.45);
+    }
+    ct.lastPaddleX=p.x;
+   }else if(!active){
+    if(b){b.spin=0;b.spinInc=0;}
+    curveTracking=null;
+   }
+  }
   document.querySelectorAll('.ah-slot').forEach(el=>{
    const id=el.dataset.ability,a=byId[id];if(!a)return;
    const left=Math.max(0,(cooldowns[id]||0)-now),fill=el.querySelector('.ah-fill'),state=el.querySelector('.ah-state');
