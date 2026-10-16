@@ -18,21 +18,45 @@
   state.cooldowns=state.cooldowns||{}; state.active=state.active||{};
   const $=id=>document.getElementById(id), panel=$("pool-mod-panel"),toggle=$("pool-mod-toggle"),canvas=$("pool-aim-overlay"),ctx=canvas.getContext("2d");
   let pointer={x:innerWidth/2,y:innerHeight/2,inside:false},noticeTimer=0,lastRender=0;
-  let turnSeen=false,lastTurn=null,sawOpponentTurn=false,usedThisTurn=false,previousShotRunning=false,pendingAbility=null,gameStatus={inGame:false,myTurn:false,shotRunning:false};
+  let turnSeen=false,lastTurn=null,sawOpponentTurn=false,usedThisTurn=false,previousShotRunning=false,pendingAbility=null,gameSessionActive=false,gameStatus={inGame:false,myTurn:false,shotRunning:false};
   let curveBend=Number(localStorage.getItem("poolCurveBend")||0.55),curveSide=Number(localStorage.getItem("poolCurveSide")||1);
   function save(){try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}render();}
   function notify(message,color="#c4b5fd"){const el=$("pool-ability-notice");el.textContent=message;el.style.borderColor=color;el.classList.add("show");clearTimeout(noticeTimer);noticeTimer=setTimeout(()=>el.classList.remove("show"),2100);}
   function remaining(id){return Math.max(0,(state.cooldowns[id]||0)-Date.now());}
   function readGameStatus(){
-    // The billiards game exposes its Phaser play-state and turn flags from its own script.
+    // Require a live billiards table, not merely a menu/loading scene with a turn flag.
     try {
-      const g=window.game||(window.Phaser&&window.Phaser.GAMES&&window.Phaser.GAMES[0]), scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
-      const isPlay=!!(scene&&scene.turn!==undefined&&scene.ballArray&&scene.gameRunning!==undefined);
-      const active=!!(isPlay&&scene.gameRunning&&!scene.gameOver&&!(scene.levelComplete));
+      const g=window.game||(window.Phaser&&window.Phaser.GAMES&&window.Phaser.GAMES[0]);
+      const scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
+      const balls=scene&&scene.ballArray;
+      const cue=balls&&balls[0];
       const turn=scene&&scene.turn;
-      if(!active){gameStatus={inGame:false,myTurn:false,shotRunning:!!(scene&&scene.shotRunning)};lastTurn=null;turnSeen=false;sawOpponentTurn=false;usedThisTurn=false;previousShotRunning=false;pendingAbility=null;return gameStatus;}
-      if(!turnSeen){turnSeen=true;lastTurn=turn;usedThisTurn=false;}
-      else if(turn!==lastTurn){
+      const hasLiveTable=!!(
+        scene &&
+        Array.isArray(balls) && balls.length >= 2 &&
+        cue && cue.body &&
+        scene.gameRunning === true &&
+        (turn === "p1" || turn === "p2")
+      );
+      if(!hasLiveTable){
+        gameStatus={inGame:false,myTurn:false,shotRunning:false};
+        gameSessionActive=false;
+        previousShotRunning=false;
+        pendingAbility=null;
+        return gameStatus;
+      }
+      if(!gameSessionActive){
+        gameSessionActive=true;
+        turnSeen=true;
+        lastTurn=turn;
+        sawOpponentTurn=false;
+        usedThisTurn=false;
+        previousShotRunning=!!scene.shotRunning;
+      } else if(!turnSeen){
+        turnSeen=true;
+        lastTurn=turn;
+        usedThisTurn=false;
+      } else if(turn!==lastTurn){
         if(turn!=="p1")sawOpponentTurn=true;
         if(turn==="p1"&&sawOpponentTurn){usedThisTurn=false;sawOpponentTurn=false;}
         lastTurn=turn;
@@ -40,13 +64,23 @@
       const shooting=!!scene.shotRunning;
       if(shooting&&!previousShotRunning&&pendingAbility){
         const id=pendingAbility, a=abilities.find(x=>x.id===id), now=Date.now();
-        if(a){state.active[id]=now+a.duration*1000;state.cooldowns[id]=now+a.cooldown*1000;try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}}
+        if(a){
+          state.active[id]=now+a.duration*1000;
+          state.cooldowns[id]=now+a.cooldown*1000;
+          try{localStorage.setItem(STORE,JSON.stringify(state));}catch(_){}
+        }
         pendingAbility=null;
       }
       previousShotRunning=shooting;
       gameStatus={inGame:true,myTurn:turn==="p1"&&!shooting&&!(scene.foulWindow&&scene.foulWindow.visible),shotRunning:shooting};
       return gameStatus;
-    } catch(_){gameStatus={inGame:false,myTurn:false,shotRunning:false};return gameStatus;}
+    } catch(_){
+      gameStatus={inGame:false,myTurn:false,shotRunning:false};
+      gameSessionActive=false;
+      previousShotRunning=false;
+      pendingAbility=null;
+      return gameStatus;
+    }
   }
   function render(){
     const gs=readGameStatus();
