@@ -25,9 +25,9 @@
   function readGameStatus(){
     // The billiards game exposes its Phaser play-state and turn flags from its own script.
     try {
-      const g=window.game, p=window.projectInfo, scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
+      const g=window.game||(window.Phaser&&window.Phaser.GAMES&&window.Phaser.GAMES[0]), scene=g&&g.state&&g.state.getCurrentState?g.state.getCurrentState():null;
       const isPlay=!!(scene&&scene.turn!==undefined&&scene.ballArray&&scene.gameRunning!==undefined);
-      const active=!!(isPlay&&scene.gameRunning&&!scene.gameOver&&!(p&&p.levelComplete));
+      const active=!!(isPlay&&scene.gameRunning&&!scene.gameOver&&!(scene.levelComplete));
       const turn=scene&&scene.turn;
       if(!active){gameStatus={inGame:false,myTurn:false,shotRunning:!!(scene&&scene.shotRunning)};lastTurn=null;turnSeen=false;sawOpponentTurn=false;usedThisTurn=false;return gameStatus;}
       if(!turnSeen){turnSeen=true;lastTurn=turn;usedThisTurn=false;}
