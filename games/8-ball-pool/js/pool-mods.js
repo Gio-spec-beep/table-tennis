@@ -47,11 +47,14 @@
       const balls=scene&&scene.ballArray;
       const cue=balls&&(balls[0]||(typeof balls.getAt==="function"?balls.getAt(0):null));
       const turn=scene&&scene.turn;
+      // This game uses its own billiards physics objects, not Phaser Arcade bodies.
+      // A cue ball therefore normally has position/velocity data rather than cue.body.
+      const ballCount=balls ? Number(balls.length||balls.total||(typeof balls.getAll==="function"?balls.getAll().length:0)||0) : 0;
       const hasLiveTable=!!(
-        scene && balls && Number(balls.length||balls.total||0)>=2 &&
-        cue && cue.body &&
+        scene && balls && ballCount>=2 &&
+        cue && cue.position &&
         !!scene.gameRunning &&
-        turn!==undefined && turn!==null
+        (turn==="p1"||turn==="p2")
       );
       if(!hasLiveTable){
         gameStatus={inGame:false,myTurn:false,shotRunning:false};
