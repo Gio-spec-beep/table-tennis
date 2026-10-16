@@ -290,9 +290,93 @@
   const key=e.code.replace('Key','').toUpperCase(),a=equipped.map(id=>byId[id]).find(x=>x&&x.key===key);
   if(a){e.preventDefault();e.stopImmediatePropagation();armAbility(a.id);}
  },true);
+
+ // Local two-player mode: keyboard-controlled paddles, reusing the game's
+ // existing ball physics, paddle collision checks, rally rules, and scoring.
+ const local2p={enabled:false,keys:Object.create(null),p1Offset:0,p2Offset:0};
+ const twoPButton=document.getElementById('local-2p-toggle');
+ const twoPStatus=document.getElementById('local-2p-status');
+ function getCanvasCore(){try{return typeof canvas!=='undefined'?canvas:document.getElementById('canvas');}catch(e){return document.getElementById('canvas');}}
+ function gameIsRunning(){try{return typeof gameState!=='undefined'&&gameState==='game';}catch(e){return false;}}
+ function set2pUI(){
+  twoPButton.classList.toggle('active',local2p.enabled);
+  twoPButton.textContent=local2p.enabled?'DISABLE 2-PLAYER MODE':'ENABLE 2-PLAYER MODE';
+  twoPStatus.textContent=local2p.enabled?'Mode active · P1 A/D · P2 ←/→':'Current mode: single player';
+ }
+ twoPButton.addEventListener('click',()=>{local2p.enabled=!local2p.enabled;local2p.p1Offset=0;local2p.p2Offset=0;set2pUI();});
+ document.addEventListener('keydown',e=>{
+  if(!local2p.enabled)return;
+  if(['KeyA','KeyD','ArrowLeft','ArrowRight'].includes(e.code)){
+   local2p.keys[e.code]=true;
+   if(gameIsRunning())e.preventDefault();
+  }
+ });
+ document.addEventListener('keyup',e=>{if(e.code in local2p.keys)local2p.keys[e.code]=false;});
+ window.addEventListener('blur',()=>{local2p.keys=Object.create(null);});
+ function patchLocalPaddles(){
+  if(!local2p.enabled||!gameIsRunning())return;
+  const c=getCanvasCore(),p1=getPaddle();let p2=null;
+  try{p2=typeof enemyBat!=='undefined'?enemyBat:null;}catch(e){}
+  if(!c||!p1||!p2)return;
+  if(!p1.__local2pPatched){
+   const originalP1Update=p1.update;
+   p1.update=function(){
+    if(local2p.enabled&&gameIsRunning()){
+     const direction=(local2p.keys.KeyD?1:0)-(local2p.keys.KeyA?1:0);
+     local2p.p1Offset=clamp(local2p.p1Offset+direction*650*(typeof delta!=='undefined'?delta:0.016),-Math.min(220,c.width*.34),Math.min(220,c.width*.34));
+     this.targX=c.width/2+local2p.p1Offset;
+    }
+    return originalP1Update.apply(this,arguments);
+   };
+   p1.__local2pPatched=true;
+  }
+  if(!p2.__local2pPatched){
+   const originalP2Update=p2.update,originalP2Hit=p2.getHitData;
+   p2.update=function(){
+    if(!local2p.enabled||!gameIsRunning())return originalP2Update.apply(this,arguments);
+    const dt=typeof delta!=='undefined'?delta:0.016;
+    const direction=(local2p.keys.ArrowRight?1:0)-(local2p.keys.ArrowLeft?1:0);
+    this.prevLocal2pX=this.x;
+    local2p.p2Offset=clamp(local2p.p2Offset+direction*650*dt,-Math.min(220,c.width*.34),Math.min(220,c.width*.34));
+    this.x=c.width/2+local2p.p2Offset;
+    this.y=c.height/4+50*tableTop.offsetY-45;
+    this.rotation=(this.x-c.width/2)/200;
+    this.scale=.4+(this.y-c.height/4)/300;
+   };
+   p2.getHitData=function(){
+    if(!local2p.enabled||!gameIsRunning())return originalP2Hit.apply(this,arguments);
+    const dt=typeof delta!=='undefined'?delta:0.016;
+    const dx=this.x-(this.prevLocal2pX||this.x);
+    const direction=clamp(dx/Math.max(1,dt*650),-1,1);
+    const aim=clamp((this.x-c.width/2)/250+direction*.24,-.92,.92);
+    return {x:aim,y:.68+Math.min(Math.abs(direction)*.18,.18),speed:clamp(.39+Math.abs(direction)*.12,.30,.60),spin:clamp(direction*.85,-1,1)};
+   };
+   p2.__local2pPatched=true;
+  }
+ }
+ function local2pLoop(){patchLocalPaddles();requestAnimationFrame(local2pLoop);}
+ set2pUI();requestAnimationFrame(local2pLoop);
+
  loadEquip();renderHud();renderInventory();update();requestAnimationFrame(drawFire);
 })();
 </script>
+
+
+<style>
+#local-2p-panel{position:fixed;left:16px;top:16px;z-index:99995;width:min(300px,calc(100vw - 32px));padding:12px 14px;border:1px solid rgba(118,226,255,.7);border-radius:10px;background:rgba(10,20,32,.94);color:#effaff;font:12px/1.4 Arial,Helvetica,sans-serif;box-shadow:0 6px 24px #0008}
+#local-2p-panel strong{display:block;font-size:12px;letter-spacing:.8px;margin-bottom:5px}
+#local-2p-panel p{margin:0 0 9px;color:#b6cbd9}
+#local-2p-toggle{width:100%;padding:9px;border:1px solid #56c9ed;border-radius:7px;background:linear-gradient(#23546b,#163446);color:white;font-weight:900;cursor:pointer}
+#local-2p-toggle.active{background:linear-gradient(#38762b,#244a20);border-color:#a5f58d}
+#local-2p-status{display:block;margin-top:7px;color:#a9e9ff;font-size:10px}
+@media(max-width:560px){#local-2p-panel{left:8px;top:8px;width:210px;padding:8px;font-size:10px}#local-2p-panel p{margin-bottom:6px}}
+</style>
+<div id="local-2p-panel">
+ <strong>🏓 LOCAL 2-PLAYER</strong>
+ <p>Player 1: <b>A / D</b> · Player 2: <b>← / →</b><br>Two players share this keyboard. Abilities remain Player 1-only.</p>
+ <button id="local-2p-toggle" type="button">ENABLE 2-PLAYER MODE</button>
+ <span id="local-2p-status">Current mode: single player</span>
+</div>
 
 </body>
 </html>
