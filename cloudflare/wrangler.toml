@@ -1,0 +1,11 @@
+name = "table-tennis-online"
+main = "worker.js"
+compatibility_date = "2026-10-17"
+
+[[durable_objects.bindings]]
+name = "MATCH_ROOMS"
+class_name = "MatchRoom"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MatchRoom"]
