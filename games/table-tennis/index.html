@@ -35,8 +35,11 @@
 	    window.famobi_gameID = "table-tennis-world-tour";
 	    window.famobi_gameJS = ['https://gio-spec-beep.github.io/table-tennis/games/table-tennis/js/all.js',
 	        function(){
-	        	if(window.famobi && window.famobi.config && window.famobi.config.aid !== "A-CRAZYGAMES") {
+	        	// Keep the mouse available for the game's menu and restart buttons.
+	        	// Pointer lock can otherwise remain active after a match ends and swallow UI clicks.
+	        	if(window.famobi && window.famobi.config && window.famobi.config.features) {
 	        		window.famobi.config.features.lockPointer = false;
+	        		if(document.pointerLockElement && document.exitPointerLock) document.exitPointerLock();
 	        	}
 				if (typeof extGameLoad !== 'undefined') extGameLoad();
 	        }
