@@ -19,20 +19,28 @@ html,body{background:#000;margin:0;padding:0;overflow:hidden;width:100%;height:1
 <div id="mygame"></div>
 <script src="https://cdn.jsdelivr.net/gh/thirstygithub/shiny-disco@main/src/01phaser.js"></script>
 <script src="js/asset-paths.js"></script>
-<button id="pool-mod-toggle" type="button" aria-expanded="false">✦ POOL ABILITIES</button>
-<section id="pool-mod-panel" aria-label="Pool ability inventory">
+<button id="pool-mod-toggle" type="button" aria-expanded="true">✦ POOL ABILITIES</button>
+<section id="pool-mod-panel" class="open" aria-label="Pool ability inventory">
  <header class="pm-head"><div><strong>8-BALL ABILITY LAB</strong><div style="color:#b9a9d3;font-size:10px;margin-top:3px">EQUIP · ACTIVATE · LEVEL UP</div></div><button class="pm-close" id="pool-mod-close" type="button">✕</button></header>
  <div class="pm-body">
-  <div class="pm-status" id="pm-status">Your loadout saves on this device.</div>
-  <div class="pm-label">ABILITY INVENTORY · EQUIP UP TO 3</div><div class="pm-grid" id="pm-abilities"></div>
+  <div class="pm-status" id="pm-status">✦ 0 ability points · 3/6 unlocked</div>
+  <div class="pm-label">ABILITY INVENTORY · EQUIP UP TO 3</div><div class="pm-grid" id="pm-abilities">
+   <article class="pm-card selected"><div class="pm-card-title"><span class="pm-icon" style="color:#fbbf24">⚡</span><b>Hyper Break</b></div><small>Pulsing opening-shot setup effect.</small><div class="pm-card-foot"><span>18s cooldown</span><button type="button" data-ability="hyper">UNEQUIP</button></div></article>
+   <article class="pm-card selected"><div class="pm-card-title"><span class="pm-icon" style="color:#c084fc">🌀</span><b>Curve Shot</b></div><small>Curved route aiming guide.</small><div class="pm-card-foot"><span>14s cooldown</span><button type="button" data-ability="curve">UNEQUIP</button></div></article>
+   <article class="pm-card selected"><div class="pm-card-title"><span class="pm-icon" style="color:#67e8f9">🧊</span><b>Dead Stop</b></div><small>Marks a target landing zone.</small><div class="pm-card-foot"><span>16s cooldown</span><button type="button" data-ability="dead">UNEQUIP</button></div></article>
+  </div>
   <div style="font-size:10px;color:#cbbce0">Click an ability to equip it. If all 3 slots are full, choose UNEQUIP on a card before equipping another.</div>
   <div class="pm-action-row"><button class="pm-action" id="pm-practice" type="button">＋ PRACTICE POINT</button><button class="pm-action" id="pm-reset" type="button">RESET LOADOUT</button></div>
   <div class="pm-note">Press 1, 2, or 3 to activate the matching equipped ability. The abilities provide timed visual aiming assists and cooldowns layered over the original game. They do not change the original game's ball physics or shot power.</div>
  </div>
 </section>
-<div id="pm-slots" aria-label="Equipped abilities"></div>
+<div id="pm-slots" aria-label="Equipped abilities">
+ <button type="button" class="pm-slot" data-cast="hyper" style="--ability-color:#fbbf24"><span class="pm-slot-key">1</span><span class="pm-slot-icon">⚡</span><b>Hyper Break</b><small>READY</small><i style="width:0%"></i></button>
+ <button type="button" class="pm-slot" data-cast="curve" style="--ability-color:#c084fc"><span class="pm-slot-key">2</span><span class="pm-slot-icon">🌀</span><b>Curve Shot</b><small>READY</small><i style="width:0%"></i></button>
+ <button type="button" class="pm-slot" data-cast="dead" style="--ability-color:#67e8f9"><span class="pm-slot-key">3</span><span class="pm-slot-icon">🧊</span><b>Dead Stop</b><small>READY</small><i style="width:0%"></i></button>
+ </div>
 <div id="pool-ability-notice" role="status" aria-live="polite"></div>
 <canvas id="pool-aim-overlay" aria-hidden="true"></canvas>
-<script src="js/pool-mods.js"></script>
+<script src="js/pool-mods.js?v=20261016b"></script>
 </body>
 </html>
