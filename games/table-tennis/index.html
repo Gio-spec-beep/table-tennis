@@ -205,25 +205,25 @@
    slots.appendChild(el);
   });
  }
- let ultimateActive=false,ultimateStarting=false,ultimateTimer=null,previousGameState=null,scoreHookInstalled=false;
+ let ultimateActive=false,ultimateStarting=false,ultimateTimer=null,scoreHookInstalled=false;
  const ultimateOverlay=document.getElementById('ultimate-overlay'),ultimateFrame=document.getElementById('ultimate-video-frame');
  function activateUltimate(){
   if(ultimateActive||ultimateStarting||!gameIsRunning())return;
   ultimateStarting=true;
-  ultimateActive=true;
   armed=null;
-  previousGameState=gameState;
-  gameState='pause';
+  renderHud();
   ultimateOverlay.style.display='flex';
-  ultimateFrame.innerHTML='<iframe title="Ultimate move video" width="100%" height="100%" style="border:0;max-width:100%;max-height:100%;aspect-ratio:16/9" src="https://www.youtube-nocookie.com/embed/3bhPpszmdvo?autoplay=1&controls=0&rel=0&playsinline=1&start=0&end=6" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  // Muted autoplay avoids the browser blocking playback; controls=0 hides the player controls.
+  ultimateFrame.innerHTML='<iframe title="Ultimate move video" width="100%" height="100%" style="border:0;max-width:100%;max-height:100%;aspect-ratio:16/9;pointer-events:none" src="https://www.youtube-nocookie.com/embed/3bhPpszmdvo?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&modestbranding=1&start=0&end=6" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>';
   ultimateTimer=setTimeout(()=>{
    ultimateFrame.innerHTML='';
    ultimateOverlay.style.display='none';
    ultimateStarting=false;
-   if(gameState==='pause')gameState=previousGameState||'game';
+   // Do not alter the game engine state: the overlay alone covers the game during the video.
+   ultimateActive=true;
+   installUltimateScoreHook();
    renderHud();
   },6000);
-  installUltimateScoreHook();
  }
  function installUltimateScoreHook(){
   if(scoreHookInstalled)return;
@@ -232,9 +232,8 @@
    const original=window.updateScore;
    const wrapped=function(winner){
     if(ultimateActive){
-     // The base game awards one point. Add one before it runs so the duel winner receives two total.
-     if(winner==='user')oGameData.userScore++;
-     else if(winner==='enemy')oGameData.enemyScore++;
+     if(winner==='user'&&typeof oGameData!=='undefined')oGameData.userScore++;
+     else if(winner==='enemy'&&typeof oGameData!=='undefined')oGameData.enemyScore++;
      ultimateActive=false;
     }
     return original.apply(this,arguments);
