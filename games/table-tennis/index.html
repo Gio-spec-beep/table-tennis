@@ -99,6 +99,11 @@
 @media(max-width:560px){#ability-hud{right:8px;bottom:8px;width:220px}.ah-slot{padding:5px}.ah-name{font-size:11px}.ai-grid{grid-template-columns:1fr}.ai-equipped{grid-template-columns:1fr}.ai-panel{max-height:92vh}.ai-title{font-size:17px}}
 </style>
 
+<div id="ultimate-overlay" style="display:none;position:fixed;inset:0;z-index:99999;background:#000;align-items:center;justify-content:center">
+ <div style="position:absolute;top:18px;left:0;right:0;text-align:center;color:#fff;font:bold 20px system-ui;z-index:2;text-shadow:0 2px 8px #000">ULTIMATE MOVE</div>
+ <div id="ultimate-video-frame" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center"></div>
+ <div style="position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#fff;font:600 14px system-ui;z-index:2;text-shadow:0 2px 8px #000">DUEL STARTING…</div>
+</div>
 <canvas id="ability-vfx" aria-hidden="true"></canvas>
 <div id="ability-hud" aria-label="Equipped abilities">
  <div class="ah-head"><span>⚡ ABILITIES</span><small>READY / COOLDOWN</small></div>
@@ -145,7 +150,7 @@
   {id:'drop',name:'Dead Drop',icon:'🪶',key:'R',cooldown:9,desc:'Take pace off your next hit for a softer, shorter drop shot.',meta:'SLOW SHOT · SHORT DROP'},
   {id:'smash',name:'Power Smash',icon:'💥',key:'F',cooldown:10,desc:'Hit a fast, flat attack with a major speed boost and reduced spin.',meta:'MAX PACE · FLAT HIT'},
   {id:'trick',name:'Trick Shot',icon:'✨',key:'T',cooldown:11,desc:'Combine extra speed with a sharp spin reversal for a deceptive return.',meta:'SPEED + REVERSE SPIN'},
-  {id:'corner',name:'Corner Sniper',icon:'🎯',key:'G',cooldown:9,desc:'Aim your next bounce toward the far left or right corner based on the direction your paddle is moving at impact.',meta:'CORNER AIM · PADDLE DIRECTION'},
+  {id:'corner',name:'Corner Sniper',icon:'🎯',key:'B',cooldown:9,desc:'Aim your next bounce toward the far left or right corner based on the direction your paddle is moving at impact.',meta:'CORNER AIM · PADDLE DIRECTION'},
   {id:'ghost',name:'Ghost Drop',icon:'👻',key:'V',cooldown:12,desc:'A very soft, low bounce designed to land short and disrupt your opponent’s timing.',meta:'ULTRA-SOFT · LOW BOUNCE'},
   {id:'sidewinder',name:'Sidewinder',icon:'🌪️',key:'C',cooldown:10,desc:'Apply strong side spin in the direction your paddle is moving when you hit the ball.',meta:'STRONG SIDE SPIN'}
  ];
@@ -200,7 +205,51 @@
    slots.appendChild(el);
   });
  }
- function armAbility(id){
+ let ultimateActive=false,ultimateStarting=false,ultimateTimer=null,previousGameState=null,scoreHookInstalled=false;
+ const ultimateOverlay=document.getElementById('ultimate-overlay'),ultimateFrame=document.getElementById('ultimate-video-frame');
+ function activateUltimate(){
+  if(ultimateActive||ultimateStarting||!gameIsRunning())return;
+  ultimateStarting=true;
+  ultimateActive=true;
+  armed=null;
+  previousGameState=gameState;
+  gameState='pause';
+  ultimateOverlay.style.display='flex';
+  ultimateFrame.innerHTML='<iframe title="Ultimate move video" width="100%" height="100%" style="border:0;max-width:100%;max-height:100%;aspect-ratio:16/9" src="https://www.youtube-nocookie.com/embed/3bhPpszmdvo?autoplay=1&controls=0&rel=0&playsinline=1&start=0&end=6" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>';
+  ultimateTimer=setTimeout(()=>{
+   ultimateFrame.innerHTML='';
+   ultimateOverlay.style.display='none';
+   ultimateStarting=false;
+   if(gameState==='pause')gameState=previousGameState||'game';
+   renderHud();
+  },6000);
+  installUltimateScoreHook();
+ }
+ function installUltimateScoreHook(){
+  if(scoreHookInstalled)return;
+  const patch=()=>{
+   if(typeof window.updateScore!=='function'||window.updateScore.__ultimateWrapped)return false;
+   const original=window.updateScore;
+   const wrapped=function(winner){
+    if(ultimateActive){
+     // The base game awards one point. Add one before it runs so the duel winner receives two total.
+     if(winner==='user')oGameData.userScore++;
+     else if(winner==='enemy')oGameData.enemyScore++;
+     ultimateActive=false;
+    }
+    return original.apply(this,arguments);
+   };
+   wrapped.__ultimateWrapped=true;
+   window.updateScore=wrapped;
+   scoreHookInstalled=true;
+   return true;
+  };
+  if(!patch()){
+   let attempts=0;
+   const retry=setInterval(()=>{if(patch()||++attempts>80)clearInterval(retry);},100);
+  }
+ }
+  function armAbility(id){
   if(!equipped.includes(id))return;
   if((cooldowns[id]||0)>performance.now()){renderHud();return;}
   if(armed===id){armed=null;renderHud();return;}
@@ -212,6 +261,9 @@
   wrappedBall=b;originalSetBounce=b.setBouncePoint;
   b.setBouncePoint=function(hitData){
    let data=hitData;
+   if(ultimateActive&&this.lastHit==='user'&&data&&typeof data.speed==='number'){
+    data=Object.assign({},data);data.speed=Math.min(.96,Math.max(.88,data.speed*2.35));
+   }
    if(armed&&this.lastHit==='user'&&data&&typeof data.speed==='number'){
     const used=armed,a=byId[used],p=getPaddle();
     data=Object.assign({},data);
@@ -306,8 +358,10 @@
  }
  document.addEventListener('keydown',e=>{
   if(e.repeat||e.ctrlKey||e.altKey||e.metaKey||inv.classList.contains('open'))return;
-  const key=e.code.replace('Key','').toUpperCase(),a=equipped.map(id=>byId[id]).find(x=>x&&x.key===key);
-  if(a){e.preventDefault();e.stopImmediatePropagation();armAbility(a.id);}
+  const key=e.code.replace('Key','').toUpperCase();
+  if(key==='G'){e.preventDefault();e.stopImmediatePropagation();activateUltimate();return;}
+  const ability=equipped.map(id=>byId[id]).find(x=>x&&x.key===key);
+  if(ability){e.preventDefault();e.stopImmediatePropagation();armAbility(ability.id);}
  },true);
 
  // Local two-player mode: keyboard-controlled paddles, reusing the game's
