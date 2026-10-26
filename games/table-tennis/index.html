@@ -231,7 +231,11 @@
      data.speed=Math.min(.82,data.speed*1.15);
     }
     else if(used==='ghost'){data.speed=Math.max(.18,data.speed*.48);data.y=clamp((data.y||.28)*.42,.06,.22);data.spin*=.3;}
-    else if(used==='sidewinder'){data.spin=clamp((direction||1)*1.35,-1.6,1.6);}
+    else if(used==='sidewinder'){
+     // Keep side spin mild enough that the ball still lands on the opponent's half.
+     // Strong spin in this game's original physics can curve the shot off the table.
+     data.spin=clamp((direction||1)*0.38,-0.38,0.38);
+    }
     // Safety guard for EVERY ability: always aim at a legal point on the
     // opponent's half of the table, inside the sidelines, and keep speed in
     // the original game's normal range. This preserves its normal table-bounce
