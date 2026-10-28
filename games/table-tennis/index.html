@@ -112,7 +112,8 @@
  <div style="position:absolute;bottom:20px;left:0;right:0;text-align:center;color:#fff;font:600 14px system-ui;z-index:2;text-shadow:0 2px 8px #000">DUEL STARTING…</div>
 </div>
 <canvas id="ability-vfx" aria-hidden="true"></canvas>
-<div id="ultimate-meter" aria-label="Ultimate charge">
+<div id="timestop-banner" style="display:none;position:fixed;top:18%;left:50%;transform:translateX(-50%);z-index:99998;padding:12px 22px;border:1px solid #7de8ff;border-radius:12px;background:rgba(3,22,38,.94);color:#baf5ff;font:900 22px Arial,sans-serif;letter-spacing:3px;box-shadow:0 0 35px #37dfff66;pointer-events:none">⏱ TIMESTOP</div>
+ <div id="ultimate-meter" aria-label="Ultimate charge">
  <div class="um-title">ULTIMATE: <span id="ultimate-name">SWEET!</span></div>
  <div class="um-track"><div class="um-fill" id="ultimate-fill"></div></div>
  <div class="um-caption" id="ultimate-charge-text">0 / 5 HITS · CHARGE YOUR ULTIMATE</div>
@@ -225,16 +226,18 @@
    slots.appendChild(el);
   });
  }
- let ultimateActive=false,ultimateStarting=false,ultimateTimer=null,scoreHookInstalled=false;
+ let ultimateActive=false,ultimateStarting=false,ultimateTimer=null,scoreHookInstalled=false,originalSetBounce=null;
  const ultimateOverlay=document.getElementById('ultimate-overlay'),ultimateFrame=document.getElementById('ultimate-video-frame');
  const ULTIMATE_HITS_REQUIRED=5;
  const ultimateDefs=[
   {id:'sweet',name:'SWEET!',icon:'🍬',desc:'Play the signature intro, then every hit you make accelerates the ball further until the rally ends.',available:true},
+   {id:'timestop',name:'TIMESTOP',icon:'⏱️',desc:'Freeze the ball in mid-air and stop the opponent for 10 seconds. Each hit while time is stopped boosts the ball when time resumes.',available:true},
   {id:'thunder',name:'THUNDER CLASH',icon:'⚡',desc:'A future ultimate built around a lightning-fast power shot.',available:false},
   {id:'phantom',name:'PHANTOM',icon:'👻',desc:'A future ultimate built around a deceptive disappearing shot.',available:false},
   {id:'gravity',name:'ZERO GRAVITY',icon:'🪐',desc:'A future ultimate built around unusual ball movement.',available:false}
  ];
  let selectedUltimate='sweet',ultimateCharge=0,ultimateHitCount=0,ultimateSpeedLevel=0;
+  let timeStopActive=false,timeStopUntil=0,timeStopSnapshot=null,timeStopPaddleSnapshot=null,timeStopPendingBounce=null,timeStopHits=0;
  const ultimateSelect=document.getElementById('ultimate-select'),ultimateCatalog=document.getElementById('ultimate-catalog');
  function renderUltimateMeter(){
   const pct=Math.min(100,ultimateCharge/ULTIMATE_HITS_REQUIRED*100);
@@ -279,7 +282,8 @@
   }catch(err){console.warn('Could not reset serve for SWEET ultimate:',err);}
  }
  function activateUltimate(){
-  if(ultimateActive||ultimateStarting||ultimateCharge<ULTIMATE_HITS_REQUIRED||!gameIsRunning())return;
+  if(ultimateActive||ultimateStarting||timeStopActive||ultimateCharge<ULTIMATE_HITS_REQUIRED||!gameIsRunning())return;
+  if(selectedUltimate==='timestop'){activateTimeStop();return;}
   if(selectedUltimate!=='sweet')return;
   ultimateStarting=true;
   ultimateCharge=0;ultimateHitCount=0;ultimateSpeedLevel=0;armed=null;
@@ -293,7 +297,33 @@
    ultimateActive=true;installUltimateScoreHook();renderHud();
   },6000);
  }
- function installUltimateScoreHook(){
+ function activateTimeStop(){
+   const b=getBall();if(!b)return;
+   timeStopSnapshot={};Object.keys(b).forEach(k=>{if(typeof b[k]!=='function')timeStopSnapshot[k]=b[k];});
+   let enemy=null;try{enemy=typeof enemyBat!=='undefined'?enemyBat:window.enemyBat||null;}catch(e){enemy=window.enemyBat||null;}
+   timeStopPaddleSnapshot=enemy?{obj:enemy,values:{}}:null;
+   if(enemy)Object.keys(enemy).forEach(k=>{if(typeof enemy[k]!=='function')timeStopPaddleSnapshot.values[k]=enemy[k];});
+   timeStopPendingBounce=null;timeStopHits=0;timeStopActive=true;timeStopUntil=performance.now()+10000;
+   ultimateCharge=0;ultimateHitCount=0;ultimateSpeedLevel=0;armed=null;
+   ultimateSelect.classList.remove('open');renderHud();renderUltimateMeter();
+   document.getElementById('ultimate-charge-text').textContent='TIMESTOP ACTIVE · 10.0s';
+   const banner=document.getElementById('timestop-banner');if(banner)banner.style.display='block';
+  }
+  function endTimeStop(){
+   if(!timeStopActive)return;timeStopActive=false;
+   const b=getBall();
+   if(b&&timeStopSnapshot){
+    Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
+    if(timeStopPendingBounce&&typeof originalSetBounce==='function'){
+     const data=Object.assign({},timeStopPendingBounce);
+     data.speed=Math.min(.96,Math.max(.3,(Number(data.speed)||.45)*Math.pow(1.3,timeStopHits)));
+     originalSetBounce.call(b,data);
+    }
+   }
+   timeStopSnapshot=null;timeStopPendingBounce=null;timeStopPaddleSnapshot=null;
+   const banner=document.getElementById('timestop-banner');if(banner)banner.style.display='none';renderUltimateMeter();
+  }
+  function installUltimateScoreHook(){
   if(scoreHookInstalled)return;
   const patch=()=>{
    if(typeof window.updateScore!=='function'||window.updateScore.__ultimateWrapped)return false;
@@ -327,7 +357,11 @@
   if(!b||typeof b.setBouncePoint!=='function'||b===wrappedBall)return;
   wrappedBall=b;originalSetBounce=b.setBouncePoint;
   b.setBouncePoint=function(hitData){
-   let data=hitData;
+    if(timeStopActive){
+     if(this.lastHit==='user'&&hitData&&typeof hitData.speed==='number'){timeStopHits++;timeStopPendingBounce=Object.assign({},hitData);}
+     return;
+    }
+    let data=hitData;
    if(this.lastHit==='user'&&data&&typeof data.speed==='number'){
     // Every successful player hit charges the ultimate. During SWEET!, each
     // player hit stacks another speed level for the rest of the rally.
@@ -402,8 +436,16 @@
   vctx.globalAlpha=1;requestAnimationFrame(drawFire);
  }
  function update(){
-  wrapBall();
-  const now=performance.now(),p=getPaddle();
+   wrapBall();
+   const now=performance.now(),p=getPaddle();
+   if(timeStopActive){
+    const b=getBall();
+    if(b&&timeStopSnapshot)Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
+    if(timeStopPaddleSnapshot&&timeStopPaddleSnapshot.obj)Object.keys(timeStopPaddleSnapshot.values).forEach(k=>{try{timeStopPaddleSnapshot.obj[k]=timeStopPaddleSnapshot.values[k];}catch(e){}});
+    const left=Math.max(0,(timeStopUntil-now)/1000);
+    document.getElementById('ultimate-charge-text').textContent='TIMESTOP ACTIVE · '+left.toFixed(1)+'s · '+timeStopHits+' FROZEN HITS';
+    if(now>=timeStopUntil)endTimeStop();
+   }
   if(p&&Number.isFinite(p.x)){
    if(paddleLastX!==null){const dx=p.x-paddleLastX;if(Math.abs(dx)>.05)paddleMoveSign=Math.sign(dx);}
    paddleLastX=p.x;
