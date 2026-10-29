@@ -322,6 +322,9 @@
     // usual upper limit so the ball can still land on the table.
     const hits=Math.min(Math.max(0,timeStopHits),4);
     const mult=1.8+hits*0.08; // at least 80% faster, up to 112% faster
+    // A frozen hit must be replayed as a USER paddle hit. Restoring the snapshot
+    // also restores lastHit from before contact, which otherwise makes the engine
+    // plan the wrong trajectory and can erase the speed boost.
     if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
      data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.78,0.78);
@@ -332,6 +335,8 @@
      // its actual table-plane velocity. The engine's bounce planner can
      // normalize speed internally, so changing only data.speed may be invisible.
      data.speed=clamp(Math.max(data.speed*mult,0.84),0.84,0.92);
+     b.lastHit='user';
+     b.offTable=false;b.offSide=false;
      originalSetBounce.call(b,data);
      if(Number.isFinite(b.tableVX)&&Number.isFinite(b.tableVY)){
       b.tableVX*=1.65;
@@ -463,9 +468,12 @@
     if(b&&timeStopSnapshot){
      // Detect the transient paddle-hit state before restoring the frozen frame.
      if(b.lastHit!==timeStopSnapshot.lastHit&&b.lastHit==='user'){
-      timeStopHits++;
-      timeStopPendingBounce={};
-      Object.keys(b).forEach(k=>{if(typeof b[k]!=='function')timeStopPendingBounce[k]=b[k];});
+      // The setBouncePoint wrapper captures the real hitData (target x/y/speed).
+      // Only use the ball-state snapshot as a fallback if that hook didn't fire.
+      if(!timeStopPendingBounce||typeof timeStopPendingBounce.speed!=='number'){
+       timeStopHits++;
+       timeStopPendingBounce={x:0,y:.25,speed:typeof b.speed==='number'?b.speed:.45,spin:typeof b.spin==='number'?b.spin:0};
+      }
      }
      Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
     }
