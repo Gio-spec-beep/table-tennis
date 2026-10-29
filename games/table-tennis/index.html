@@ -317,12 +317,16 @@
     Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
     // Route the resumed shot through the game's normal bounce planner so it
     // targets the opponent's half of the table instead of carrying frozen momentum off-table.
-    const mult=1+Math.min(Math.max(0,timeStopHits),4)*0.06; // max +24%, fast but controlled
+    // Make Timestop hits noticeably faster than an ordinary return, while
+    // retaining the engine's normal bounce target and keeping speed below its
+    // usual upper limit so the ball can still land on the table.
+    const hits=Math.min(Math.max(0,timeStopHits),4);
+    const mult=1.35+hits*0.10; // +35% for one frozen hit, up to +75% for four
     if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
      data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.82,0.82);
-     data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0.22,0.12,0.38);
-     data.speed=clamp(data.speed*mult,0.42,0.58);
+     data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0,0.12,0.38);
+     data.speed=clamp(data.speed*mult,0.48,0.78);
      originalSetBounce.call(b,data);
     }
    }
