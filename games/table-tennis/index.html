@@ -328,8 +328,16 @@
      data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0,0.16,0.34);
      // The engine's normal player-hit speeds are about 0.3–0.6. Keep this
      // special shot in a genuinely fast range without using extreme velocities.
-     data.speed=clamp(data.speed*mult,0.82,0.90);
+     // Force a clear speed increase in both the engine's speed value and
+     // its actual table-plane velocity. The engine's bounce planner can
+     // normalize speed internally, so changing only data.speed may be invisible.
+     data.speed=clamp(Math.max(data.speed*mult,0.84),0.84,0.92);
      originalSetBounce.call(b,data);
+     if(Number.isFinite(b.tableVX)&&Number.isFinite(b.tableVY)){
+      b.tableVX*=1.65;
+      b.tableVY*=1.65;
+     }
+     if(Number.isFinite(b.heightInc)) b.heightInc*=1.2;
     }
    }
    timeStopSnapshot=null;timeStopPendingBounce=null;timeStopPaddleSnapshot=null;
