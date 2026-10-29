@@ -10,6 +10,7 @@ permissions:
   pages: write
   id-token: write
 
+# Keep Pages deployments serialized; a fresh push creates a fresh artifact.
 concurrency:
   group: "pages"
   cancel-in-progress: true
