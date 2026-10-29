@@ -321,12 +321,14 @@
     // retaining the engine's normal bounce target and keeping speed below its
     // usual upper limit so the ball can still land on the table.
     const hits=Math.min(Math.max(0,timeStopHits),4);
-    const mult=1.35+hits*0.10; // +35% for one frozen hit, up to +75% for four
+    const mult=1.8+hits*0.08; // at least 80% faster, up to 112% faster
     if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
-     data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.82,0.82);
-     data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0,0.12,0.38);
-     data.speed=clamp(data.speed*mult,0.48,0.78);
+     data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.78,0.78);
+     data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0,0.16,0.34);
+     // The engine's normal player-hit speeds are about 0.3–0.6. Keep this
+     // special shot in a genuinely fast range without using extreme velocities.
+     data.speed=clamp(data.speed*mult,0.82,0.90);
      originalSetBounce.call(b,data);
     }
    }
