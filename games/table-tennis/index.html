@@ -313,11 +313,18 @@
    if(!timeStopActive)return;timeStopActive=false;
    const b=getBall();
    if(b&&timeStopSnapshot){
+    // Restore the frozen state, then resume from the most recent paddle contact.
     Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
-    if(timeStopPendingBounce&&typeof originalSetBounce==='function'){
+    if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
-     data.speed=Math.min(.96,Math.max(.3,(Number(data.speed)||.45)*Math.pow(1.3,timeStopHits)));
+     data.speed=Math.min(.96,Math.max(.3,data.speed*Math.pow(1.3,Math.max(1,timeStopHits))));
      originalSetBounce.call(b,data);
+    }else if(timeStopPendingBounce){
+     Object.keys(timeStopPendingBounce).forEach(k=>{try{b[k]=timeStopPendingBounce[k];}catch(e){}});
+     const mult=Math.pow(1.3,Math.max(1,timeStopHits));
+     ['tableVX','tableVY','heightInc','speed','vx','vy','velocityX','velocityY'].forEach(k=>{
+      if(typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]!==0)b[k]*=mult;
+     });
     }
    }
    timeStopSnapshot=null;timeStopPendingBounce=null;timeStopPaddleSnapshot=null;
@@ -440,7 +447,15 @@
    const now=performance.now(),p=getPaddle();
    if(timeStopActive){
     const b=getBall();
-    if(b&&timeStopSnapshot)Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
+    if(b&&timeStopSnapshot){
+     // Detect the transient paddle-hit state before restoring the frozen frame.
+     if(b.lastHit!==timeStopSnapshot.lastHit&&b.lastHit==='user'){
+      timeStopHits++;
+      timeStopPendingBounce={};
+      Object.keys(b).forEach(k=>{if(typeof b[k]!=='function')timeStopPendingBounce[k]=b[k];});
+     }
+     Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
+    }
     if(timeStopPaddleSnapshot&&timeStopPaddleSnapshot.obj)Object.keys(timeStopPaddleSnapshot.values).forEach(k=>{try{timeStopPaddleSnapshot.obj[k]=timeStopPaddleSnapshot.values[k];}catch(e){}});
     const left=Math.max(0,(timeStopUntil-now)/1000);
     document.getElementById('ultimate-charge-text').textContent='TIMESTOP ACTIVE · '+left.toFixed(1)+'s · '+timeStopHits+' FROZEN HITS';
