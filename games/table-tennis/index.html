@@ -321,7 +321,7 @@
     // retaining the engine's normal bounce target and keeping speed below its
     // usual upper limit so the ball can still land on the table.
     const hits=Math.min(Math.max(0,timeStopHits),4);
-    const mult=1.8+hits*0.08; // at least 80% faster, up to 112% faster
+    const mult=2.8+hits*0.15; // strong TimeStop ultimate scaling
     // A frozen hit must be replayed as a USER paddle hit. Restoring the snapshot
     // also restores lastHit from before contact, which otherwise makes the engine
     // plan the wrong trajectory and can erase the speed boost.
@@ -334,13 +334,13 @@
      // Force a clear speed increase in both the engine's speed value and
      // its actual table-plane velocity. The engine's bounce planner can
      // normalize speed internally, so changing only data.speed may be invisible.
-     data.speed=clamp(Math.max(data.speed*mult,0.84),0.84,0.92);
+     data.speed=clamp(Math.max(data.speed*mult,0.94),0.94,0.98);
      b.lastHit='user';
      b.offTable=false;b.offSide=false;
      originalSetBounce.call(b,data);
      if(Number.isFinite(b.tableVX)&&Number.isFinite(b.tableVY)){
-      b.tableVX*=1.65;
-      b.tableVY*=1.65;
+      b.tableVX*=3.25;
+      b.tableVY*=3.25;
      }
      if(Number.isFinite(b.heightInc)) b.heightInc*=1.2;
     }
