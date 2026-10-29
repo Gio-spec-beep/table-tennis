@@ -315,22 +315,15 @@
    if(b&&timeStopSnapshot){
     // Restore the frozen state, then resume from the most recent paddle contact.
     Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
-    // Keep the stacked boost noticeable but bounded so the shot remains playable.
-    const mult=1+Math.min(Math.max(0,timeStopHits),4)*0.08; // max +32%
+    // Route the resumed shot through the game's normal bounce planner so it
+    // targets the opponent's half of the table instead of carrying frozen momentum off-table.
+    const mult=1+Math.min(Math.max(0,timeStopHits),4)*0.06; // max +24%, fast but controlled
     if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
-     data.speed=Math.min(.60,Math.max(.30,data.speed*mult));
+     data.x=clamp(Number.isFinite(Number(data.x))?Number(data.x):0,-0.82,0.82);
+     data.y=clamp(Number.isFinite(Number(data.y))?Number(data.y):0.22,0.12,0.38);
+     data.speed=clamp(data.speed*mult,0.42,0.58);
      originalSetBounce.call(b,data);
-    }else if(timeStopPendingBounce){
-     Object.keys(timeStopPendingBounce).forEach(k=>{try{b[k]=timeStopPendingBounce[k];}catch(e){}});
-     // Do not boost height/vertical arc; only gently increase planar movement.
-     ['tableVX','tableVY','vx','vy','velocityX','velocityY'].forEach(k=>{
-      if(typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]!==0){
-       const base=timeStopSnapshot[k];
-       const cap=typeof base==='number'&&base!==0?Math.abs(base)*1.32:Math.abs(b[k])*1.32;
-       b[k]=Math.sign(b[k])*Math.min(Math.abs(b[k])*mult,cap);
-      }
-     });
     }
    }
    timeStopSnapshot=null;timeStopPendingBounce=null;timeStopPaddleSnapshot=null;
