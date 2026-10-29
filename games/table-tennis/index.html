@@ -315,15 +315,21 @@
    if(b&&timeStopSnapshot){
     // Restore the frozen state, then resume from the most recent paddle contact.
     Object.keys(timeStopSnapshot).forEach(k=>{try{b[k]=timeStopSnapshot[k];}catch(e){}});
+    // Keep the stacked boost noticeable but bounded so the shot remains playable.
+    const mult=1+Math.min(Math.max(0,timeStopHits),4)*0.08; // max +32%
     if(timeStopPendingBounce&&typeof originalSetBounce==='function'&&typeof timeStopPendingBounce.speed==='number'){
      const data=Object.assign({},timeStopPendingBounce);
-     data.speed=Math.min(.96,Math.max(.3,data.speed*Math.pow(1.3,Math.max(1,timeStopHits))));
+     data.speed=Math.min(.60,Math.max(.30,data.speed*mult));
      originalSetBounce.call(b,data);
     }else if(timeStopPendingBounce){
      Object.keys(timeStopPendingBounce).forEach(k=>{try{b[k]=timeStopPendingBounce[k];}catch(e){}});
-     const mult=Math.pow(1.3,Math.max(1,timeStopHits));
-     ['tableVX','tableVY','heightInc','speed','vx','vy','velocityX','velocityY'].forEach(k=>{
-      if(typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]!==0)b[k]*=mult;
+     // Do not boost height/vertical arc; only gently increase planar movement.
+     ['tableVX','tableVY','vx','vy','velocityX','velocityY'].forEach(k=>{
+      if(typeof b[k]==='number'&&Number.isFinite(b[k])&&b[k]!==0){
+       const base=timeStopSnapshot[k];
+       const cap=typeof base==='number'&&base!==0?Math.abs(base)*1.32:Math.abs(b[k])*1.32;
+       b[k]=Math.sign(b[k])*Math.min(Math.abs(b[k])*mult,cap);
+      }
      });
     }
    }
