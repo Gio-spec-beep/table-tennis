@@ -5,58 +5,154 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Gladihoppers · Modded</title>
   <style>
+    *{box-sizing:border-box}
     html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05030a;color:#fff;font-family:system-ui,sans-serif}
-    #unity-container{width:100%;height:100%;position:relative}
-    #gh-progress{position:fixed;left:16px;right:16px;bottom:18px;text-align:center;z-index:10;color:#ddd6fe;font-size:13px;pointer-events:none;text-shadow:0 1px 5px #000}
+    #unity-container{position:absolute;inset:0;width:100%;height:100%}
+    #gh-status{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;max-height:48vh;overflow:auto;padding:14px;background:rgba(12,8,22,.96);border:1px solid #7050a8;border-radius:12px;box-shadow:0 8px 35px #000b;font-size:13px}
+    #gh-status h2{font-size:15px;margin:0 0 8px;color:#c4b5fd}
+    #gh-status p{margin:5px 0;color:#ddd6fe}
+    #gh-checks{display:grid;gap:5px;margin:10px 0}
+    .gh-check{padding:7px 9px;border-radius:7px;background:#ffffff0d;overflow-wrap:anywhere}
+    .gh-check b{color:#fff}
+    .gh-check.ok{border-left:3px solid #34d399}
+    .gh-check.bad{border-left:3px solid #fb7185}
+    .gh-check.wait{border-left:3px solid #fbbf24}
+    #gh-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+    #gh-actions button{border:1px solid #a78bfa;border-radius:8px;background:#6d28d9;color:#fff;padding:8px 12px;font-weight:700;cursor:pointer}
+    #gh-actions button:disabled{opacity:.5;cursor:wait}
+    #gh-note{color:#bdb2d1!important;font-size:11px}
+    #gh-status.minimized{max-height:none;left:auto;width:auto;max-width:calc(100vw - 24px);padding:8px 12px}
+    #gh-status.minimized #gh-checks,#gh-status.minimized p,#gh-status.minimized #gh-actions{display:none}
   </style>
-  <script src="https://cdn.jsdelivr.net/gh/genizy/gh/patch/js/UnityLoader.2019.2.js"></script>
 </head>
 <body>
   <div id="unity-container"></div>
-  <div id="gh-progress" role="status">Loading Gladihoppers… connecting to game files</div>
+  <section id="gh-status" role="status" aria-live="polite">
+    <h2>GLADIHOPPERS CONNECTION CHECK</h2>
+    <p id="gh-summary">Checking whether the game files can be reached…</p>
+    <div id="gh-checks"></div>
+    <div id="gh-actions">
+      <button id="gh-retry" type="button">RUN CHECK AGAIN</button>
+      <button id="gh-hide" type="button">MINIMIZE</button>
+    </div>
+    <p id="gh-note">This check does not require Developer Tools. If a check fails, its row will show the exact stage and error.</p>
+  </section>
   <script>
-    const progress=document.getElementById('gh-progress');
-    const idle=()=>{};
-    window.PokiSDK={init:()=>Promise.resolve(),commercialBreak:()=>Promise.resolve(),rewardedBreak:()=>Promise.resolve(false)};
-    for(const method of ['customEvent','destroyAd','displayAd','gameInteractive','gameLoadingFinished','gameLoadingProgress','gameLoadingStart','gameplayStart','gameplayStop','happyTime','roundEnd','roundStart','setPlayerAge','togglePlayerAdvertisingConsent'])window.PokiSDK[method]=idle;
-    window.initPokiBridge=function(name){
-      const send=(method,value)=>window.unityGame&&window.unityGame.SendMessage(name,method,value);
-      window.commercialBreak=()=>Promise.resolve().then(()=>send('commercialBreakCompleted'));
-      window.rewardedBreak=()=>Promise.resolve().then(()=>send('rewardedBreakCompleted','false'));
-      if(window.unityGame)send('ready');
-      else window.addEventListener('load',()=>send('ready'),{once:true});
-    };
-    let progressSeen=false;
-    try {
-      if(!window.UnityLoader) throw new Error('Unity WebGL loader did not download');
-      window.unityGame=window.gameInstance=UnityLoader.instantiate(
-        'unity-container',
-        'https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.json',
-        {
+  (() => {
+    const JSON_URL='https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.json';
+    const LOADER_URL='https://cdn.jsdelivr.net/gh/genizy/gh/patch/js/UnityLoader.2019.2.js';
+    const box=document.getElementById('gh-status');
+    const checks=document.getElementById('gh-checks');
+    const summary=document.getElementById('gh-summary');
+    const retry=document.getElementById('gh-retry');
+    let started=false;
+
+    function row(name,state,detail){
+      let el=document.getElementById('gh-'+name.replace(/[^a-z0-9]/gi,'-'));
+      if(!el){el=document.createElement('div');el.id='gh-'+name.replace(/[^a-z0-9]/gi,'-');el.className='gh-check';checks.append(el);}
+      el.className='gh-check '+state;
+      el.innerHTML='<b>'+name+':</b> '+String(detail).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    }
+    async function headCheck(name,url){
+      row(name,'wait','checking host response…');
+      const controller=new AbortController();
+      const timer=setTimeout(()=>controller.abort(),12000);
+      try{
+        const response=await fetch(url,{method:'HEAD',cache:'no-store',mode:'cors',signal:controller.signal});
+        if(!response.ok)throw new Error('HTTP '+response.status+' '+response.statusText);
+        const size=response.headers.get('content-length');
+        row(name,'ok','reachable · HTTP '+response.status+(size?' · '+Math.round(Number(size)/1048576*10)/10+' MB':''));
+        return true;
+      }catch(error){
+        const message=error.name==='AbortError'?'timed out after 12 seconds':error.message||'network/CORS error';
+        row(name,'bad',message+' · '+new URL(url).hostname);
+        return false;
+      }finally{clearTimeout(timer);}
+    }
+    async function loadLoader(){
+      row('Unity loader','wait','downloading loader script…');
+      await new Promise((resolve,reject)=>{
+        const script=document.createElement('script');
+        script.src=LOADER_URL;
+        script.onload=resolve;
+        script.onerror=()=>reject(new Error('Script could not load (blocked host or network error)'));
+        document.head.append(script);
+      });
+      if(!window.UnityLoader)throw new Error('Script loaded but UnityLoader was not defined');
+      row('Unity loader','ok','loaded successfully');
+    }
+    async function startGame(){
+      if(started)return;
+      started=true;retry.disabled=true;checks.innerHTML='';
+      summary.textContent='Testing the game host before starting Unity…';
+      try{
+        await loadLoader();
+      }catch(error){
+        row('Unity loader','bad',error.message);
+        summary.textContent='The Unity loader cannot be reached. The game cannot start until this host is accessible.';
+        started=false;retry.disabled=false;return;
+      }
+      let config;
+      try{
+        row('Game configuration','wait','requesting Gladihoppers.json…');
+        const response=await fetch(JSON_URL,{cache:'no-store',mode:'cors'});
+        if(!response.ok)throw new Error('HTTP '+response.status+' '+response.statusText);
+        config=await response.json();
+        if(!config.dataUrl||!config.wasmCodeUrl||!config.wasmFrameworkUrl)throw new Error('JSON is missing one or more game-file URLs');
+        row('Game configuration','ok','loaded · Unity '+(config.unityVersion||'version not specified'));
+      }catch(error){
+        row('Game configuration','bad',error.message||'network/CORS error');
+        summary.textContent='The game configuration file could not be read. See the failed check above.';
+        started=false;retry.disabled=false;return;
+      }
+      const assets=[
+        ['Game data',config.dataUrl],
+        ['WebAssembly code',config.wasmCodeUrl],
+        ['WebAssembly framework',config.wasmFrameworkUrl]
+      ];
+      const results=await Promise.all(assets.map(([name,url])=>headCheck(name,url)));
+      if(results.some(ok=>!ok)){
+        summary.textContent='At least one required game file is unreachable from this browser. This is why loading stays at 0%.';
+        started=false;retry.disabled=false;return;
+      }
+      summary.textContent='All files are reachable. Starting Gladihoppers…';
+      try{
+        const idle=()=>{};
+        window.PokiSDK={init:()=>Promise.resolve(),commercialBreak:()=>Promise.resolve(),rewardedBreak:()=>Promise.resolve(false)};
+        for(const method of ['customEvent','destroyAd','displayAd','gameInteractive','gameLoadingFinished','gameLoadingProgress','gameLoadingStart','gameplayStart','gameplayStop','happyTime','roundEnd','roundStart','setPlayerAge','togglePlayerAdvertisingConsent'])window.PokiSDK[method]=idle;
+        window.initPokiBridge=function(name){
+          const send=(method,value)=>window.unityGame&&window.unityGame.SendMessage(name,method,value);
+          window.commercialBreak=()=>Promise.resolve().then(()=>send('commercialBreakCompleted'));
+          window.rewardedBreak=()=>Promise.resolve().then(()=>send('rewardedBreakCompleted','false'));
+          if(window.unityGame)send('ready');
+          else window.addEventListener('load',()=>send('ready'),{once:true});
+        };
+        window.unityGame=window.gameInstance=UnityLoader.instantiate('unity-container',JSON_URL,{
           onProgress(instance,value){
-            progressSeen=true;
-            progress.textContent='Loading Gladihoppers… '+Math.round(value*100)+'%';
-            if(value>=1)progress.hidden=true;
+            summary.textContent='Loading Gladihoppers… '+Math.round(value*100)+'%';
+            if(value>=1){box.classList.add('minimized');}
           },
           onerror(error){
-            progress.textContent='Gladihoppers failed to start. Reload the page and try again.';
-            console.error('Gladihoppers Unity error:',error);
+            row('Unity runtime','bad',error&&error.message?error.message:String(error||'unknown Unity error'));
+            summary.textContent='Unity reported an error while starting the game.';
+            box.classList.remove('minimized');
           }
-        }
-      );
-    } catch(error) {
-      progress.textContent='Gladihoppers loader error: '+error.message;
-      console.error(error);
-    }
-    setTimeout(()=>{
-      if(!progressSeen && !progress.hidden) {
-        progress.textContent='Still waiting for the Unity game files. The game host may be blocked or unavailable on this network.';
+        });
+        row('Unity runtime','wait','game files passed checks; waiting for Unity to initialize');
+        const modScript=document.createElement('script');
+        modScript.src=new URL('mod-menu.js',location.href).href;
+        modScript.onerror=()=>row('Mod menu','bad','mod-menu.js could not load; the game may still work');
+        document.body.append(modScript);
+      }catch(error){
+        row('Unity runtime','bad',error.message||String(error));
+        summary.textContent='The Unity game could not be started.';
+        started=false;retry.disabled=false;
       }
-    },30000);
-    const modScript=document.createElement('script');
-    modScript.src=new URL('mod-menu.js',location.href).href;
-    modScript.onerror=()=>console.error('Gladihoppers mod menu script failed to load.');
-    document.body.append(modScript);
+    }
+    retry.addEventListener('click',()=>{started=false;startGame();});
+    document.getElementById('gh-hide').addEventListener('click',()=>box.classList.toggle('minimized'));
+    startGame();
+  })();
   </script>
 </body>
 </html>
