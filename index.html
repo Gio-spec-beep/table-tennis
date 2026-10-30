@@ -120,7 +120,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
         <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
         <strong>Version 1.0.8 · October 30, 2026</strong>
         <ul style="margin:8px 0 0;padding-left:20px;color:var(--muted)">
-          <li>Added a Gladihoppers mod menu toggled with Ctrl + F3.</li>
+          <li>Added a Gladihoppers mod menu toggled with /.</li>
           <li>Added single-player health, melee damage, movement speed, and weapon reach stat boosts.</li>
           <li>Added a reset option to restore the original stats.</li>
           <li>Updated Gladihoppers to a pinned Unity WebGL build for mod compatibility.</li>
@@ -166,22 +166,22 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
     <button class="play" onclick="showTab('games')">BACK TO GAMES</button>
   </section>
 </main>
-<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.8</span></footer>
+<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.9</span></footer>
 <div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game player">
   <div class="game-bar">
     <div class="game-title" id="gameTitle">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
-    <div class="game-actions"><a id="gameNewTab" href="games/table-tennis/index.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
+    <div class="game-actions"><button id="modMenuButton" onclick="toggleModMenu()" style="display:none">MOD MENU /</button><a id="gameNewTab" href="games/table-tennis/index.html" target="_blank" rel="noopener">OPEN IN NEW TAB ↗</a><button onclick="closeGame()" aria-label="Close game">✕ CLOSE</button></div>
   </div>
   <div class="game-frame-wrap"><iframe class="game-frame" id="gameFrame" title="Selected game" allow="autoplay; fullscreen; gamepad; pointer-lock" allowfullscreen></iframe></div>
 </div>
 <script>
 const overlay=document.getElementById('gameOverlay');
 let currentGame='games/table-tennis/index.html';
-function openGame(file='games/table-tennis/index.html',title='TABLE TENNIS WORLD TOUR'){currentGame=file;const frame=document.getElementById('gameFrame');frame.src=file;document.getElementById('gameTitle').innerHTML=(file.includes('8-ball-pool')?'🎱 &nbsp; ':file.includes('gladihoppers')?'⚔️ &nbsp; ':'🏓 &nbsp; ')+title+(file.includes('gladihoppers')?'':' <span style="color:#a78bfa">· MODDED</span>');document.getElementById('gameNewTab').href=file;overlay.classList.add('open');document.body.style.overflow='hidden'}
-function closeGame(){overlay.classList.remove('open');document.body.style.overflow='';}
+function openGame(file='games/table-tennis/index.html',title='TABLE TENNIS WORLD TOUR'){currentGame=file;document.getElementById('modMenuButton').style.display=file.includes('gladihoppers')?'inline-block':'none';const frame=document.getElementById('gameFrame');frame.src=file;document.getElementById('gameTitle').innerHTML=(file.includes('8-ball-pool')?'🎱 &nbsp; ':file.includes('gladihoppers')?'⚔️ &nbsp; ':'🏓 &nbsp; ')+title+(file.includes('gladihoppers')?'':' <span style="color:#a78bfa">· MODDED</span>');document.getElementById('gameNewTab').href=file;overlay.classList.add('open');document.body.style.overflow='hidden'}
+function closeGame(){overlay.classList.remove('open');document.body.style.overflow='';}\nfunction toggleModMenu(){const frame=document.getElementById('gameFrame');try{frame.contentWindow.postMessage({type:'GH_TOGGLE_MOD_MENU'},'*')}catch(error){console.warn('Could not reach Gladihoppers mod menu',error)}}
 function showTab(tab){const games=tab==='games';document.getElementById('gamesPanel').style.display=games?'block':'none';document.getElementById('hero').style.display=games?'block':'none';document.getElementById('settingsPanel').style.display=games?'none':'block';document.getElementById('gamesTab').classList.toggle('active',games);document.getElementById('settingsTab').classList.toggle('active',!games);window.scrollTo({top:0,behavior:'smooth'})}
 document.getElementById('searchInput').addEventListener('input',function(){const q=this.value.trim().toLowerCase();const cards=[...document.querySelectorAll('.card')];let count=0;cards.forEach(card=>{const visible=card.dataset.search.includes(q)||card.innerText.toLowerCase().includes(q);card.style.display=visible?'':'none';if(visible)count++});document.getElementById('emptyState').style.display=count?'none':'block';document.getElementById('countText').textContent=count+' game'+(count===1?'':'s')+' available'});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeGame();if((e.code==='Slash'||e.key==='/'||e.key==='?')&&!e.ctrlKey&&!e.altKey&&!e.metaKey&&currentGame.includes('gladihoppers')&&overlay.classList.contains('open'))toggleModMenu()});
 </script>
 </body>
 </html>
