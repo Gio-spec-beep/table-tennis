@@ -39,8 +39,11 @@
   </section>
   <script>
   (() => {
-    const JSON_URL=new URL('Build/Gladihoppers.json',location.href).href;
     const LOADER_URL=new URL('UnityLoader.2019.2.js',location.href).href;
+    // Keep the Unity configuration in this page so the browser does not need
+    // to request a separate .json file (some school filters return HTTP 403).
+    const GAME_CONFIG={companyName:'Dreamon Studios',productName:'Gladihoppers',productVersion:'3.0.1',dataUrl:'https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.data.unityweb',wasmCodeUrl:'https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.wasm.code.unityweb',wasmFrameworkUrl:'https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.wasm.framework.unityweb',graphicsAPI:['WebGL 2.0','WebGL 1.0'],webglContextAttributes:{preserveDrawingBuffer:false},splashScreenStyle:'Dark',backgroundColor:'#231F20',cacheControl:{default:'must-revalidate'},developmentBuild:false,multithreading:false,unityVersion:'2019.3.13f1'};
+    const JSON_URL=URL.createObjectURL(new Blob([JSON.stringify(GAME_CONFIG)],{type:'application/json'}));
     const box=document.getElementById('gh-status');
     const checks=document.getElementById('gh-checks');
     const summary=document.getElementById('gh-summary');
@@ -92,19 +95,8 @@
         summary.textContent='The Unity loader cannot be reached. The game cannot start until this host is accessible.';
         started=false;retry.disabled=false;return;
       }
-      let config;
-      try{
-        row('Game configuration','wait','requesting Gladihoppers.json…');
-        const response=await fetch(JSON_URL,{cache:'no-store',mode:'cors'});
-        if(!response.ok)throw new Error('HTTP '+response.status+' '+response.statusText);
-        config=await response.json();
-        if(!config.dataUrl||!config.wasmCodeUrl||!config.wasmFrameworkUrl)throw new Error('JSON is missing one or more game-file URLs');
-        row('Game configuration','ok','loaded · Unity '+(config.unityVersion||'version not specified'));
-      }catch(error){
-        row('Game configuration','bad',error.message||'network/CORS error');
-        summary.textContent='The game configuration file could not be read. See the failed check above.';
-        started=false;retry.disabled=false;return;
-      }
+      const config=GAME_CONFIG;
+      row('Game configuration','ok','loaded from the page · Unity '+config.unityVersion);
       const assets=[
         ['Game data',config.dataUrl],
         ['WebAssembly code',config.wasmCodeUrl],
