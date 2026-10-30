@@ -177,7 +177,7 @@
   panel.querySelector('#gh-reset').addEventListener('click', resetStats);
 
   document.addEventListener('keydown', event => {
-    if (event.ctrlKey && event.code === 'F3' && !event.altKey && !event.shiftKey) {
+    if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault();
       event.stopPropagation();
       panel.classList.toggle('open');
