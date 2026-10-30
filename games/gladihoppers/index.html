@@ -96,6 +96,9 @@
         started=false;retry.disabled=false;return;
       }
       const config=GAME_CONFIG;
+      // UnityLoader 2019.2 reads this global while calculating download progress.
+      // The original host defines it before loading Unity; our embedded config must do the same.
+      window.config=config;
       row('Game configuration','ok','loaded from the page · Unity '+config.unityVersion);
       const assets=[
         ['Game data',config.dataUrl],
