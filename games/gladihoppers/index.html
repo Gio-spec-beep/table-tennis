@@ -39,7 +39,7 @@
   </section>
   <script>
   (() => {
-    const JSON_URL='https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.json';
+    const JSON_URL=new URL('Build/Gladihoppers.json',location.href).href;
     const LOADER_URL=new URL('UnityLoader.2019.2.js',location.href).href;
     const box=document.getElementById('gh-status');
     const checks=document.getElementById('gh-checks');
