@@ -24,7 +24,7 @@
   panel.setAttribute('aria-label', 'Gladihoppers mod menu');
   panel.innerHTML = `
     <h2>GLADIHOPPERS MOD MENU</h2>
-    <p>Single-player stat editor · Toggle with <span class="gh-hotkey">Ctrl + F3</span></p>
+    <p>Single-player stat editor · Toggle with <span class="gh-hotkey">/</span></p>
     <div class="gh-row"><label for="gh-health">Add health</label><input id="gh-health" type="number" min="0" max="100000" step="10" value="100"></div>
     <div class="gh-row"><label for="gh-damage">Add melee damage</label><input id="gh-damage" type="number" min="0" max="5000" step="1" value="5"></div>
     <div class="gh-row"><label for="gh-speed">Add movement speed</label><input id="gh-speed" type="number" min="0" max="100" step="0.1" value="1"></div>
@@ -176,11 +176,18 @@
   panel.querySelector('#gh-apply').addEventListener('click', applyStats);
   panel.querySelector('#gh-reset').addEventListener('click', resetStats);
 
+  function togglePanel() { panel.classList.toggle('open'); }
+
+  window.addEventListener('message', event => {
+    if (event.data && event.data.type === 'GH_TOGGLE_MOD_MENU') togglePanel();
+  });
+
   document.addEventListener('keydown', event => {
-    if (event.key === '/' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+    const slashKey = event.code === 'Slash' || event.key === '/' || event.key === '?';
+    if (slashKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault();
       event.stopPropagation();
-      panel.classList.toggle('open');
+      togglePanel();
     }
     if (event.key === 'Escape' && panel.classList.contains('open')) panel.classList.remove('open');
   }, true);
