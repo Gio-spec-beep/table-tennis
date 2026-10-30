@@ -1,0 +1,23 @@
+{
+  "companyName": "Dreamon Studios",
+  "productName": "Gladihoppers",
+  "productVersion": "3.0.1",
+  "dataUrl": "https://cdn.jsdelivr.net/gh/Toaster68/gh@bd6bd0189e8f6579756fbc78ef89241c28e0101b/Build/Gladihoppers.data.unityweb",
+  "wasmCodeUrl": "https://cdn.jsdelivr.net/gh/Toaster68/gh@bd6bd0189e8f6579756fbc78ef89241c28e0101b/Build/Gladihoppers.wasm.code.unityweb",
+  "wasmFrameworkUrl": "https://cdn.jsdelivr.net/gh/Toaster68/gh@bd6bd0189e8f6579756fbc78ef89241c28e0101b/Build/Gladihoppers.wasm.framework.unityweb",
+  "graphicsAPI": [
+    "WebGL 2.0",
+    "WebGL 1.0"
+  ],
+  "webglContextAttributes": {
+    "preserveDrawingBuffer": false
+  },
+  "splashScreenStyle": "Dark",
+  "backgroundColor": "#231F20",
+  "cacheControl": {
+    "default": "must-revalidate"
+  },
+  "developmentBuild": false,
+  "multithreading": false,
+  "unityVersion": "2019.3.13f1"
+}
