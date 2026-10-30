@@ -2,9 +2,9 @@
   "companyName": "Dreamon Studios",
   "productName": "Gladihoppers",
   "productVersion": "3.0.1",
-  "dataUrl": "https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.data.unityweb",
-  "wasmCodeUrl": "https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.wasm.code.unityweb",
-  "wasmFrameworkUrl": "https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.wasm.framework.unityweb",
+  "dataUrl": "https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.data.unityweb",
+  "wasmCodeUrl": "https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.wasm.code.unityweb",
+  "wasmFrameworkUrl": "https://cdn.jsdelivr.net/gh/genizy/gh/Build/Gladihoppers.wasm.framework.unityweb",
   "graphicsAPI": [
     "WebGL 2.0",
     "WebGL 1.0"
