@@ -96,7 +96,18 @@
         summary.textContent='The Unity loader cannot be reached. The game cannot start until this host is accessible.';
         started=false;retry.disabled=false;return;
       }
-      const config=GAME_CONFIG;
+      window.addEventListener('error',event=>{
+      row('JavaScript error','bad',(event.message||'unknown error')+(event.filename?' · '+event.filename.split('/').pop()+':'+event.lineno:''));
+      summary.textContent='A browser error stopped Unity startup. See the JavaScript error row above.';
+      box.classList.remove('minimized');
+    });
+    window.addEventListener('unhandledrejection',event=>{
+      const reason=event.reason;
+      row('Startup promise error','bad',reason&&reason.message?reason.message:String(reason||'unknown rejection'));
+      summary.textContent='A startup operation failed. See the error row above.';
+      box.classList.remove('minimized');
+    });
+    const config=GAME_CONFIG;
       // UnityLoader 2019.2 reads this global while calculating download progress.
       // The original host defines it before loading Unity; our embedded config must do the same.
       window.config=config;
