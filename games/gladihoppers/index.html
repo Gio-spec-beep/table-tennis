@@ -146,10 +146,9 @@
           }
         });
         row('Unity runtime','wait','game files passed checks; waiting for Unity to initialize');
-        const modScript=document.createElement('script');
-        modScript.src=new URL('mod-menu.js',location.href).href;
-        modScript.onerror=()=>row('Mod menu','bad','mod-menu.js could not load; the game may still work');
-        document.body.append(modScript);
+        // Diagnostic isolation: keep the custom mod-menu script out of Unity startup.
+        // It can be re-enabled after the unmodified game is confirmed to initialize.
+        row('Mod menu','wait','temporarily disabled while testing the Unity startup crash');
       }catch(error){
         row('Unity runtime','bad',error.message||String(error));
         summary.textContent='The Unity game could not be started.';
