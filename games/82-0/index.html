@@ -338,13 +338,13 @@ function renderPool(){
  });
  $('poolHint').hidden=true;
  $('eraSub').textContent=nameOf(combo.t)+' · '+combo.e+' PLAYER POOL';
- const groups=[['G',filtered.filter(p=>category(p)==='G')],['F',filtered.filter(p=>category(p)==='F')],['C',filtered.filter(p=>category(p)==='C')]];
+ const groups=godMode?[['TOP PLAYERS',filtered.slice().sort((a,b)=>(b._baseOvr||playerOvr(b))-(a._baseOvr||playerOvr(a)))]]:[['G',filtered.filter(p=>category(p)==='G')],['F',filtered.filter(p=>category(p)==='F')],['C',filtered.filter(p=>category(p)==='C')]];
  const root=$('playerGroups');root.innerHTML='';
  if(!filtered.length){const e=document.createElement('div');e.className='draft-hint';e.textContent='No players match this filter. Try another position.';root.append(e);return;}
  groups.forEach(([g,arr])=>{
   if(!arr.length)return;
   const section=document.createElement('section');section.className='group';
-  const heading=document.createElement('div');heading.className='group-title';heading.textContent=g+' · '+arr.length;section.append(heading);
+  const heading=document.createElement('div');heading.className='group-title';heading.textContent=(godMode?'★ GOD MODE · ':'')+g+' · '+arr.length;section.append(heading);
   arr.forEach(p=>{
    const available=openPositions(p),used=isUsed(p),btn=document.createElement('button');btn.type='button';btn.className='player-card'+(selectedPlayer&&identity(selectedPlayer)===identity(p)?' selected':'');btn.disabled=used||available.length===0;
    const identityBox=document.createElement('div');identityBox.className='identity';
