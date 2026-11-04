@@ -353,7 +353,7 @@ try{
  const response=await fetch('players.json',{cache:'force-cache'});if(!response.ok)throw new Error('Player database returned HTTP '+response.status);
  players=await response.json();buildIndexes();
  $('spin').disabled=false;
- $('poolCount').textContent=players.length.toLocaleString()+' PLAYER ENTRIES AVAILABLE';
+
  say(players.length.toLocaleString()+' players loaded. Spin once to roll a team and decade.');
  renderRoster();
 }catch(e){$('spin').disabled=true;$('spin').textContent='PLAYER DATABASE UNAVAILABLE';$('poolHint').textContent='Could not load the player database: '+e.message;}
