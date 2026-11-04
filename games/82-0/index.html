@@ -232,7 +232,7 @@ function drawPair(){
  animateDraw(team,era,'spin');
 }
 function animateDraw(team,era,source){
- spinning=true;renderProgress();$('eraBar')?.classList.add('spinning');
+ spinning=true;renderProgress();
  $('eraTeam').textContent='SPINNING';$('eraYears').textContent='…';$('eraSub').textContent='Finding your franchise era…';
  let n=0;const timer=setInterval(()=>{const e=rand(validEras());const t=rand([...eraTeams.get(e)].filter(x=>usable(comboIndex.get(key(x,e))||[]).length));$('eraTeam').textContent=nameOf(t);$('eraYears').textContent=e;$('eraSub').textContent='RANDOM TEAM + DECADE';n++;if(n>=14){clearInterval(timer);combo={t:team,e:era};selectedPlayer=null;movingFrom=null;$('eraTeam').textContent=nameOf(team);$('eraYears').textContent=era;$('eraSub').textContent='TEAM + DECADE LOCKED IN';$('search').disabled=false;$('search').value='';renderPool();say(source==='team'?'Team re-rolled. The decade stayed the same.':source==='decade'?'Decade re-rolled. The team stayed the same.':'Select a player from this exact team and decade.');spinning=false;renderRoster();}},65);
 }
