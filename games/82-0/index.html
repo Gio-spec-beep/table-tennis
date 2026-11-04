@@ -293,25 +293,38 @@ function setPhase(next){phase=next;
  $('rollDecade').textContent=next==='decade'?'🎰 ROLL DECADE':next==='team'?'WAITING FOR TEAM':'DECADE LOCKED';
  $('rerollTeam').hidden=!(team&&['decade','pick'].includes(next));
  $('rerollDecade').hidden=!(decade&&next==='pick');
- $('rerollTeam').disabled=teamRerolls<=0||next==='team';
- $('rerollDecade').disabled=decadeRerolls<=0||next!=='pick';
+ $('rerollTeam').disabled=teamRerolls<=0||next==='team'||(next==='pick'&&!Object.keys(DATA).some(t=>t!==team&&DATA[t].d[decade]&&eligible(DATA[t].d[decade]).length));
+ $('rerollDecade').disabled=decadeRerolls<=0||next!=='pick'||!team||validDecades(team).filter(d=>d!==decade).length===0;
  $('available').classList.toggle('show',next==='pick');
  $('nextRound').hidden=next!=='next';
  $('simulate').hidden=next!=='complete';
 }
 function rollTeam(isReroll=false){
- const options=validTeams().filter(t=>!isReroll||t!==team);
- if(!options.length){$('status').textContent='No other team has players who fit your remaining open positions.';return;}
- team=choose(options);decade=null;
+ const keptDecade=isReroll?decade:null;
+ const options=keptDecade
+  ?Object.keys(DATA).filter(t=>t!==team&&DATA[t].d[keptDecade]&&eligible(DATA[t].d[keptDecade]).length)
+  :validTeams().filter(t=>!isReroll||t!==team);
+ if(!options.length){$('status').textContent='No other team has players who fit your remaining open positions for that draw.';return;}
+ team=choose(options);
  $('teamValue').textContent=DATA[team].name;
  $('teamMeta').textContent='Team locked in for this round';
- $('decadeValue').textContent='Waiting for team roll';
- $('decadeMeta').textContent='Now roll a decade for '+DATA[team].name;
- $('poolTitle').textContent='AVAILABLE PLAYERS';
  $('playerList').innerHTML='';
- $('draftTitle').textContent='Now roll the decade';
- $('instructions').textContent='Team selected: '+DATA[team].name+'. Press ROLL DECADE to reveal the player pool.';
- setPhase('decade');
+ if(keptDecade){
+  decade=keptDecade;
+  $('decadeValue').textContent=decade;
+  $('decadeMeta').textContent=DATA[team].name+' · '+decade;
+  $('draftTitle').textContent='Choose a player';
+  $('instructions').textContent='New team: '+DATA[team].name+'. The decade stays '+decade+'.';
+  renderPlayers();
+  setPhase('pick');
+ }else{
+  decade=null;
+  $('decadeValue').textContent='Waiting for team roll';
+  $('decadeMeta').textContent='Now roll a decade for '+DATA[team].name;
+  $('draftTitle').textContent='Now roll the decade';
+  $('instructions').textContent='Team selected: '+DATA[team].name+'. Press ROLL DECADE to reveal the player pool.';
+  setPhase('decade');
+ }
 }
 function rollDecade(isReroll=false){
  if(!team)return;
