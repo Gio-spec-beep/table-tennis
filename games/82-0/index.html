@@ -7,410 +7,276 @@
 <title>82-0 · NBA Draft</title>
 <style>
 :root{color-scheme:dark;--bg:#0b0712;--panel:#171020;--panel2:#211630;--line:rgba(196,181,253,.2);--purple:#a78bfa;--bright:#ddd6fe;--muted:#b7abc9;--white:#faf7ff}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,rgba(124,58,237,.3),transparent 48%),var(--bg);color:var(--white);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button{font:inherit;cursor:pointer}
-.top{height:60px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 900px)/2))}.brand{font-weight:950;letter-spacing:.16em;color:var(--bright)}.top a{color:var(--muted);text-decoration:none;font-size:.82rem}
-main{width:min(900px,calc(100% - 32px));margin:30px auto 64px}.hero{text-align:center;margin-bottom:23px}.eyebrow{font-size:.7rem;letter-spacing:.18em;color:var(--purple);font-weight:900}h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:9px 0}.subtitle{color:var(--muted);margin:0 auto;max-width:520px}
-.progress{display:flex;align-items:center;gap:12px;margin:22px 0 13px}.track{height:7px;flex:1;background:#2b2039;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c4b5fd);transition:width .2s}#progressText{font-size:.78rem;color:var(--muted);font-weight:850;white-space:nowrap}
-.roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px}.slot{min-height:119px;background:linear-gradient(150deg,#20162e,#15101f);border:1px solid var(--line);border-radius:13px;padding:12px;display:flex;flex-direction:column}.slot .pos{color:var(--purple);font-size:.7rem;font-weight:950;letter-spacing:.12em}.slot .name{font-size:.86rem;font-weight:850;margin-top:12px;line-height:1.2}.slot .detail{font-size:.68rem;color:var(--muted);margin-top:4px}.slot.filled{border-color:rgba(167,139,250,.6);background:linear-gradient(150deg,#2b1c42,#181020)}
-.draft{margin-top:17px;background:linear-gradient(150deg,#1d142b,#130e1b);border:1px solid var(--line);border-radius:17px;padding:19px}.draft-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.draft-head h2{margin:0;font-size:1.05rem}.round{font-size:.7rem;font-weight:900;letter-spacing:.1em;color:var(--bright);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
-.instructions{font-size:.82rem;color:var(--muted);margin:7px 0 16px}
-.steps{display:grid;grid-template-columns:1fr 1fr;gap:10px}.step{border:1px solid var(--line);background:#100b18;border-radius:12px;padding:13px;min-height:112px}.step small{color:var(--muted);font-size:.66rem;font-weight:900;letter-spacing:.13em}.step strong{display:block;font-size:1rem;margin:5px 0 10px}.step button,.main-button,.secondary{border:1px solid #9b7af0;border-radius:9px;background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white;padding:9px 12px;font-size:.78rem;font-weight:900}.step button{width:100%}.step button:disabled,.main-button:disabled{opacity:.45;cursor:not-allowed}.step .rolled{color:#fff;font-size:.98rem;min-height:27px}.step .meta{font-size:.68rem;color:var(--muted);margin-top:2px}
-.rerolls{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.secondary{background:transparent;border-color:var(--line);color:var(--bright);padding:7px 10px;font-size:.72rem}.secondary:disabled{opacity:.35;cursor:not-allowed}
-.available{display:none;margin-top:17px}.available.show{display:block}.available h3{font-size:.86rem;letter-spacing:.08em;margin:0 0 4px}.available p{font-size:.76rem;color:var(--muted);margin:0 0 11px}.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.player{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;border:1px solid var(--line);border-radius:11px;background:#251a34;color:white;padding:11px}.player:hover{border-color:#a78bfa;background:#302043}.player:disabled{opacity:.34;cursor:not-allowed}.player strong{font-size:.86rem;display:block}.player .sub{display:block;color:var(--muted);font-size:.68rem;margin-top:2px}.ovr{font-weight:950;color:var(--bright);white-space:nowrap;font-size:.85rem}
-.controls{display:flex;gap:9px;margin-top:15px;flex-wrap:wrap}.main-button{flex:1;padding:12px 15px;font-size:.82rem}.status{font-size:.74rem;color:var(--muted);margin-top:10px;min-height:18px}.summary{margin-top:15px;display:flex;justify-content:space-between;gap:15px;align-items:center;border:1px solid var(--line);border-radius:13px;padding:13px 15px;background:rgba(167,139,250,.07)}.summary strong{font-size:.9rem}.summary span{font-size:.75rem;color:var(--muted)}.rating{text-align:right;font-size:1.45rem;color:var(--bright);font-weight:950;line-height:1}.rating small{display:block;font-size:.58rem;letter-spacing:.13em;color:var(--muted);margin-top:4px}
-.result{display:none;margin-top:16px;padding:22px;border-radius:15px;border:1px solid #9471dc;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));text-align:center}.result.show{display:block}.result-label{font-size:.68rem;letter-spacing:.16em;color:var(--bright);font-weight:900}.record{font-size:clamp(2.8rem,9vw,4.2rem);font-weight:1000;line-height:1.1;margin:8px 0}.result p{color:var(--muted);margin:0}
-.footnote{text-align:center;color:#9588a8;font-size:.68rem;margin:16px 0}
-@media(max-width:650px){main{margin-top:23px}.roster{grid-template-columns:repeat(3,minmax(0,1fr))}.slot:nth-child(4),.slot:nth-child(5){grid-column:span 1}.players{grid-template-columns:1fr}.draft{padding:14px}.steps{gap:8px}.step{padding:10px;min-height:106px}}
-@media(max-width:390px){.roster{grid-template-columns:repeat(2,minmax(0,1fr))}.slot:last-child{grid-column:1/-1}}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,rgba(124,58,237,.3),transparent 48%),var(--bg);color:var(--white);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}
+.top{height:60px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 980px)/2))}.brand{font-weight:950;letter-spacing:.16em;color:var(--bright)}.top a{color:var(--muted);text-decoration:none;font-size:.82rem}
+main{width:min(980px,calc(100% - 32px));margin:27px auto 60px}.hero{text-align:center;margin-bottom:21px}.eyebrow{font-size:.7rem;letter-spacing:.18em;color:var(--purple);font-weight:900}h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:9px 0}.subtitle{color:var(--muted);margin:0 auto;max-width:560px}
+.progress{display:flex;align-items:center;gap:12px;margin:19px 0 12px}.track{height:7px;flex:1;background:#2b2039;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c4b5fd);transition:width .2s}#progressText{font-size:.78rem;color:var(--muted);font-weight:850;white-space:nowrap}
+.roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.slot{min-height:105px;background:linear-gradient(150deg,#20162e,#15101f);border:1px solid var(--line);border-radius:12px;padding:11px;display:flex;flex-direction:column}.slot .pos{color:var(--purple);font-size:.68rem;font-weight:950;letter-spacing:.1em}.slot .name{font-size:.84rem;font-weight:850;margin-top:10px;line-height:1.2}.slot .detail{font-size:.66rem;color:var(--muted);margin-top:4px}.slot.filled{border-color:rgba(167,139,250,.65);background:linear-gradient(150deg,#2b1c42,#181020)}
+.draft{margin-top:15px;background:linear-gradient(150deg,#1d142b,#130e1b);border:1px solid var(--line);border-radius:16px;padding:17px}
+.draw-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.draw-head h2{margin:0;font-size:1rem}.badge{font-size:.68rem;font-weight:900;letter-spacing:.1em;color:var(--bright);border:1px solid var(--line);border-radius:8px;padding:5px 8px;white-space:nowrap}
+.combo{display:none;margin-top:13px;padding:12px 14px;border:1px solid #8661c1;background:rgba(124,58,237,.13);border-radius:12px}.combo.show{display:block}.combo-team{font-size:1.05rem;font-weight:950}.combo-decade{color:var(--bright);font-size:.78rem;font-weight:800;margin-top:2px}
+.spin-wrap{margin-top:12px}.spin{width:100%;padding:15px;border:1px solid #b39af5;border-radius:11px;background:linear-gradient(110deg,#8b5cf6,#6d28d9);color:#fff;font-size:.92rem;font-weight:950;letter-spacing:.06em}.spin:hover{filter:brightness(1.12)}.spin:disabled{opacity:.45;cursor:not-allowed}
+.rerolls{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.reroll{border:1px solid var(--line);border-radius:9px;background:#21182e;color:var(--bright);padding:8px 11px;font-size:.72rem;font-weight:850}.reroll:disabled{opacity:.35;cursor:not-allowed}
+.pool{display:none;margin-top:15px}.pool.show{display:block}.pool-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.pool-head h3{margin:0;font-size:.86rem;letter-spacing:.08em}.pool-count{font-size:.7rem;color:var(--muted)}
+.search{width:100%;padding:11px 12px;margin-bottom:9px;border-radius:9px;border:1px solid var(--line);background:#0e0916;color:white;outline:none}.search:focus{border-color:var(--purple)}
+.player-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:440px;overflow:auto;padding:2px 4px 2px 0}
+.player{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;width:100%;border:1px solid var(--line);border-radius:10px;background:#21182e;color:white;padding:10px}.player:hover{border-color:#a78bfa;background:#302043}.player:disabled{opacity:.35;cursor:not-allowed}.player strong{font-size:.82rem;display:block}.player .sub{display:block;color:var(--muted);font-size:.65rem;margin-top:2px}.statline{font-size:.62rem;color:#c8bdd8;white-space:nowrap;text-align:right;line-height:1.45}.statline b{color:var(--bright);font-size:.72rem}
+.position-choice{display:none;margin-top:12px;padding:12px;border:1px solid #8661c1;border-radius:12px;background:rgba(124,58,237,.1)}.position-choice.show{display:block}.position-choice strong{display:block;font-size:.8rem;margin-bottom:9px}.pos-buttons{display:flex;gap:7px;flex-wrap:wrap}.pos-button{border:1px solid #9b7af0;background:#6d28d9;color:white;padding:9px 14px;border-radius:8px;font-size:.78rem;font-weight:900}.pos-button:disabled{opacity:.35;cursor:not-allowed}
+.status{font-size:.73rem;color:var(--muted);margin-top:9px;min-height:17px}.summary{margin-top:14px;display:flex;justify-content:space-between;gap:15px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(167,139,250,.07)}.summary strong{font-size:.86rem}.summary span{font-size:.72rem;color:var(--muted)}.rating{text-align:right;font-size:1.4rem;color:var(--bright);font-weight:950;line-height:1}.rating small{display:block;font-size:.56rem;letter-spacing:.13em;color:var(--muted);margin-top:4px}
+.controls{display:flex;gap:8px;margin-top:12px}.action{border:1px solid var(--line);border-radius:9px;background:#21182e;color:var(--bright);padding:10px 12px;font-size:.74rem;font-weight:900}.action.primary{flex:1;background:linear-gradient(110deg,#8b5cf6,#6d28d9);border-color:#b39af5;color:white}.action:disabled{opacity:.4;cursor:not-allowed}
+.result{display:none;margin-top:15px;padding:21px;border-radius:14px;border:1px solid #9471dc;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));text-align:center}.result.show{display:block}.result-label{font-size:.67rem;letter-spacing:.16em;color:var(--bright);font-weight:900}.record{font-size:clamp(2.8rem,9vw,4rem);font-weight:1000;line-height:1.1;margin:8px 0}.result p{color:var(--muted);margin:0}.footnote{text-align:center;color:#9588a8;font-size:.66rem;margin:14px 0}
+.loading,.error{padding:20px;text-align:center;color:var(--muted);font-size:.83rem}.error{color:#fda4af}
+@media(max-width:650px){main{margin-top:21px}.roster{grid-template-columns:repeat(3,minmax(0,1fr))}.slot:nth-child(4),.slot:nth-child(5){grid-column:span 1}.player-list{grid-template-columns:1fr}.draft{padding:13px}}
+@media(max-width:390px){.roster{grid-template-columns:repeat(2,minmax(0,1fr))}.slot:last-child{grid-column:1/-1}.controls{flex-wrap:wrap}.action.primary{flex-basis:100%}}
 </style>
 </head>
 <body>
 <header class="top"><div class="brand">82—0</div><a href="../../index.html">← Back to Game Hub</a></header>
 <main>
-<section class="hero"><div class="eyebrow">THE ALL-TIME NBA DRAFT</div><h1>Roll. Draft. Go 82–0.</h1><p class="subtitle">Each round, roll an NBA team first, then roll a decade. Pick one player from that team's era. Do it five times and build your lineup.</p></section>
-<div class="progress"><div class="track"><div class="fill" id="progressFill"></div></div><div id="progressText">ROUND 1 OF 5</div></div>
+<section class="hero"><div class="eyebrow">THE ALL-TIME NBA DRAFT</div><h1>Spin. Pick. Go 82–0.</h1><p class="subtitle">Spin once to get a random NBA team and decade. Then pick one player from that exact roster. Repeat five times.</p></section>
+<div class="progress"><div class="track"><div class="fill" id="progressFill"></div></div><div id="progressText">0 / 5 PICKS</div></div>
 <section class="roster" aria-label="Your lineup">
-  <article class="slot" data-pos="PG"><span class="pos">PG · POINT GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a draft pick</div></article>
-  <article class="slot" data-pos="SG"><span class="pos">SG · SHOOTING GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a draft pick</div></article>
-  <article class="slot" data-pos="SF"><span class="pos">SF · SMALL FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a draft pick</div></article>
-  <article class="slot" data-pos="PF"><span class="pos">PF · POWER FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a draft pick</div></article>
-  <article class="slot" data-pos="C"><span class="pos">C · CENTER</span><div class="name">Open spot</div><div class="detail">Waiting for a draft pick</div></article>
+  <article class="slot" data-pos="PG"><span class="pos">PG · POINT GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
+  <article class="slot" data-pos="SG"><span class="pos">SG · SHOOTING GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
+  <article class="slot" data-pos="SF"><span class="pos">SF · SMALL FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
+  <article class="slot" data-pos="PF"><span class="pos">PF · POWER FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
+  <article class="slot" data-pos="C"><span class="pos">C · CENTER</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
 </section>
 <section class="draft">
-  <div class="draft-head"><h2 id="draftTitle">Your first draw</h2><span class="round" id="roundBadge">PICK 1 / 5</span></div>
-  <p class="instructions" id="instructions">First roll your team. After it lands, roll the decade.</p>
-  <div class="steps">
-    <div class="step"><small>STEP 1 · FRANCHISE</small><strong class="rolled" id="teamValue">Not rolled yet</strong><div class="meta" id="teamMeta">Roll a random NBA team</div><button id="rollTeam">🎲 ROLL TEAM</button></div>
-    <div class="step"><small>STEP 2 · DECADE</small><strong class="rolled" id="decadeValue">Waiting for team</strong><div class="meta" id="decadeMeta">Team must be rolled first</div><button id="rollDecade" disabled>🎰 ROLL DECADE</button></div>
-  </div>
+  <div class="draw-head"><h2 id="draftTitle">Ready for your first spin?</h2><span class="badge" id="roundBadge">ROUND 1 / 5</span></div>
+  <div class="combo" id="combo"><div class="combo-team" id="teamValue"></div><div class="combo-decade" id="decadeValue"></div></div>
+  <div class="spin-wrap"><button class="spin" id="spin">🎰 SPIN FOR TEAM + DECADE</button></div>
   <div class="rerolls">
-    <button class="secondary" id="rerollTeam" hidden>Re-roll team · 1 left</button>
-    <button class="secondary" id="rerollDecade" hidden>Re-roll decade · 1 left</button>
+    <button class="reroll" id="rerollTeam" hidden>Re-roll team · 1 left</button>
+    <button class="reroll" id="rerollDecade" hidden>Re-roll decade · 1 left</button>
   </div>
-  <section class="available" id="available">
-    <h3 id="poolTitle">AVAILABLE PLAYERS</h3>
-    <p>Choose one player from this team and decade. The player will fill the first open position they can play.</p>
-    <div class="players" id="playerList"></div>
+  <section class="pool" id="pool">
+    <div class="pool-head"><h3 id="poolTitle">PLAYERS IN THIS DRAW</h3><span class="pool-count" id="poolCount"></span></div>
+    <input class="search" id="search" type="search" placeholder="Search this roster…" autocomplete="off">
+    <div class="player-list" id="playerList"></div>
+    <div class="position-choice" id="positionChoice"><strong id="positionPrompt">Choose a position for this player</strong><div class="pos-buttons" id="positionButtons"></div></div>
   </section>
   <div class="controls">
-    <button class="main-button" id="nextRound" hidden>NEXT ROUND →</button>
-    <button class="main-button" id="simulate" hidden>SIMULATE 82-GAME SEASON</button>
-    <button class="secondary" id="restart">Start over</button>
+    <button class="action" id="restart">Start over</button>
+    <button class="action primary" id="simulate" hidden>SIMULATE 82-GAME SEASON</button>
   </div>
   <div class="status" id="status" aria-live="polite">One team re-roll and one decade re-roll are available per game.</div>
 </section>
-<section class="summary"><div><strong>Your team rating</strong><br><span id="summaryText">Draft five players to build your lineup.</span></div><div class="rating" id="average">—<small>AVERAGE OVR</small></div></section>
+<section class="summary"><div><strong>Your team rating</strong><br><span id="summaryText">Draft five players to build your lineup.</span></div><div class="rating" id="average">—<small>TEAM OVR</small></div></section>
 <section class="result" id="result" aria-live="polite"><div class="result-label">YOUR 82-GAME SEASON</div><div class="record" id="record">82–0</div><p id="resultText">A perfect season!</p></section>
-<p class="footnote">Player ratings are custom game ratings for this roster challenge, not official NBA ratings. Team and decade combinations are based on selected notable franchise-era players.</p>
+<p class="footnote">The full player pool includes 10,626 team-and-decade player entries from the 1960s through the 2020s. Stats are per-game averages.</p>
 </main>
 <script>
-(function(){
-const P=(name,pos,ovr)=>({name,pos:Array.isArray(pos)?pos:String(pos).split('/'),ovr});
-const DATA={
-ATL:{name:'Atlanta Hawks',d:{
-'1970s':[P('Pete Maravich','PG',96),P('Lou Hudson','SF',95)],
-'1980s':[P('Dominique Wilkins','SF',98),P('Doc Rivers','PG',89)],
-'1990s':[P('Dikembe Mutombo','C',95),P('Steve Smith','SG',92)],
-'2000s':[P('Joe Johnson','SG',94),P('Al Horford','C/PF',92)],
-'2010s':[P('Paul Millsap','PF',92),P('Trae Young','PG',94)],
-'2020s':[P('Trae Young','PG',95),P('Jalen Johnson','PF',90)]}},
-BOS:{name:'Boston Celtics',d:{
-'1960s':[P('Bill Russell','C',99),P('John Havlicek','SF/SG',96)],
-'1970s':[P('Dave Cowens','C',96),P('John Havlicek','SF/SG',96)],
-'1980s':[P('Larry Bird','SF/PF',99),P('Kevin McHale','PF/C',97),P('Robert Parish','C',95)],
-'1990s':[P('Paul Pierce','SF',92),P('Antoine Walker','PF',91)],
-'2000s':[P('Paul Pierce','SF',96),P('Kevin Garnett','PF/C',97),P('Ray Allen','SG',94)],
-'2010s':[P('Isaiah Thomas','PG',93),P('Jayson Tatum','SF/PF',96),P('Jaylen Brown','SG/SF',93)],
-'2020s':[P('Jayson Tatum','SF/PF',98),P('Jaylen Brown','SG/SF',96)]}},
-BKN:{name:'Brooklyn Nets',d:{
-'1970s':[P('Julius Erving','SF/PF',98)],
-'1990s':[P('Dražen Petrović','SG',93),P('Derrick Coleman','PF/C',91)],
-'2000s':[P('Jason Kidd','PG',97),P('Vince Carter','SG/SF',95)],
-'2010s':[P('Brook Lopez','C',92),P('Deron Williams','PG',92)],
-'2020s':[P('Kevin Durant','SF/PF',99),P('Kyrie Irving','PG/SG',96)]}},
-CHA:{name:'Charlotte Hornets',d:{
-'1990s':[P('Alonzo Mourning','C',94),P('Larry Johnson','PF',94),P('Glen Rice','SF',93)],
-'2000s':[P('Gerald Wallace','SF',91),P('Emeka Okafor','C',90)],
-'2010s':[P('Kemba Walker','PG',94),P('Al Jefferson','C',90)],
-'2020s':[P('LaMelo Ball','PG',93),P('Miles Bridges','SF/PF',90)]}},
-CHI:{name:'Chicago Bulls',d:{
-'1970s':[P('Bob Love','SF/PF',93),P('Chet Walker','SF',91)],
-'1980s':[P('Michael Jordan','SG',99),P('Artis Gilmore','C',94)],
-'1990s':[P('Michael Jordan','SG',100),P('Scottie Pippen','SF',97),P('Dennis Rodman','PF/C',96)],
-'2000s':[P('Ben Gordon','SG',90),P('Luol Deng','SF',91)],
-'2010s':[P('Derrick Rose','PG',95),P('Jimmy Butler','SG/SF',94),P('Joakim Noah','C',92)],
-'2020s':[P('DeMar DeRozan','SF/SG',94),P('Zach LaVine','SG',93)]}},
-CLE:{name:'Cleveland Cavaliers',d:{
-'1980s':[P('Mark Price','PG',95),P('Brad Daugherty','C',93)],
-'1990s':[P('Shawn Kemp','PF',93),P('Terrell Brandon','PG',91)],
-'2000s':[P('LeBron James','SF/PF',99),P('Zydrunas Ilgauskas','C',90)],
-'2010s':[P('LeBron James','SF/PF',100),P('Kyrie Irving','PG',96),P('Kevin Love','PF/C',93)],
-'2020s':[P('Donovan Mitchell','SG',96),P('Darius Garland','PG',92)]}},
-DAL:{name:'Dallas Mavericks',d:{
-'1980s':[P('Mark Aguirre','SF',94),P('Rolando Blackman','SG',93)],
-'1990s':[P('Jason Kidd','PG',92),P('Michael Finley','SG/SF',91)],
-'2000s':[P('Dirk Nowitzki','PF/C',99),P('Steve Nash','PG',95)],
-'2010s':[P('Dirk Nowitzki','PF/C',97),P('Luka Dončić','PG/SG',96)],
-'2020s':[P('Luka Dončić','PG/SG',99),P('Kyrie Irving','PG/SG',96)]}},
-DEN:{name:'Denver Nuggets',d:{
-'1970s':[P('David Thompson','SG',96)],
-'1980s':[P('Alex English','SF',97),P('Fat Lever','PG',93)],
-'1990s':[P('Dikembe Mutombo','C',96),P('Mahmoud Abdul-Rauf','PG',91)],
-'2000s':[P('Carmelo Anthony','SF/PF',96),P('Chauncey Billups','PG',94),P('Allen Iverson','PG/SG',94)],
-'2010s':[P('Nikola Jokić','C',98),P('Jamal Murray','PG/SG',93)],
-'2020s':[P('Nikola Jokić','C',100),P('Jamal Murray','PG/SG',95)]}},
-DET:{name:'Detroit Pistons',d:{
-'1970s':[P('Bob Lanier','C',96)],
-'1980s':[P('Isiah Thomas','PG',98),P('Joe Dumars','SG',95),P('Bill Laimbeer','C',92)],
-'1990s':[P('Grant Hill','SF/PF',96),P('Jerry Stackhouse','SG',91)],
-'2000s':[P('Ben Wallace','C',96),P('Chauncey Billups','PG',95),P('Rip Hamilton','SG',93)],
-'2010s':[P('Blake Griffin','PF',94),P('Andre Drummond','C',92)],
-'2020s':[P('Cade Cunningham','PG',93),P('Jalen Duren','C',90)]}},
-GSW:{name:'Golden State Warriors',d:{
-'1960s':[P('Wilt Chamberlain','C',100),P('Rick Barry','SF',97)],
-'1970s':[P('Rick Barry','SF',98),P('Jamaal Wilkes','SF',91)],
-'1980s':[P('Chris Mullin','SF',94),P('Sleepy Floyd','PG',90)],
-'1990s':[P('Tim Hardaway','PG',94),P('Chris Mullin','SF',93)],
-'2000s':[P('Baron Davis','PG',92),P('Jason Richardson','SG',91)],
-'2010s':[P('Stephen Curry','PG',100),P('Kevin Durant','SF/PF',99),P('Klay Thompson','SG',96),P('Draymond Green','PF/C',96)],
-'2020s':[P('Stephen Curry','PG',99),P('Draymond Green','PF/C',94)]}},
-HOU:{name:'Houston Rockets',d:{
-'1970s':[P('Moses Malone','C',98),P('Rudy Tomjanovich','PF',91)],
-'1980s':[P('Hakeem Olajuwon','C',99),P('Ralph Sampson','C/PF',95)],
-'1990s':[P('Hakeem Olajuwon','C',100),P('Clyde Drexler','SG/SF',95)],
-'2000s':[P('Yao Ming','C',96),P('Tracy McGrady','SG/SF',96)],
-'2010s':[P('James Harden','SG/PG',99),P('Chris Paul','PG',96)],
-'2020s':[P('Alperen Şengün','C',94),P('Jalen Green','SG',91)]}},
-IND:{name:'Indiana Pacers',d:{
-'1970s':[P('Mel Daniels','C',95),P('George McGinnis','PF',94)],
-'1980s':[P('Reggie Miller','SG',92)],
-'1990s':[P('Reggie Miller','SG',98),P('Rik Smits','C',92)],
-'2000s':[P('Jermaine O’Neal','PF/C',95),P('Ron Artest','SF',94)],
-'2010s':[P('Paul George','SF',96),P('Roy Hibbert','C',91)],
-'2020s':[P('Tyrese Haliburton','PG',95),P('Pascal Siakam','PF',93)]}},
-LAC:{name:'LA Clippers',d:{
-'1970s':[P('Bob McAdoo','C/PF',98)],
-'1980s':[P('World B. Free','PG/SG',93),P('Marques Johnson','SF',92)],
-'1990s':[P('Danny Manning','PF',92),P('Loy Vaught','PF/C',90)],
-'2000s':[P('Elton Brand','PF/C',95),P('Corey Maggette','SF',91)],
-'2010s':[P('Chris Paul','PG',98),P('Blake Griffin','PF',96),P('DeAndre Jordan','C',93)],
-'2020s':[P('Kawhi Leonard','SF',97),P('Paul George','SG/SF',96)]}},
-LAL:{name:'Los Angeles Lakers',d:{
-'1960s':[P('Jerry West','PG/SG',98),P('Elgin Baylor','SF/PF',97)],
-'1970s':[P('Kareem Abdul-Jabbar','C',99),P('Magic Johnson','PG',98)],
-'1980s':[P('Magic Johnson','PG',100),P('Kareem Abdul-Jabbar','C',98),P('James Worthy','SF/PF',96)],
-'1990s':[P('Shaquille O’Neal','C',99),P('Kobe Bryant','SG',94)],
-'2000s':[P('Kobe Bryant','SG',100),P('Shaquille O’Neal','C',98),P('Pau Gasol','PF/C',96)],
-'2010s':[P('Kobe Bryant','SG',96),P('LeBron James','SF/PF',99),P('Anthony Davis','PF/C',97)],
-'2020s':[P('LeBron James','SF/PF',98),P('Anthony Davis','PF/C',97)]}},
-MEM:{name:'Memphis Grizzlies',d:{
-'1990s':[P('Shareef Abdur-Rahim','PF',92),P('Mike Bibby','PG',90)],
-'2000s':[P('Pau Gasol','PF/C',95)],
-'2010s':[P('Marc Gasol','C',96),P('Zach Randolph','PF/C',94),P('Mike Conley','PG',93)],
-'2020s':[P('Ja Morant','PG',96),P('Jaren Jackson Jr.','PF/C',94)]}},
-MIA:{name:'Miami Heat',d:{
-'1990s':[P('Alonzo Mourning','C',95),P('Tim Hardaway','PG',93)],
-'2000s':[P('Dwyane Wade','SG',98),P('Shaquille O’Neal','C',96)],
-'2010s':[P('LeBron James','SF/PF',100),P('Dwyane Wade','SG',96),P('Chris Bosh','PF/C',94)],
-'2020s':[P('Jimmy Butler','SF/SG',96),P('Bam Adebayo','C/PF',94)]}},
-MIL:{name:'Milwaukee Bucks',d:{
-'1970s':[P('Kareem Abdul-Jabbar','C',100),P('Oscar Robertson','PG',96)],
-'1980s':[P('Sidney Moncrief','SG',96),P('Terry Cummings','PF',93)],
-'1990s':[P('Glenn Robinson','SF/PF',93),P('Ray Allen','SG',93)],
-'2000s':[P('Michael Redd','SG',94),P('Sam Cassell','PG',91)],
-'2010s':[P('Giannis Antetokounmpo','PF',99),P('Khris Middleton','SF',94)],
-'2020s':[P('Giannis Antetokounmpo','PF',100),P('Damian Lillard','PG',96)]}},
-MIN:{name:'Minnesota Timberwolves',d:{
-'1990s':[P('Kevin Garnett','PF/C',96)],
-'2000s':[P('Kevin Garnett','PF/C',99),P('Wally Szczerbiak','SF',90)],
-'2010s':[P('Karl-Anthony Towns','C/PF',95),P('Jimmy Butler','SG/SF',94)],
-'2020s':[P('Anthony Edwards','SG/SF',97),P('Karl-Anthony Towns','C/PF',94)]}},
-NOP:{name:'New Orleans Pelicans',d:{
-'2000s':[P('Chris Paul','PG',97),P('David West','PF',93)],
-'2010s':[P('Anthony Davis','PF/C',99),P('DeMarcus Cousins','C',96)],
-'2020s':[P('Zion Williamson','PF',95),P('Brandon Ingram','SF',93)]}},
-NYK:{name:'New York Knicks',d:{
-'1960s':[P('Walt Frazier','PG',97),P('Willis Reed','C',96)],
-'1970s':[P('Walt Frazier','PG',98),P('Willis Reed','C',97)],
-'1980s':[P('Patrick Ewing','C',95)],
-'1990s':[P('Patrick Ewing','C',98),P('Allan Houston','SG',93)],
-'2000s':[P('Stephon Marbury','PG',92),P('Jamal Crawford','SG',91)],
-'2010s':[P('Carmelo Anthony','SF/PF',96),P('J.R. Smith','SG',91)],
-'2020s':[P('Jalen Brunson','PG',97),P('Julius Randle','PF',94)]}},
-OKC:{name:'Oklahoma City Thunder / Seattle SuperSonics',d:{
-'1970s':[P('Spencer Haywood','PF',95)],
-'1980s':[P('Jack Sikma','C',95),P('Gus Williams','PG',93)],
-'1990s':[P('Gary Payton','PG',98),P('Shawn Kemp','PF',96)],
-'2000s':[P('Ray Allen','SG',94),P('Rashard Lewis','SF/PF',93),P('Kevin Durant','SF',95)],
-'2010s':[P('Kevin Durant','SF/PF',99),P('Russell Westbrook','PG',98),P('James Harden','SG/PG',95)],
-'2020s':[P('Shai Gilgeous-Alexander','PG/SG',99),P('Chet Holmgren','C/PF',93)]}},
-ORL:{name:'Orlando Magic',d:{
-'1990s':[P('Shaquille O’Neal','C',98),P('Penny Hardaway','PG/SG',96)],
-'2000s':[P('Dwight Howard','C',99),P('Tracy McGrady','SG/SF',97)],
-'2010s':[P('Dwight Howard','C',95),P('Nikola Vučević','C',93)],
-'2020s':[P('Paolo Banchero','PF',94),P('Franz Wagner','SF/PF',93)]}},
-PHI:{name:'Philadelphia 76ers',d:{
-'1960s':[P('Wilt Chamberlain','C',99),P('Hal Greer','SG',94)],
-'1970s':[P('Julius Erving','SF/PF',99),P('Moses Malone','C',97)],
-'1980s':[P('Charles Barkley','PF',96),P('Moses Malone','C',98)],
-'1990s':[P('Allen Iverson','PG/SG',97)],
-'2000s':[P('Allen Iverson','PG/SG',98),P('Chris Webber','PF/C',93)],
-'2010s':[P('Joel Embiid','C',97),P('Ben Simmons','PG/PF',94)],
-'2020s':[P('Joel Embiid','C',100),P('Tyrese Maxey','PG/SG',95)]}},
-PHX:{name:'Phoenix Suns',d:{
-'1970s':[P('Connie Hawkins','SF/PF',95),P('Paul Westphal','SG',94)],
-'1980s':[P('Larry Nance','PF/C',93),P('Walter Davis','SG/SF',94)],
-'1990s':[P('Charles Barkley','PF',97),P('Kevin Johnson','PG',96)],
-'2000s':[P('Steve Nash','PG',99),P('Amar’e Stoudemire','PF/C',96)],
-'2010s':[P('Devin Booker','SG',94),P('Eric Bledsoe','PG',91)],
-'2020s':[P('Devin Booker','SG',98),P('Kevin Durant','SF/PF',97)]}},
-POR:{name:'Portland Trail Blazers',d:{
-'1970s':[P('Bill Walton','C',98)],
-'1980s':[P('Clyde Drexler','SG/SF',96),P('Terry Porter','PG',93)],
-'1990s':[P('Clyde Drexler','SG/SF',97),P('Arvydas Sabonis','C',93)],
-'2000s':[P('Brandon Roy','SG',95),P('LaMarcus Aldridge','PF/C',95)],
-'2010s':[P('Damian Lillard','PG',98),P('LaMarcus Aldridge','PF/C',94)],
-'2020s':[P('Damian Lillard','PG',96),P('Anfernee Simons','SG',92)]}},
-SAC:{name:'Sacramento Kings',d:{
-'1960s':[P('Oscar Robertson','PG',99)],
-'1970s':[P('Tiny Archibald','PG',96)],
-'1980s':[P('Reggie Theus','SG/PG',91)],
-'1990s':[P('Mitch Richmond','SG',96)],
-'2000s':[P('Chris Webber','PF/C',97),P('Peja Stojaković','SF',94)],
-'2010s':[P('DeMarcus Cousins','C',96)],
-'2020s':[P('De’Aaron Fox','PG',96),P('Domantas Sabonis','C/PF',96)]}},
-SAS:{name:'San Antonio Spurs',d:{
-'1970s':[P('George Gervin','SG/SF',98)],
-'1980s':[P('David Robinson','C',93)],
-'1990s':[P('David Robinson','C',97),P('Tim Duncan','PF/C',97)],
-'2000s':[P('Tim Duncan','PF/C',100),P('Tony Parker','PG',95),P('Manu Ginóbili','SG',95)],
-'2010s':[P('Kawhi Leonard','SF',98),P('Tim Duncan','PF/C',96)],
-'2020s':[P('Victor Wembanyama','C/PF',98),P('DeMar DeRozan','SF',92)]}},
-TOR:{name:'Toronto Raptors',d:{
-'1990s':[P('Vince Carter','SG/SF',95)],
-'2000s':[P('Chris Bosh','PF/C',96),P('Vince Carter','SG/SF',93)],
-'2010s':[P('Kawhi Leonard','SF',98),P('Kyle Lowry','PG',96),P('DeMar DeRozan','SG/SF',95)],
-'2020s':[P('Pascal Siakam','PF',94),P('Scottie Barnes','SF/PF',94)]}},
-UTA:{name:'Utah Jazz',d:{
-'1980s':[P('John Stockton','PG',94),P('Karl Malone','PF',94)],
-'1990s':[P('John Stockton','PG',99),P('Karl Malone','PF',99)],
-'2000s':[P('Deron Williams','PG',95),P('Carlos Boozer','PF',94)],
-'2010s':[P('Donovan Mitchell','SG',96),P('Rudy Gobert','C',96)],
-'2020s':[P('Lauri Markkanen','PF',95),P('Donovan Mitchell','SG',94)]}},
-WAS:{name:'Washington Wizards / Baltimore Bullets',d:{
-'1960s':[P('Wes Unseld','C',95),P('Earl Monroe','PG/SG',96)],
-'1970s':[P('Wes Unseld','C',97),P('Elvin Hayes','PF/C',97)],
-'1980s':[P('Jeff Malone','SG',92),P('Moses Malone','C',95)],
-'1990s':[P('Juwan Howard','PF',91),P('Chris Webber','PF/C',94)],
-'2000s':[P('Gilbert Arenas','PG',96),P('Antawn Jamison','PF',93)],
-'2010s':[P('John Wall','PG',96),P('Bradley Beal','SG',95)],
-'2020s':[P('Bradley Beal','SG',94),P('Kyle Kuzma','PF',92)]}}
-};
-const POS=['PG','SG','SF','PF','C'];
-const roster={PG:null,SG:null,SF:null,PF:null,C:null};
+(async function(){
 const $=id=>document.getElementById(id);
-let round=1,team=null,decade=null,phase='team',teamRerolls=1,decadeRerolls=1;
-const choose=a=>a[Math.floor(Math.random()*a.length)];
-const slug=n=>n.toLowerCase().replace(/[^a-z0-9]/g,'');
-function openPositions(){return POS.filter(p=>!roster[p]);}
-function eligible(players){const open=openPositions();return players.filter(p=>!Object.values(roster).some(x=>x&&x.name===p.name)&&p.pos.some(pos=>open.includes(pos)));}
-function validTeams(){return Object.keys(DATA).filter(k=>Object.values(DATA[k].d).some(pool=>eligible(pool).length));}
-function validDecades(t){return Object.keys(DATA[t].d).filter(d=>eligible(DATA[t].d[d]).length);}
-function pickPosition(p){return POS.find(pos=>!roster[pos]&&p.pos.includes(pos));}
-function updateRoster(){
- const used=Object.values(roster).filter(Boolean);const sum=used.reduce((n,p)=>n+p.ovr,0);
- document.querySelectorAll('.slot').forEach(slot=>{const pos=slot.dataset.pos,p=roster[pos];slot.classList.toggle('filled',!!p);slot.querySelector('.name').textContent=p?p.name:'Open spot';slot.querySelector('.detail').textContent=p?(p.pos.join(' / ')+' · '+p.ovr+' OVR'):'Waiting for a draft pick';});
- $('progressFill').style.width=(used.length/5*100)+'%';
- $('progressText').textContent='ROUND '+Math.min(round,5)+' OF 5';
- $('average').innerHTML=(used.length?(sum/used.length).toFixed(1):'—')+'<small>AVERAGE OVR</small>';
- $('summaryText').textContent=used.length===5?'Your starting five is complete. Simulate your season!':used.length+' of 5 players drafted.';
- $('roundBadge').textContent='PICK '+Math.min(round,5)+' / 5';
+const POS=['PG','SG','SF','PF','C'];
+const DECADES=['1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
+const TEAM_NAMES={ATL:'Atlanta Hawks',BOS:'Boston Celtics',BKN:'Brooklyn Nets',CHA:'Charlotte Hornets',CHI:'Chicago Bulls',CLE:'Cleveland Cavaliers',DAL:'Dallas Mavericks',DEN:'Denver Nuggets',DET:'Detroit Pistons',GSW:'Golden State Warriors',HOU:'Houston Rockets',IND:'Indiana Pacers',LAC:'LA Clippers',LAL:'Los Angeles Lakers',MEM:'Memphis Grizzlies',MIA:'Miami Heat',MIL:'Milwaukee Bucks',MIN:'Minnesota Timberwolves',NOP:'New Orleans Pelicans',NYK:'New York Knicks',OKC:'Oklahoma City Thunder / Seattle SuperSonics',ORL:'Orlando Magic',PHI:'Philadelphia 76ers',PHX:'Phoenix Suns',POR:'Portland Trail Blazers',SAC:'Sacramento Kings',SAS:'San Antonio Spurs',TOR:'Toronto Raptors',UTA:'Utah Jazz',WAS:'Washington Wizards / Baltimore Bullets'};
+const weights={ppg:0.46,rpg:0.25,apg:0.18,spg:0.07,bpg:0.04};
+const bench={ppg:133.4,rpg:39.7,apg:29.3,spg:6.1,bpg:3.2};
+let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map();
+let roster={PG:null,SG:null,SF:null,PF:null,C:null};
+let combo=null,pending=null,teamRerolls=1,decadeRerolls=1,round=1,mode='spin';
+
+function say(message){$('status').textContent=message;}
+function key(team,era){return team+'|'+era;}
+function identity(p){return p.id||p.n.toLowerCase();}
+function isUsed(p){return Object.values(roster).some(x=>x&&x.id===p.id);}
+function availablePositions(p){return (p.pos||[]).filter(pos=>POS.includes(pos)&&!roster[pos]);}
+function fmt(v){return v===null||v===undefined||!Number.isFinite(Number(v))?'—':Number(v).toFixed(1);}
+function buildIndexes(){
+  for(const p of players){
+    const k=key(p.t,p.e);
+    if(!comboIndex.has(k))comboIndex.set(k,[]);
+    comboIndex.get(k).push(p);
+    if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());
+    eraTeams.get(p.e).add(p.t);
+    if(!teamEras.has(p.t))teamEras.set(p.t,new Set());
+    teamEras.get(p.t).add(p.e);
+  }
+  for(const pool of comboIndex.values())pool.sort((a,b)=>(b.pts||0)-(a.pts||0)||a.n.localeCompare(b.n));
 }
-function setPhase(next){phase=next;
- $('rollTeam').disabled=next!=='team';
- $('rollDecade').disabled=next!=='decade';
- $('rollTeam').textContent=next==='team'?'🎲 ROLL TEAM':'TEAM LOCKED';
- $('rollDecade').textContent=next==='decade'?'🎰 ROLL DECADE':next==='team'?'WAITING FOR TEAM':'DECADE LOCKED';
- $('rerollTeam').hidden=!(team&&['decade','pick'].includes(next));
- $('rerollDecade').hidden=!(decade&&next==='pick');
- $('rerollTeam').disabled=teamRerolls<=0||next==='team'||(next==='pick'&&!Object.keys(DATA).some(t=>t!==team&&DATA[t].d[decade]&&eligible(DATA[t].d[decade]).length));
- $('rerollDecade').disabled=decadeRerolls<=0||next!=='pick'||!team||validDecades(team).filter(d=>d!==decade).length===0;
- $('available').classList.toggle('show',next==='pick');
- $('nextRound').hidden=next!=='next';
- $('simulate').hidden=next!=='complete';
+function eligiblePool(pool){
+  return pool.filter(p=>!isUsed(p)&&availablePositions(p).length>0);
 }
-function rollTeam(isReroll=false){
- const keptDecade=isReroll?decade:null;
- const options=keptDecade
-  ?Object.keys(DATA).filter(t=>t!==team&&DATA[t].d[keptDecade]&&eligible(DATA[t].d[keptDecade]).length)
-  :validTeams().filter(t=>!isReroll||t!==team);
- if(!options.length){$('status').textContent='No other team has players who fit your remaining open positions for that draw.';return;}
- team=choose(options);
- $('teamValue').textContent=DATA[team].name;
- $('teamMeta').textContent='Team locked in for this round';
- $('playerList').innerHTML='';
- if(keptDecade){
-  decade=keptDecade;
-  $('decadeValue').textContent=decade;
-  $('decadeMeta').textContent=DATA[team].name+' · '+decade;
-  $('draftTitle').textContent='Choose a player';
-  $('instructions').textContent='New team: '+DATA[team].name+'. The decade stays '+decade+'.';
-  renderPlayers();
-  setPhase('pick');
- }else{
-  decade=null;
-  $('decadeValue').textContent='Waiting for team roll';
-  $('decadeMeta').textContent='Now roll a decade for '+DATA[team].name;
-  $('draftTitle').textContent='Now roll the decade';
-  $('instructions').textContent='Team selected: '+DATA[team].name+'. Press ROLL DECADE to reveal the player pool.';
-  setPhase('decade');
- }
+function allValidEras(){
+  return DECADES.filter(era=>[...(eraTeams.get(era)||[])].some(team=>eligiblePool(comboIndex.get(key(team,era))||[]).length));
 }
-function rollDecade(isReroll=false){
- if(!team)return;
- const options=validDecades(team).filter(d=>!isReroll||d!==decade);
- if(!options.length){$('status').textContent='No other decade has eligible players for this team. Use a team re-roll instead.';return;}
- decade=choose(options);
- $('decadeValue').textContent=decade;
- $('decadeMeta').textContent=DATA[team].name+' · '+decade;
- $('draftTitle').textContent='Choose a player';
- $('instructions').textContent='You rolled '+DATA[team].name+' in the '+decade+'. Pick one player from this pool.';
- renderPlayers();
- setPhase('pick');
+function validTeamsForEra(era,exclude){
+  return [...(eraTeams.get(era)||[])].filter(t=>t!==exclude&&eligiblePool(comboIndex.get(key(t,era))||[]).length);
 }
-function renderPlayers(){
- const pool=eligible(DATA[team].d[decade]);
- $('poolTitle').textContent=DATA[team].name+' · '+decade;
- $('playerList').innerHTML='';
- pool.forEach(p=>{
-  const b=document.createElement('button');b.type='button';b.className='player';
-  const left=document.createElement('span');const strong=document.createElement('strong');strong.textContent=p.name;
-  const sub=document.createElement('span');sub.className='sub';sub.textContent=p.pos.join(' / ')+' · Fits '+p.pos.filter(x=>!roster[x]).join(', ');
-  left.append(strong,sub);const rating=document.createElement('span');rating.className='ovr';rating.textContent=p.ovr+' OVR';
-  b.append(left,rating);
-  b.addEventListener('click',()=>draftPlayer(p));
-  $('playerList').append(b);
- });
- if(!pool.length){$('playerList').textContent='No eligible players remain for this draw. Use a re-roll.';}
+function validErasForTeam(team,exclude){
+  return [...(teamEras.get(team)||[])].filter(e=>e!==exclude&&eligiblePool(comboIndex.get(key(team,e))||[]).length);
 }
-function draftPlayer(p){
- const pos=pickPosition(p);if(!pos)return;
- roster[pos]=p;updateRoster();
- $('status').textContent=p.name+' added to '+pos+'.';
- $('playerList').innerHTML='';
- $('available').classList.remove('show');
- team=null;decade=null;
- if(round===5){
-  $('draftTitle').textContent='Your starting five is complete';
-  $('instructions').textContent='All five picks are in. Simulate your 82-game season.';
-  setPhase('complete');
- }else{
-  round++;
-  $('draftTitle').textContent='Pick '+round+': ready for the next draw';
-  $('instructions').textContent='Your last player is locked in. Continue to roll the next team.';
-  setPhase('next');updateRoster();
- }
+function setSpinState(){
+  const done=Object.values(roster).filter(Boolean).length;
+  $('progressFill').style.width=(done/5*100)+'%';
+  $('progressText').textContent=done+' / 5 PICKS';
+  $('roundBadge').textContent='ROUND '+Math.min(round,5)+' / 5';
+  $('spin').disabled=done===5||!!combo;
+  $('spin').textContent=done===5?'DRAFT COMPLETE':done?'🎰 SPIN FOR NEXT TEAM + DECADE':'🎰 SPIN FOR TEAM + DECADE';
+  $('simulate').hidden=done!==5;
+  $('rerollTeam').hidden=!combo||done===5;
+  $('rerollDecade').hidden=!combo||done===5;
+  $('rerollTeam').disabled=teamRerolls<=0||validTeamsForEra(combo?.e,combo?.t).length===0;
+  $('rerollDecade').disabled=decadeRerolls<=0||validErasForTeam(combo?.t,combo?.e).length===0;
 }
-$('rollTeam').addEventListener('click',()=>rollTeam());
-$('rollDecade').addEventListener('click',()=>rollDecade());
-$('rerollTeam').addEventListener('click',()=>{
- if(teamRerolls<=0||!team)return;
- teamRerolls--;rollTeam(true);
- $('rerollTeam').textContent='Re-roll team · '+teamRerolls+' left';
- $('status').textContent='Team re-roll used.';
-});
-$('rerollDecade').addEventListener('click',()=>{
- if(decadeRerolls<=0||!team||!decade)return;
- decadeRerolls--;rollDecade(true);
- $('rerollDecade').textContent='Re-roll decade · '+decadeRerolls+' left';
- $('status').textContent='Decade re-roll used.';
-});
-$('nextRound').addEventListener('click',()=>{
- team=null;decade=null;
- $('teamValue').textContent='Not rolled yet';$('teamMeta').textContent='Roll a random NBA team';
- $('decadeValue').textContent='Waiting for team';$('decadeMeta').textContent='Team must be rolled first';
- $('draftTitle').textContent='Pick '+round+': roll your team';
- $('instructions').textContent='First roll your team. After it lands, roll the decade.';
- setPhase('team');$('status').textContent='One team re-roll and one decade re-roll for the whole game.';
-});
-$('simulate').addEventListener('click',()=>{
- const players=Object.values(roster);if(players.some(x=>!x))return;
- const avg=players.reduce((n,p)=>n+p.ovr,0)/5;
- const spread=Math.sqrt(players.reduce((n,p)=>n+Math.pow(p.ovr-avg,2),0)/5);
- const wins=Math.max(0,Math.min(82,Math.round(32+(avg-75)*2.1+Math.max(0,2.2-spread/5)+(Math.random()*5-2.5))));
- $('record').textContent=wins+'–'+(82-wins);
- $('resultText').textContent=wins===82?'PERFECT SEASON! You built an 82–0 lineup.':wins>=75?'Elite roster. You came close to a perfect season.':wins>=65?'Great team. A few better rolls could push it further.':'Keep rolling and drafting. You can build a stronger five.';
- $('result').classList.add('show');$('result').scrollIntoView({behavior:'smooth',block:'nearest'});
-});
-$('restart').addEventListener('click',()=>{
- POS.forEach(pos=>roster[pos]=null);round=1;team=null;decade=null;teamRerolls=1;decadeRerolls=1;
- $('teamValue').textContent='Not rolled yet';$('teamMeta').textContent='Roll a random NBA team';$('decadeValue').textContent='Waiting for team';$('decadeMeta').textContent='Team must be rolled first';
- $('rerollTeam').textContent='Re-roll team · 1 left';$('rerollDecade').textContent='Re-roll decade · 1 left';
- $('draftTitle').textContent='Your first draw';$('instructions').textContent='First roll your team. After it lands, roll the decade.';
- $('playerList').innerHTML='';$('result').classList.remove('show');$('status').textContent='One team re-roll and one decade re-roll are available per game.';
- updateRoster();setPhase('team');
-});
-updateRoster();setPhase('team');
+function renderRoster(){
+  const chosen=Object.values(roster).filter(Boolean);
+  document.querySelectorAll('.slot').forEach(slot=>{
+    const pos=slot.dataset.pos,p=roster[pos];
+    slot.classList.toggle('filled',!!p);
+    slot.querySelector('.name').textContent=p?p.n:'Open spot';
+    slot.querySelector('.detail').textContent=p?(p.t+' · '+p.e):'Waiting for a pick';
+  });
+  $('average').innerHTML=(chosen.length?calculateTeamOVR(chosen).toFixed(1):'—')+'<small>TEAM OVR</small>';
+  $('summaryText').textContent=chosen.length===5?'Your five is complete. Simulate your season!':chosen.length+' of 5 players drafted.';
+  setSpinState();
+}
+function drawPair(){
+  const eras=allValidEras();
+  if(!eras.length){say('No valid team and decade draws remain. Start over to draft again.');return;}
+  const era=eras[Math.floor(Math.random()*eras.length)];
+  const teams=validTeamsForEra(era);
+  const team=teams[Math.floor(Math.random()*teams.length)];
+  showCombo(team,era,'spin');
+}
+function showCombo(team,era,source){
+  combo={t:team,e:era};
+  pending=null;
+  $('combo').classList.add('show');
+  $('teamValue').textContent=TEAM_NAMES[team]||team;
+  $('decadeValue').textContent=era;
+  $('draftTitle').textContent='Your draw is ready';
+  $('poolTitle').textContent=(TEAM_NAMES[team]||team)+' · '+era;
+  $('search').value='';
+  $('positionChoice').classList.remove('show');
+  renderPlayerPool();
+  $('pool').classList.add('show');
+  $('spin').disabled=true;
+  $('spin').textContent='PICK ONE PLAYER TO CONTINUE';
+  say(source==='team'?'Team re-rolled. The decade stayed the same.':source==='decade'?'Decade re-rolled. The team stayed the same.':'Pick one player from the complete team-and-decade list.');
+  setSpinState();
+}
+function renderPlayerPool(){
+  if(!combo)return;
+  const pool=comboIndex.get(key(combo.t,combo.e))||[];
+  const q=$('search').value.trim().toLowerCase();
+  const filtered=pool.filter(p=>!q||p.n.toLowerCase().includes(q)||p.pos.join(' ').toLowerCase().includes(q));
+  $('poolCount').textContent=filtered.length+' / '+pool.length+' players';
+  const list=$('playerList');list.innerHTML='';
+  if(!filtered.length){list.innerHTML='<div class="loading">No players match that search.</div>';return;}
+  for(const p of filtered){
+    const b=document.createElement('button');b.type='button';b.className='player';
+    const left=document.createElement('span');
+    const strong=document.createElement('strong');strong.textContent=p.n;
+    const sub=document.createElement('span');sub.className='sub';
+    const open=availablePositions(p);
+    sub.textContent=p.pos.join(' / ')+(isUsed(p)?' · ALREADY DRAFTED':open.length?' · Can play '+open.join(', '):' · No open position');
+    left.append(strong,sub);
+    const stats=document.createElement('span');stats.className='statline';
+    stats.innerHTML='<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST';
+    b.append(left,stats);
+    b.disabled=isUsed(p)||open.length===0;
+    b.addEventListener('click',()=>choosePlayer(p));
+    list.append(b);
+  }
+}
+function choosePlayer(p){
+  pending=p;
+  $('positionPrompt').textContent='Put '+p.n+' in which position?';
+  const buttons=$('positionButtons');buttons.innerHTML='';
+  const open=availablePositions(p);
+  open.forEach(pos=>{
+    const b=document.createElement('button');b.type='button';b.className='pos-button';b.textContent=pos;
+    b.addEventListener('click',()=>draftPlayer(p,pos));
+    buttons.append(b);
+  });
+  $('positionChoice').classList.add('show');
+  say('Choose an open position for '+p.n+'.');
+  $('positionChoice').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function draftPlayer(p,pos){
+  if(roster[pos]||isUsed(p))return;
+  roster[pos]={...p,fromTeam:combo.t,fromEra:combo.e};
+  $('positionChoice').classList.remove('show');
+  $('pool').classList.remove('show');
+  $('combo').classList.remove('show');
+  combo=null;pending=null;
+  round=Object.values(roster).filter(Boolean).length+1;
+  $('draftTitle').textContent=round<=5?'Pick '+round+' is ready':'Your starting five is complete';
+  say(p.n+' drafted at '+pos+'.');
+  $('search').value='';
+  renderRoster();
+  if(round>5){$('spin').textContent='DRAFT COMPLETE';say('All five positions are filled. Run your 82-game simulation.');}
+  else $('spin').disabled=false;
+}
+function rerollTeam(){
+  if(!combo||teamRerolls<=0)return;
+  const teams=validTeamsForEra(combo.e,combo.t);
+  if(!teams.length){say('No other eligible teams in this decade.');return;}
+  teamRerolls--;
+  const team=teams[Math.floor(Math.random()*teams.length)];
+  $('rerollTeam').textContent='Re-roll team · '+teamRerolls+' left';
+  showCombo(team,combo.e,'team');
+}
+function rerollDecade(){
+  if(!combo||decadeRerolls<=0)return;
+  const eras=validErasForTeam(combo.t,combo.e);
+  if(!eras.length){say('No other eligible decades for this team.');return;}
+  decadeRerolls--;
+  const era=eras[Math.floor(Math.random()*eras.length)];
+  $('rerollDecade').textContent='Re-roll decade · '+decadeRerolls+' left';
+  showCombo(combo.t,era,'decade');
+}
+function calculateTeamOVR(list){
+  const positive=stat=>list.filter(p=>p[stat]!==null&&p[stat]!==undefined&&Number(p[stat])>0);
+  const adj=stat=>{const vals=positive(stat);return vals.length?vals.reduce((s,p)=>s+Number(p[stat]),0)*5/vals.length:0;};
+  return Math.round(100*(list.reduce((s,p)=>s+(p.pts||0),0)/bench.ppg*weights.ppg+
+    list.reduce((s,p)=>s+(p.reb||0),0)/bench.rpg*weights.rpg+
+    list.reduce((s,p)=>s+(p.ast||0),0)/bench.apg*weights.apg+
+    adj('stl')/bench.spg*weights.spg+adj('blk')/bench.bpg*weights.bpg)*10)/10;
+}
+function simulate(){
+  const list=Object.values(roster).filter(Boolean);
+  if(list.length!==5)return;
+  const ovr=calculateTeamOVR(list);
+  const wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
+  $('record').textContent=wins+'–'+(82-wins);
+  const grade=wins===82?'PERFECT SEASON! Your roster reached 82–0.':wins>=72?'Historic team. You are right near the top.':wins>=62?'Dynasty-level roster.':wins>=57?'Contender.':wins>=50?'Playoff team.':'Keep drafting and try a different combination.';
+  $('resultText').textContent='Team OVR '+ovr.toFixed(1)+' · '+grade;
+  $('result').classList.add('show');
+  $('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function reset(){
+  roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;pending=null;teamRerolls=1;decadeRerolls=1;round=1;
+  $('combo').classList.remove('show');$('pool').classList.remove('show');$('positionChoice').classList.remove('show');$('result').classList.remove('show');
+  $('rerollTeam').textContent='Re-roll team · 1 left';$('rerollDecade').textContent='Re-roll decade · 1 left';
+  $('draftTitle').textContent='Ready for your first spin?';$('roundBadge').textContent='ROUND 1 / 5';$('spin').textContent='🎰 SPIN FOR TEAM + DECADE';say('One team re-roll and one decade re-roll are available per game.');
+  renderRoster();
+}
+$('spin').addEventListener('click',drawPair);
+$('rerollTeam').addEventListener('click',rerollTeam);
+$('rerollDecade').addEventListener('click',rerollDecade);
+$('search').addEventListener('input',renderPlayerPool);
+$('restart').addEventListener('click',reset);
+$('simulate').addEventListener('click',simulate);
+try{
+  const response=await fetch('players.json',{cache:'force-cache'});
+  if(!response.ok)throw new Error('Player database request failed · HTTP '+response.status);
+  players=await response.json();
+  buildIndexes();
+  const total=[...comboIndex.values()].reduce((n,a)=>n+a.length,0);
+  $('spin').disabled=false;
+  $('spin').textContent='🎰 SPIN FOR TEAM + DECADE';
+  $('status').textContent=total.toLocaleString()+' player entries loaded across '+comboIndex.size+' team-and-decade combinations. Spin to begin.';
+  renderRoster();
+}catch(error){
+  $('spin').disabled=true;
+  $('spin').textContent='PLAYER DATABASE NOT AVAILABLE';
+  say('Could not load the player database: '+error.message+'. Refresh the page to try again.');
+  $('playerList').innerHTML='<div class="error">The player list could not be loaded.</div>';
+}
 })();
 </script>
 </body>
