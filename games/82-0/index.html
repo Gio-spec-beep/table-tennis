@@ -110,6 +110,8 @@ main{width:min(1180px,calc(100% - 34px));margin:17px auto 48px}
 .lineup-panel{background:linear-gradient(155deg,#1e2938,#141c27);}
 .lineup-head h2{color:#dce7f8;}
 @media(max-width:560px){.player-card{grid-template-columns:32px minmax(95px,1fr) auto;gap:6px;padding:7px;}.player-avatar{width:32px;height:39px;font-size:.72rem}.player-card .stats{gap:2px;grid-auto-columns:minmax(20px,1fr)}.player-card .stat-value{font-size:.61rem}.player-card .stat-label{font-size:.42rem}.rating-stars{font-size:.61rem}}
+
+.sim-board{display:none;margin-top:12px;border:1px solid #35465d;border-radius:13px;background:#111923;overflow:hidden;text-align:left}.sim-board.show{display:block}.sim-head{display:flex;justify-content:space-between;padding:10px 12px;background:#1c2939}.sim-head strong{font-size:.68rem;letter-spacing:.1em}.sim-head span{font:900 .72rem ui-monospace;color:#9fc2ff}.sim-progress{height:5px;background:#2b3748}.sim-progress div{height:100%;width:0;background:#3478f6}.sim-now{padding:12px;border-bottom:1px solid #2d3b4d;min-height:90px}.sim-game-label{font-size:.57rem;font-weight:950;letter-spacing:.13em;color:#7faaff}.sim-matchup{font-size:1rem;font-weight:950;margin:4px 0}.sim-score{font:950 1.4rem ui-monospace}.sim-score .won{color:#86d8a4}.sim-score .lost{color:#ff8585}.sim-detail{font-size:.66rem;color:#9eacc0;margin-top:4px}.sim-story{display:flex;flex-direction:column;gap:6px;padding:9px;max-height:330px;overflow:auto}.story-item{display:grid;grid-template-columns:40px 1fr auto;gap:8px;align-items:center;border:1px solid #2e3b4d;border-radius:9px;background:#18212c;padding:8px}.story-item.win{border-left:3px solid #4aaf78}.story-item.loss{border-left:4px solid #ef646e;background:#302027}.story-game{font-size:.55rem;font-weight:950;color:#8999af}.story-opponent{font-size:.7rem;font-weight:850}.story-note{font-size:.57rem;color:#8999ae;margin-top:2px}.story-result{font:900 .75rem ui-monospace}.story-result.win{color:#82d6a1}.story-result.loss{color:#ff858c}.loss-break{padding:11px 12px;background:#38252b;border-top:1px solid #a24b55;border-bottom:1px solid #a24b55}.loss-break h3{margin:0;color:#ff9aa0;font-size:.72rem}.loss-break p{margin:5px 0 0;color:#d9b7bb;font-size:.66rem}.boxscore{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px}.boxscore div{background:#241d24;border:1px solid #51343b;border-radius:7px;padding:6px;text-align:center}.boxscore b{display:block;font:900 .83rem ui-monospace;color:#f0dce0}.boxscore small{font-size:.5rem;color:#c29ba2;font-weight:850}.sim-final{padding:12px;background:#1b2939;border-top:1px solid #35465d}.sim-final h3{margin:0;font-size:.72rem}.sim-final .big-record{font:950 2rem ui-monospace;color:#a8caff;margin:3px 0}.sim-final p{font-size:.67rem;color:#a8b6c9;margin:0}.sim-controls{display:flex;justify-content:flex-end;padding:8px 10px}.sim-controls button{border:1px solid #405574;background:#1b2b41;color:#b9d3fa;border-radius:7px;padding:6px 9px;font-size:.6rem;font-weight:900}
 </style>
 </head>
 <body>
@@ -162,7 +164,7 @@ main{width:min(1180px,calc(100% - 34px));margin:17px auto 48px}
     <span class="position-toggle" id="moveHint">Tap a filled seat to move</span>
   </div>
   <div class="action-row"><button class="action secondary" id="clearSelection">CLEAR SELECTION</button><button class="action" id="simulate" disabled>SIMULATE SEASON</button></div>
-  <section class="result" id="result"><div class="record" id="record">82–0</div><p id="resultText"></p></section>
+  <section class="result" id="result"><div class="record" id="record">82–0</div><p id="resultText"></p></section><section class="sim-board" id="simBoard"><div class="sim-head"><strong>82-GAME SEASON · STORYBOARD</strong><span id="simRecord">0–0</span></div><div class="sim-progress"><div id="simBar"></div></div><div class="sim-now" id="simNow"><div class="sim-game-label">SEASON TIP-OFF</div><div class="sim-matchup">Watch your record build game by game.</div></div><div class="sim-story" id="simStory"></div><div class="sim-final" id="simFinal" hidden></div><div class="sim-controls"><button id="simAgain" hidden>SIMULATE AGAIN</button></div></section>
 </aside>
 </div>
 <p class="footnote">Stats are per-game averages in the selected franchise decade. Stars and player tags are game highlights based on this player pool—not official award counts.</p>
@@ -190,8 +192,12 @@ function category(p){const poss=allowedPositions(p);if(poss.includes('C')&&poss.
 function eraStart(e){return Number(e.slice(0,4));}
 function playerOvr(p){
  const ce=CEIL[eraStart(p.e)]||CEIL[2020];
- let n=0;for(const s of ['ppg','rpg','apg','spg','bpg'])if(p[s]!=null)n+=Number(p[s])/ce[s];
- return Math.min(100,Math.round((60+40*n+Math.max(0,(p.pos||[]).length-1)*2)*10)/10);
+ // Database fields are pts/reb/ast/stl/blk; previous code looked for absent ppg/rpg/etc.
+ const fields=[['pts','ppg',.46],['reb','rpg',.25],['ast','apg',.18],['stl','spg',.07],['blk','bpg',.04]];
+ let score=0,weight=0;
+ for(const [field,cap,w] of fields){if(p[field]!=null&&Number.isFinite(Number(p[field]))){score+=Math.min(Number(p[field])/ce[cap],1.15)*w;weight+=w;}}
+ const normalized=weight?score/weight:0;
+ return Math.max(45,Math.min(99,Math.round((58+42*normalized+Math.max(0,(p.pos||[]).length-1)*1.5)*10)/10));
 }
 function badges(p){
  const b=[],low=p.n.toLowerCase();
@@ -366,19 +372,25 @@ function clickSeat(pos){
  }
  if(roster[pos]){movingFrom=pos;renderRoster();}
 }
-function calculateResult(){
- const list=POS.map(pos=>roster[pos]).filter(Boolean);
- const sum=s=>list.reduce((n,p)=>n+(Number(p[s])||0),0);
- const adjusted=s=>{const a=list.filter(p=>p[s]!=null&&Number(p[s])>0);return a.length?a.reduce((n,p)=>n+Number(p[s]),0)*5/a.length:0;};
- const ovr=teamOVR(list),wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
- $('record').textContent=wins+'–'+(82-wins);$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC':wins>=62?'DYNASTY':wins>=57?'CONTENDER':wins>=50?'PLAYOFF TEAM':'LOTTERY');
- $('result').classList.add('show');
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+function simOpponent(){return rand(['Boston Celtics','Los Angeles Lakers','Golden State Warriors','Chicago Bulls','Miami Heat','New York Knicks','Denver Nuggets','San Antonio Spurs','Philadelphia 76ers','Phoenix Suns','Milwaukee Bucks','Detroit Pistons','Houston Rockets','Cleveland Cavaliers','Dallas Mavericks','Seattle SuperSonics']);}
+function simGame(game,ovr,list){const win=Math.random()<Math.max(.12,Math.min(.96,(ovr-48)/55));const opp=simOpponent();const a=Math.round(101+Math.random()*19+(ovr-75)*.18),b=Math.round(101+Math.random()*19+(75-ovr)*.18);const team=win?Math.max(a,b+1):Math.min(a,b-1),other=win?Math.min(a,b-1):Math.max(a,b+1);const leader=list.slice().sort((x,y)=>(Number(y.pts)||0)-(Number(x.pts)||0))[0];return {game,win,opp,team,other,leader:leader?.n||'Team effort',stats:{pts:list.reduce((n,p)=>n+(Number(p.pts)||0),0),reb:list.reduce((n,p)=>n+(Number(p.reb)||0),0),ast:list.reduce((n,p)=>n+(Number(p.ast)||0),0)}};}
+function addStory(g){const row=document.createElement('div');row.className='story-item '+(g.win?'win':'loss');const no=document.createElement('div');no.className='story-game';no.textContent='G'+String(g.game).padStart(2,'0');const info=document.createElement('div');const opp=document.createElement('div');opp.className='story-opponent';opp.textContent='vs '+g.opp;const note=document.createElement('div');note.className='story-note';note.textContent=(g.win?'WIN · ':'LOSS · ')+g.leader+' led your team';info.append(opp,note);const score=document.createElement('div');score.className='story-result '+(g.win?'win':'loss');score.textContent=g.team+'–'+g.other;row.append(no,info,score);$('simStory').prepend(row);}
+function showLoss(g,record,list){const box=document.createElement('div');box.className='loss-break';const h=document.createElement('h3');h.textContent='LOSS DETECTED · GAME '+g.game;const p=document.createElement('p');p.textContent='Ticker paused: '+g.opp+' beat your team. Match recap — simulation resumes shortly.';const stats=document.createElement('div');stats.className='boxscore';[['TEAM PTS',g.stats.pts],['REB',g.stats.reb],['AST',g.stats.ast],['TEAM OVR',teamOVR(list).toFixed(1)]].forEach(([label,value])=>{const cell=document.createElement('div'),b=document.createElement('b'),sm=document.createElement('small');b.textContent=value;sm.textContent=label;cell.append(b,sm);stats.append(cell);});box.append(h,p,stats);$('simNow').innerHTML='';$('simNow').append(box);}
+async function calculateResult(){
+ if(POS.some(pos=>!roster[pos]))return;
+ const list=POS.map(pos=>roster[pos]),ovr=teamOVR(list),games=Array.from({length:82},(_,i)=>simGame(i+1,ovr,list));
+ $('simBoard').classList.add('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simBar').style.width='0%';$('simRecord').textContent='0–0';$('result').classList.remove('show');$('simulate').disabled=true;$('simulate').textContent='SEASON IN PROGRESS…';
+ $('simNow').innerHTML='<div class="sim-game-label">SEASON TIP-OFF</div><div class="sim-matchup">The season is underway.</div><div class="sim-detail">Wins count up live. Each loss pauses for a matchup recap.</div>';
+ let wins=0,losses=0;
+ for(const g of games){if(g.win)wins++;else losses++;$('simRecord').textContent=wins+'–'+losses;$('simBar').style.width=(g.game/82*100)+'%';$('simNow').innerHTML='<div class="sim-game-label">GAME '+g.game+' / 82 · '+(g.win?'WIN':'LOSS')+'</div><div class="sim-matchup">'+(g.win?'Defeated ':'Lost to ')+g.opp+'</div><div class="sim-score"><span class="'+(g.win?'won':'lost')+'">'+g.team+'</span> – '+g.other+'</div><div class="sim-detail">'+g.leader+' led your team · record '+wins+'–'+losses+'</div>';addStory(g);if(!g.win){showLoss(g,wins+'–'+losses,list);await wait(2200);}else await wait(110);}
+ const record=wins+'–'+losses;$('simNow').innerHTML='<div class="sim-game-label">FINAL · GAME 82</div><div class="sim-matchup">Season complete</div><div class="sim-score">'+record+'</div><div class="sim-detail">82 games finished · '+losses+' loss recap(s)</div>';$('simFinal').hidden=false;$('simFinal').innerHTML='<h3>SEASON SUMMARY</h3><div class="big-record">'+record+'</div><p>Team OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC SEASON':wins>=62?'DYNASTY SEASON':wins>=50?'PLAYOFF SEASON':'REBUILD SEASON')+'</p>';$('record').textContent=record;$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+wins+' wins and '+losses+' losses';$('result').classList.add('show');$('simAgain').hidden=false;$('simulate').disabled=false;$('simulate').textContent='SIMULATE SEASON AGAIN';
 }
 function reset(){
  roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;
  groupFilter='Any';positionFilter='Any';$('groupFilters').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.group==='Any'));$('positionFilter').value='Any';
  $('eraTeam').textContent='Ready to spin';$('eraYears').textContent='';$('eraSub').textContent='One spin chooses your team and decade';
- $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');
+ $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');$('simBoard').classList.remove('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simulate').textContent='SIMULATE SEASON';
  say('Tap a player from the list, then tap a highlighted seat to draft him.');renderRoster();
 }
 $('spin').addEventListener('click',drawPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);
@@ -389,7 +401,7 @@ document.querySelectorAll('.seat').forEach(seat=>seat.addEventListener('click',(
 $('clearSelection').addEventListener('click',()=>{selectedPlayer=null;movingFrom=null;if(combo)renderPool();renderRoster();});
 $('flexOn').addEventListener('click',()=>{flexible=true;$('flexOn').classList.add('active');$('flexOff').classList.remove('active');if(combo)renderPool();renderRoster();});
 $('flexOff').addEventListener('click',()=>{flexible=false;$('flexOff').classList.add('active');$('flexOn').classList.remove('active');if(combo)renderPool();renderRoster();});
-$('simulate').addEventListener('click',calculateResult);$('startOverTop').addEventListener('click',reset);
+$('simulate').addEventListener('click',calculateResult);$('simAgain').addEventListener('click',calculateResult);$('startOverTop').addEventListener('click',reset);
 try{
  const response=await fetch('players.json',{cache:'force-cache'});if(!response.ok)throw new Error('Player database returned HTTP '+response.status);
  players=await response.json();buildIndexes();
