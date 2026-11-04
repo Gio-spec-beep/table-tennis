@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d1118">
 <title>82-0 · NBA Draft</title>
+<link id="tabIcon" rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%233478f6%22%2F%3E%3Ctext%20x%3D%2232%22%20y%3D%2243%22%20text-anchor%3D%22middle%22%20font-family%3D%22Arial%22%20font-size%3D%2234%22%20font-weight%3D%22900%22%20fill%3D%22white%22%3E82%3C%2Ftext%3E%3C%2Fsvg%3E">
+
 <style>
 :root{color-scheme:dark;--bg:#0d1118;--panel:#1b2430;--panel2:#202b39;--line:#364457;--blue:#3478f6;--blue2:#1d4ed8;--gold:#f3bd55;--text:#edf2fa;--muted:#97a4b7;--faint:#657287}
 *{box-sizing:border-box}
@@ -257,9 +259,20 @@ function renderRoster(){
  renderProgress();
 }
 function godCombos(team=null,era=null,excludeTeam=null,excludeEra=null){
- const candidates=[];
- for(const [k,pool] of comboIndex){const [t,e]=k.split('|');if(team&&t!==team)continue;if(era&&e!==era)continue;if(excludeTeam&&t===excludeTeam)continue;if(excludeEra&&e===excludeEra)continue;const eligible=usable(pool);if(!eligible.length)continue;const score=eligible.map(p=>p._baseOvr||playerOvr(p)).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);candidates.push({t,e,score});}
- candidates.sort((a,b)=>b.score-a.score);return candidates.slice(0,Math.min(12,candidates.length));
+ const candidates=[],open=POS.filter(pos=>!roster[pos]);
+ if(!open.length)return candidates;
+ for(const [k,pool] of comboIndex){
+  const [t,e]=k.split('|');if(team&&t!==team)continue;if(era&&e!==era)continue;if(excludeTeam&&t===excludeTeam)continue;if(excludeEra&&e===excludeEra)continue;
+  const eligible=usable(pool).slice().sort((a,b)=>(b._baseOvr||playerOvr(b))-(a._baseOvr||playerOvr(a)));
+  // Greedily match the strongest distinct players to positions that are still empty.
+  const remaining=new Set(open),picked=new Set();let score=0,count=0;
+  for(const p of eligible){if(picked.has(identity(p)))continue;const fits=openPositions(p).filter(pos=>remaining.has(pos));if(!fits.length)continue;
+   const pos=fits[0];remaining.delete(pos);picked.add(identity(p));score+=p._baseOvr||playerOvr(p);count++;if(!remaining.size)break;
+  }
+  if(count)candidates.push({t,e,score:score/count*count,fitCount:count});
+ }
+ candidates.sort((a,b)=>b.fitCount-a.fitCount||b.score-a.score);
+ return candidates.slice(0,Math.min(12,candidates.length));
 }
 function drawPair(){
  if(spinning||combo||POS.every(p=>roster[p]))return;
@@ -416,6 +429,13 @@ function reset(){
  say('Tap a player from the list, then tap a highlighted seat to draft him.');renderRoster();
 }
 document.addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='g'||e.repeat||spinning||combo||POS.some(p=>roster[p])||round!==1)return;godMode=true;renderRoster();});
+function updateTabIcon(){
+ const active=document.visibilityState==='visible'&&document.hasFocus();
+ const bg=active?'#3478f6':'#536174',fg=active?'#ffffff':'#c4ccd6';
+ const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="'+bg+'"/><text x="32" y="43" text-anchor="middle" font-family="Arial" font-size="34" font-weight="900" fill="'+fg+'">82</text></svg>';
+ $('tabIcon').href='data:image/svg+xml,'+encodeURIComponent(svg);
+}
+document.addEventListener('visibilitychange',updateTabIcon);window.addEventListener('focus',updateTabIcon);window.addEventListener('blur',updateTabIcon);updateTabIcon();
 $('spin').addEventListener('click',drawPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);
 $('search').addEventListener('input',renderPool);
 $('groupFilters').addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;groupFilter=b.dataset.group;$('groupFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderPool();});
