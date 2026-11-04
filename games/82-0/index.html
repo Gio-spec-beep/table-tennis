@@ -179,7 +179,7 @@ const LEGENDS=new Set(['larry bird','tim duncan','kevin durant','magic johnson',
 const WEIGHTS={ppg:.46,rpg:.25,apg:.18,spg:.07,bpg:.04},BENCH={ppg:133.4,rpg:39.7,apg:29.3,spg:6.1,bpg:3.2};
 let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map();
 let roster={PG:null,SG:null,SF:null,PF:null,C:null},combo=null,selectedPlayer=null,movingFrom=null;
-let teamRerolls=1,decadeRerolls=1,round=1,groupFilter='Any',positionFilter='Any',flexible=true,spinning=false;
+let teamRerolls=1,decadeRerolls=1,round=1,groupFilter='Any',positionFilter='Any',flexible=true,spinning=false,godMode=false;
 const rand=a=>a[Math.floor(Math.random()*a.length)],key=(t,e)=>t+'|'+e;
 function say(v){$('instruction').textContent=v;}
 function nameOf(t){return TEAM_NAMES[t]||t;}
@@ -191,6 +191,7 @@ function openPositions(p){return allowedPositions(p).filter(pos=>!roster[pos]);}
 function category(p){const poss=allowedPositions(p);if(poss.includes('C')&&poss.length===1)return 'C';if(poss.some(x=>x==='PG'||x==='SG'))return 'G';if(poss.some(x=>x==='SF'||x==='PF'))return 'F';return 'C';}
 function eraStart(e){return Number(e.slice(0,4));}
 function playerOvr(p){
+ if(godMode)return 99;
  const ce=CEIL[eraStart(p.e)]||CEIL[2020];
  // Database fields are pts/reb/ast/stl/blk; previous code looked for absent ppg/rpg/etc.
  const fields=[['pts','ppg',.46],['reb','rpg',.25],['ast','apg',.18],['stl','spg',.07],['blk','bpg',.04]];
@@ -201,6 +202,7 @@ function playerOvr(p){
 }
 function badges(p){
  const b=[],low=p.n.toLowerCase();
+ if(godMode)b.push(['GOD MODE','gold']);
  if(LEGENDS.has(low))b.push(['LEGEND','gold']);
  if(p.pts>=22)b.push(['ELITE SCORER','gold']);
  if(p.ast>=7)b.push(['PLAYMAKER','blue']);
@@ -211,7 +213,7 @@ function badges(p){
  return b.slice(0,4);
 }
 function buildIndexes(){
- for(const p of players){p._ovr=playerOvr(p);const k=key(p.t,p.e);if(!comboIndex.has(k))comboIndex.set(k,[]);comboIndex.get(k).push(p);if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());eraTeams.get(p.e).add(p.t);if(!teamEras.has(p.t))teamEras.set(p.t,new Set());teamEras.get(p.t).add(p.e);}
+ for(const p of players){p._baseOvr=playerOvr(p);p._ovr=p._baseOvr;const k=key(p.t,p.e);if(!comboIndex.has(k))comboIndex.set(k,[]);comboIndex.get(k).push(p);if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());eraTeams.get(p.e).add(p.t);if(!teamEras.has(p.t))teamEras.set(p.t,new Set());teamEras.get(p.t).add(p.e);}
 }
 function usedOrEligible(p){return !isUsed(p)&&openPositions(p).length>0;}
 function usable(pool){return pool.filter(usedOrEligible);}
@@ -255,11 +257,16 @@ function renderRoster(){
  $('instruction').textContent=movingFrom?'Choose another highlighted seat to move '+roster[movingFrom].n+'.':selectedPlayer?'Choose one of the highlighted seats to draft '+selectedPlayer.n+'.':'Tap a player in the list, then tap a highlighted seat. Tap a seated player to move him.';
  renderProgress();
 }
+function godCombos(team=null,era=null,excludeTeam=null,excludeEra=null){
+ const candidates=[];
+ for(const [k,pool] of comboIndex){const [t,e]=k.split('|');if(team&&t!==team)continue;if(era&&e!==era)continue;if(excludeTeam&&t===excludeTeam)continue;if(excludeEra&&e===excludeEra)continue;const eligible=usable(pool);if(!eligible.length)continue;const score=eligible.map(p=>p._baseOvr||playerOvr(p)).sort((a,b)=>b-a).slice(0,5).reduce((a,b)=>a+b,0);candidates.push({t,e,score});}
+ candidates.sort((a,b)=>b.score-a.score);return candidates.slice(0,Math.min(12,candidates.length));
+}
 function drawPair(){
  if(spinning||combo||POS.every(p=>roster[p]))return;
+ if(godMode){const best=godCombos();if(best.length){const pick=rand(best);animateDraw(pick.t,pick.e,'spin');return;}}
  const eras=validEras();if(!eras.length){say('No more eligible team-and-decade draws. Start over to draft again.');return;}
- const era=rand(eras),team=rand([...eraTeams.get(era)].filter(t=>usable(comboIndex.get(key(t,era))||[]).length));
- animateDraw(team,era,'spin');
+ const era=rand(eras),team=rand([...eraTeams.get(era)].filter(t=>usable(comboIndex.get(key(t,era))||[]).length));animateDraw(team,era,'spin');
 }
 function animateDraw(team,era,source){
  spinning=true;renderProgress();
@@ -311,7 +318,7 @@ function addCardMeta(parent,p){
 }
 function renderPool(){
  if(!combo)return;
- const pool=comboIndex.get(key(combo.t,combo.e))||[],leaders=statsLeaders(pool);
+ const pool=(comboIndex.get(key(combo.t,combo.e))||[]).slice().sort((a,b)=>(godMode?(b._baseOvr||0):(b._ovr||0))-(godMode?(a._baseOvr||0):(a._ovr||0))),leaders=statsLeaders(pool);
  const q=$('search').value.trim().toLowerCase();
  const filtered=pool.filter(p=>{
   const group=category(p),posOK=positionFilter==='Any'||(p.pos||[]).includes(positionFilter),groupOK=groupFilter==='Any'||group===groupFilter;
@@ -350,10 +357,14 @@ function renderPool(){
  });
 }
 function rerollTeam(){
- if(!combo||teamRerolls<=0||spinning)return;const options=validTeams(combo.e,combo.t);if(!options.length)return;teamRerolls--;animateDraw(rand(options),combo.e,'team');
+ if(!combo||teamRerolls<=0||spinning)return;
+ if(godMode){const best=godCombos(null,combo.e,combo.t);if(best.length){teamRerolls--;const pick=rand(best);animateDraw(pick.t,pick.e,'team');return;}}
+ const options=validTeams(combo.e,combo.t);if(!options.length)return;teamRerolls--;animateDraw(rand(options),combo.e,'team');
 }
 function rerollDecade(){
- if(!combo||decadeRerolls<=0||spinning)return;const options=validDecades(combo.t,combo.e);if(!options.length)return;decadeRerolls--;animateDraw(combo.t,rand(options),'decade');
+ if(!combo||decadeRerolls<=0||spinning)return;
+ if(godMode){const best=godCombos(combo.t,null,null,combo.e);if(best.length){decadeRerolls--;const pick=rand(best);animateDraw(pick.t,pick.e,'decade');return;}}
+ const options=validDecades(combo.t,combo.e);if(!options.length)return;decadeRerolls--;animateDraw(combo.t,rand(options),'decade');
 }
 function clickSeat(pos){
  if(selectedPlayer){
@@ -399,7 +410,7 @@ async function calculateResult(){
  const record=wins+'–'+losses;$('simNow').innerHTML='<div class="sim-game-label">FINAL · GAME 82</div><div class="sim-matchup">Season complete</div><div class="sim-score">'+record+'</div><div class="sim-detail">82 games finished · '+losses+' loss recap(s)</div>';$('simFinal').hidden=false;$('simFinal').innerHTML='<h3>SEASON SUMMARY</h3><div class="big-record">'+record+'</div><p>Team OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC SEASON':wins>=62?'DYNASTY SEASON':wins>=50?'PLAYOFF SEASON':'REBUILD SEASON')+'</p>';$('record').textContent=record;$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+wins+' wins and '+losses+' losses';$('result').classList.add('show');$('simAgain').hidden=false;$('simulate').disabled=false;$('simulate').textContent='SIMULATE SEASON AGAIN';
 }
 function reset(){
- roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;
+ roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;godMode=false;players.forEach(p=>p._ovr=p._baseOvr||playerOvr(p));
  groupFilter='Any';positionFilter='Any';$('groupFilters').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.group==='Any'));$('positionFilter').value='Any';
  $('eraTeam').textContent='Ready to spin';$('eraYears').textContent='';$('eraSub').textContent='One spin chooses your team and decade';
  $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');$('simBoard').classList.remove('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simulate').textContent='SIMULATE SEASON';
