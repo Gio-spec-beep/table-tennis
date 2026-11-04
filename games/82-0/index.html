@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10091c">
+<title>82-0 · Build Your Roster</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0712;--panel:#171020;--panel2:#211630;--line:rgba(196,181,253,.2);--purple:#a78bfa;--bright:#ddd6fe;--muted:#b7abc9;--white:#faf7ff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,rgba(124,58,237,.3),transparent 48%),var(--bg);color:var(--white);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+button,input{font:inherit}
+button{cursor:pointer}
+.top{height:60px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 920px)/2))}
+.brand{font-weight:900;letter-spacing:.16em;color:var(--bright)}
+.top a{color:var(--muted);text-decoration:none;font-size:.82rem}
+main{width:min(920px,calc(100% - 32px));margin:36px auto 70px}
+.hero{text-align:center;margin:0 auto 28px}
+.eyebrow{font-size:.72rem;letter-spacing:.18em;color:var(--purple);font-weight:900}
+h1{font-size:clamp(2rem,6vw,3.2rem);line-height:1.05;margin:10px 0}
+.subtitle{color:var(--muted);margin:0 auto;max-width:500px}
+.progress{display:flex;align-items:center;gap:12px;margin:24px 0 15px}
+.progress-track{height:7px;flex:1;background:#2b2039;border-radius:20px;overflow:hidden}
+.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c4b5fd);transition:width .2s}
+#progressText{font-size:.8rem;color:var(--muted);font-weight:800;white-space:nowrap}
+.roster{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px}
+.slot{grid-column:span 2;min-height:184px;background:linear-gradient(150deg,#20162e,#15101f);border:1px solid var(--line);border-radius:16px;padding:15px;display:flex;flex-direction:column}
+.slot:nth-child(4){grid-column:2/span 2}
+.slot:nth-child(5){grid-column:4/span 2}
+.slot-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.position{font-size:.72rem;letter-spacing:.14em;font-weight:900;color:var(--purple)}
+.role{font-size:.7rem;color:var(--muted)}
+.player-name{font-size:1.08rem;font-weight:850;margin:19px 0 3px}
+.player-detail{font-size:.78rem;color:var(--muted);min-height:20px}
+.rating{font-size:.74rem;color:#f0eaff;font-weight:850}
+.slot-actions{display:flex;align-items:center;gap:8px;margin-top:auto;padding-top:14px}
+.choose,.remove{border:1px solid #9b7af0;border-radius:9px;background:#6d28d9;color:#fff;font-size:.78rem;font-weight:850;padding:9px 12px}
+.choose{flex:1}
+.choose:hover,.primary:hover{filter:brightness(1.13)}
+.remove{background:transparent;border-color:var(--line);color:var(--muted);display:none}
+.slot.filled .remove{display:block}
+.guidance{margin:16px 0 0;text-align:center;color:var(--muted);font-size:.82rem}
+.summary{margin-top:22px;padding:19px;background:rgba(167,139,250,.08);border:1px solid var(--line);border-radius:16px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:15px}
+.summary h2{margin:0;font-size:1.05rem}
+.summary p{margin:4px 0 0;color:var(--muted);font-size:.82rem}
+.average{font-size:2rem;font-weight:950;color:var(--bright);text-align:right;line-height:1}
+.average small{display:block;font-size:.62rem;letter-spacing:.14em;color:var(--muted);margin-top:5px}
+.actions{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.primary,.secondary{border-radius:10px;padding:12px 16px;font-weight:900;border:1px solid #9b7af0}
+.primary{background:linear-gradient(135deg,#8b5cf6,#6d28d9);color:white;flex:1}
+.primary:disabled{opacity:.4;cursor:not-allowed;filter:none}
+.secondary{background:#20162e;color:var(--bright);border-color:var(--line)}
+.status{font-size:.75rem;color:var(--muted);margin-top:10px;min-height:18px}
+.result{display:none;margin-top:18px;padding:24px;border-radius:16px;border:1px solid #9471dc;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));text-align:center}
+.result.show{display:block}
+.result-label{font-size:.7rem;letter-spacing:.16em;color:var(--bright);font-weight:900}
+.record{font-size:clamp(2.8rem,9vw,4.4rem);font-weight:1000;line-height:1.1;margin:9px 0}
+.result p{color:var(--muted);margin:0}
+.footnote{font-size:.7rem;color:#9588a8;text-align:center;margin:18px 0}
+.modal{display:none;position:fixed;inset:0;z-index:10;background:rgba(4,2,8,.82);padding:18px;align-items:center;justify-content:center}
+.modal.open{display:flex}
+.dialog{width:min(560px,100%);max-height:min(720px,90vh);display:flex;flex-direction:column;background:#171020;border:1px solid #7151a4;border-radius:17px;box-shadow:0 25px 90px #000b;overflow:hidden}
+.dialog-head{padding:18px;border-bottom:1px solid var(--line)}
+.dialog-head-row{display:flex;justify-content:space-between;align-items:center}
+.dialog-head h2{margin:0;font-size:1.15rem}
+.close{border:0;background:transparent;color:var(--muted);font-size:1.5rem;padding:0 5px}
+.dialog-head p{color:var(--muted);font-size:.8rem;margin:5px 0 12px}
+#playerSearch{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:#0e0916;color:white;outline:none}
+#playerSearch:focus{border-color:var(--purple)}
+.player-list{overflow:auto;padding:10px;display:grid;gap:7px}
+.player-option{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:12px;border-radius:10px;border:1px solid transparent;background:#21182e;color:white}
+.player-option:hover{border-color:#9b7af0;background:#2a1d3b}
+.player-option:disabled{opacity:.35;cursor:not-allowed}
+.player-option strong{display:block;font-size:.9rem}
+.player-option span{display:block;font-size:.72rem;color:var(--muted);margin-top:2px}
+.player-ovr{font-size:.95rem!important;color:var(--bright)!important;font-weight:950;white-space:nowrap}
+.no-results{padding:25px;text-align:center;color:var(--muted)}
+@media(max-width:650px){main{margin-top:25px}.roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.slot{grid-column:span 1!important;padding:12px;min-height:170px}.slot:nth-child(5){grid-column:1/span 2!important;width:calc(50% - 5px);justify-self:center}.slot:nth-child(4){grid-column:span 1!important}.role{font-size:.65rem}.player-name{font-size:.98rem}.summary{grid-template-columns:1fr auto}}
+@media(max-width:390px){.roster{grid-template-columns:1fr}.slot,.slot:nth-child(4),.slot:nth-child(5){grid-column:1!important;width:100%;min-height:150px}.summary{grid-template-columns:1fr}.average{text-align:left}}
+</style>
+</head>
+<body>
+<header class="top"><div class="brand">82—0</div><a href="../../index.html">← Back to Game Hub</a></header>
+<main>
+  <section class="hero">
+    <div class="eyebrow">THE ALL-TIME ROSTER CHALLENGE</div>
+    <h1>Build your starting five.</h1>
+    <p class="subtitle">Pick one player for each position. No spins, no confusing menus. Choose your five, then see how close they get to 82–0.</p>
+  </section>
+  <div class="progress"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><div id="progressText">0 / 5 players</div></div>
+  <section class="roster" id="roster" aria-label="Your starting lineup">
+    <article class="slot" data-position="PG"><div class="slot-top"><span class="position">POINT GUARD</span><span class="role">PG</span></div><div class="player-name">Empty spot</div><div class="player-detail">Your floor general</div><div class="slot-actions"><button class="choose" type="button">+ Choose player</button><button class="remove" type="button">Remove</button></div></article>
+    <article class="slot" data-position="SG"><div class="slot-top"><span class="position">SHOOTING GUARD</span><span class="role">SG</span></div><div class="player-name">Empty spot</div><div class="player-detail">Your scorer</div><div class="slot-actions"><button class="choose" type="button">+ Choose player</button><button class="remove" type="button">Remove</button></div></article>
+    <article class="slot" data-position="SF"><div class="slot-top"><span class="position">SMALL FORWARD</span><span class="role">SF</span></div><div class="player-name">Empty spot</div><div class="player-detail">Your two-way wing</div><div class="slot-actions"><button class="choose" type="button">+ Choose player</button><button class="remove" type="button">Remove</button></div></article>
+    <article class="slot" data-position="PF"><div class="slot-top"><span class="position">POWER FORWARD</span><span class="role">PF</span></div><div class="player-name">Empty spot</div><div class="player-detail">Your inside presence</div><div class="slot-actions"><button class="choose" type="button">+ Choose player</button><button class="remove" type="button">Remove</button></div></article>
+    <article class="slot" data-position="C"><div class="slot-top"><span class="position">CENTER</span><span class="role">C</span></div><div class="player-name">Empty spot</div><div class="player-detail">Your anchor</div><div class="slot-actions"><button class="choose" type="button">+ Choose player</button><button class="remove" type="button">Remove</button></div></article>
+  </section>
+  <p class="guidance">Tap <b>Choose player</b> under a position, then tap the player you want.</p>
+  <section class="summary">
+    <div><h2>Your team rating</h2><p id="summaryText">Fill all five spots to unlock your season simulation.</p></div>
+    <div class="average" id="averageRating">—<small>AVERAGE OVR</small></div>
+  </section>
+  <div class="actions">
+    <button class="primary" id="simulate" disabled>SIMULATE 82-GAME SEASON</button>
+    <button class="secondary" id="reset">Clear roster</button>
+  </div>
+  <div class="status" id="saveStatus" aria-live="polite">Your roster saves automatically on this device.</div>
+  <section class="result" id="result" aria-live="polite">
+    <div class="result-label">YOUR SEASON RESULT</div>
+    <div class="record" id="record">82–0</div>
+    <p id="resultText">A perfect season!</p>
+  </section>
+  <p class="footnote">Player overall ratings are custom game ratings for this simple version—not official NBA ratings or a real-world prediction.</p>
+</main>
+<div class="modal" id="picker" role="dialog" aria-modal="true" aria-labelledby="pickerTitle">
+  <div class="dialog">
+    <div class="dialog-head">
+      <div class="dialog-head-row"><h2 id="pickerTitle">Choose a player</h2><button class="close" id="closePicker" aria-label="Close">×</button></div>
+      <p id="pickerHint">Choose one player for this position.</p>
+      <input id="playerSearch" type="search" placeholder="Search player names…" autocomplete="off">
+    </div>
+    <div class="player-list" id="playerList"></div>
+  </div>
+</div>
+<script>
+(function(){
+  const players=[
+    {id:'magic',name:'Magic Johnson',pos:['PG'],ovr:99,style:'Elite playmaker'},
+    {id:'curry',name:'Stephen Curry',pos:['PG'],ovr:99,style:'All-time shooter'},
+    {id:'oscar',name:'Oscar Robertson',pos:['PG','SG'],ovr:97,style:'All-around guard'},
+    {id:'west',name:'Jerry West',pos:['PG','SG'],ovr:97,style:'Scoring playmaker'},
+    {id:'paul',name:'Chris Paul',pos:['PG'],ovr:96,style:'Floor general'},
+    {id:'stockton',name:'John Stockton',pos:['PG'],ovr:95,style:'Pass-first guard'},
+    {id:'iverson',name:'Allen Iverson',pos:['PG','SG'],ovr:95,style:'Explosive scorer'},
+    {id:'thomas',name:'Isiah Thomas',pos:['PG'],ovr:94,style:'Quick creator'},
+    {id:'nash',name:'Steve Nash',pos:['PG'],ovr:94,style:'Elite shooter and passer'},
+    {id:'kidd',name:'Jason Kidd',pos:['PG'],ovr:93,style:'Rebounding playmaker'},
+    {id:'westbrook',name:'Russell Westbrook',pos:['PG'],ovr:93,style:'Rim pressure'},
+    {id:'lillard',name:'Damian Lillard',pos:['PG'],ovr:93,style:'Deep-range scorer'},
+    {id:'jordan',name:'Michael Jordan',pos:['SG','SF'],ovr:99,style:'Elite two-way scorer'},
+    {id:'kobe',name:'Kobe Bryant',pos:['SG','SF'],ovr:98,style:'Three-level scorer'},
+    {id:'wade',name:'Dwyane Wade',pos:['SG'],ovr:96,style:'Slashing defender'},
+    {id:'harden',name:'James Harden',pos:['SG','PG'],ovr:96,style:'Scoring playmaker'},
+    {id:'drexler',name:'Clyde Drexler',pos:['SG','SF'],ovr:94,style:'Athletic two-way wing'},
+    {id:'ray',name:'Ray Allen',pos:['SG'],ovr:94,style:'Elite shooter'},
+    {id:'gervin',name:'George Gervin',pos:['SG','SF'],ovr:94,style:'Smooth scorer'},
+    {id:'miller',name:'Reggie Miller',pos:['SG'],ovr:93,style:'Off-ball shooter'},
+    {id:'allen',name:'Klay Thompson',pos:['SG'],ovr:92,style:'3-and-D shooter'},
+    {id:'lebron',name:'LeBron James',pos:['SF','PF'],ovr:99,style:'All-around superstar'},
+    {id:'bird',name:'Larry Bird',pos:['SF','PF'],ovr:98,style:'Elite shooter and passer'},
+    {id:'durant',name:'Kevin Durant',pos:['SF','PF'],ovr:98,style:'Unstoppable scorer'},
+    {id:'kawhi',name:'Kawhi Leonard',pos:['SF','SG'],ovr:96,style:'Two-way star'},
+    {id:'erving',name:'Julius Erving',pos:['SF','PF'],ovr:96,style:'Explosive wing'},
+    {id:'pippen',name:'Scottie Pippen',pos:['SF','SG'],ovr:95,style:'Elite perimeter defender'},
+    {id:'baylor',name:'Elgin Baylor',pos:['SF'],ovr:95,style:'Historic scorer'},
+    {id:'barry',name:'Rick Barry',pos:['SF'],ovr:94,style:'Versatile scorer'},
+    {id:'melo',name:'Carmelo Anthony',pos:['SF','PF'],ovr:94,style:'Scoring forward'},
+    {id:'giannis',name:'Giannis Antetokounmpo',pos:['PF','SF'],ovr:98,style:'Powerful two-way star'},
+    {id:'duncan',name:'Tim Duncan',pos:['PF','C'],ovr:98,style:'Fundamental big'},
+    {id:'garnett',name:'Kevin Garnett',pos:['PF','C'],ovr:97,style:'Defensive anchor'},
+    {id:'malone',name:'Karl Malone',pos:['PF'],ovr:96,style:'Power scorer'},
+    {id:'barkley',name:'Charles Barkley',pos:['PF'],ovr:96,style:'Rebounding force'},
+    {id:'dirk',name:'Dirk Nowitzki',pos:['PF','C'],ovr:96,style:'Stretch big'},
+    {id:'davis',name:'Anthony Davis',pos:['PF','C'],ovr:96,style:'Two-way big'},
+    {id:'mchale',name:'Kevin McHale',pos:['PF','C'],ovr:94,style:'Post scorer'},
+    {id:'webber',name:'Chris Webber',pos:['PF','C'],ovr:93,style:'Passing big'},
+    {id:'gasol',name:'Pau Gasol',pos:['PF','C'],ovr:94,style:'Skilled big'},
+    {id:'kareem',name:'Kareem Abdul-Jabbar',pos:['C'],ovr:99,style:'Elite scoring center'},
+    {id:'shaq',name:"Shaquille O'Neal",pos:['C'],ovr:98,style:'Dominant inside force'},
+    {id:'hakeem',name:'Hakeem Olajuwon',pos:['C'],ovr:98,style:'Footwork and defense'},
+    {id:'wilt',name:'Wilt Chamberlain',pos:['C'],ovr:99,style:'Historic physical force'},
+    {id:'russell',name:'Bill Russell',pos:['C'],ovr:97,style:'Defensive legend'},
+    {id:'jokic',name:'Nikola Jokić',pos:['C'],ovr:98,style:'Elite passing center'},
+    {id:'robinson',name:'David Robinson',pos:['C','PF'],ovr:96,style:'Athletic two-way center'},
+    {id:'moses',name:'Moses Malone',pos:['C'],ovr:95,style:'Rebounding scorer'},
+    {id:'ewing',name:'Patrick Ewing',pos:['C'],ovr:94,style:'Inside-out center'},
+    {id:'embiid',name:'Joel Embiid',pos:['C'],ovr:95,style:'Scoring center'},
+    {id:'walton',name:'Bill Walton',pos:['C'],ovr:94,style:'Passing and defense'},
+    {id:'dwight',name:'Dwight Howard',pos:['C'],ovr:93,style:'Rim protector'}
+  ];
+  const hints={PG:'Your floor general',SG:'Your scorer',SF:'Your two-way wing',PF:'Your inside presence',C:'Your anchor'};
+  const selected={PG:null,SG:null,SF:null,PF:null,C:null};
+  const slots=[...document.querySelectorAll('.slot')];
+  const picker=document.getElementById('picker');
+  const list=document.getElementById('playerList');
+  const search=document.getElementById('playerSearch');
+  const simulate=document.getElementById('simulate');
+  let activePosition=null;
+
+  function save(){
+    try{localStorage.setItem('gamehub-82-0-roster',JSON.stringify(selected));document.getElementById('saveStatus').textContent='Roster saved automatically on this device.';}
+    catch(e){document.getElementById('saveStatus').textContent='Roster is ready. This browser could not save it automatically.';}
+  }
+  function load(){
+    try{
+      const saved=JSON.parse(localStorage.getItem('gamehub-82-0-roster')||'{}');
+      Object.keys(selected).forEach(pos=>{
+        const id=saved[pos];
+        const p=players.find(x=>x.id===id&&x.pos.includes(pos));
+        if(p&&!Object.values(selected).includes(p.id))selected[pos]=p.id;
+      });
+    }catch(e){}
+  }
+  function render(){
+    let count=0,total=0;
+    slots.forEach(slot=>{
+      const pos=slot.dataset.position;
+      const id=selected[pos];
+      const p=players.find(x=>x.id===id);
+      const name=slot.querySelector('.player-name');
+      const detail=slot.querySelector('.player-detail');
+      const choose=slot.querySelector('.choose');
+      slot.classList.toggle('filled',!!p);
+      if(p){count++;total+=p.ovr;name.textContent=p.name;detail.textContent=p.style+' · '+p.pos.join('/');choose.textContent='Change player';}
+      else{name.textContent='Empty spot';detail.textContent=hints[pos];choose.textContent='+ Choose player';}
+    });
+    document.getElementById('progressFill').style.width=(count/5*100)+'%';
+    document.getElementById('progressText').textContent=count+' / 5 players';
+    document.getElementById('averageRating').innerHTML=(count?(total/count).toFixed(1):'—')+'<small>AVERAGE OVR</small>';
+    document.getElementById('summaryText').textContent=count===5?'Your starting five is ready. Run your season!':(5-count)+' more '+(5-count===1?'player':'players')+' to go.';
+    simulate.disabled=count!==5;
+    if(count!==5)document.getElementById('result').classList.remove('show');
+    save();
+  }
+  function openPicker(pos){
+    activePosition=pos;
+    document.getElementById('pickerTitle').textContent='Choose your '+({PG:'point guard',SG:'shooting guard',SF:'small forward',PF:'power forward',C:'center'}[pos]);
+    document.getElementById('pickerHint').textContent='Pick one player who can play '+pos+'. Players already in your lineup cannot be picked twice.';
+    search.value='';
+    renderPlayers();
+    picker.classList.add('open');
+    setTimeout(()=>search.focus(),50);
+  }
+  function renderPlayers(){
+    const q=search.value.trim().toLowerCase();
+    list.innerHTML='';
+    const chosen=Object.values(selected).filter(Boolean);
+    const available=players.filter(p=>p.pos.includes(activePosition)&&p.name.toLowerCase().includes(q)).sort((a,b)=>b.ovr-a.ovr||a.name.localeCompare(b.name));
+    if(!available.length){list.innerHTML='<div class="no-results">No players found. Try another name.</div>';return;}
+    available.forEach(p=>{
+      const used=chosen.includes(p.id);
+      const button=document.createElement('button');
+      button.type='button';button.className='player-option';button.disabled=used;
+      const left=document.createElement('div');
+      const strong=document.createElement('strong');strong.textContent=p.name;
+      const span=document.createElement('span');span.textContent=p.style+' · '+p.pos.join('/');
+      left.append(strong,span);
+      const rating=document.createElement('span');rating.className='player-ovr';rating.textContent=used?'IN LINEUP':p.ovr+' OVR';
+      button.append(left,rating);
+      button.addEventListener('click',()=>{if(used)return;selected[activePosition]=p.id;picker.classList.remove('open');render();});
+      list.append(button);
+    });
+  }
+  slots.forEach(slot=>{
+    const pos=slot.dataset.position;
+    slot.querySelector('.choose').addEventListener('click',()=>openPicker(pos));
+    slot.querySelector('.remove').addEventListener('click',()=>{selected[pos]=null;render();});
+  });
+  search.addEventListener('input',renderPlayers);
+  document.getElementById('closePicker').addEventListener('click',()=>picker.classList.remove('open'));
+  picker.addEventListener('click',e=>{if(e.target===picker)picker.classList.remove('open');});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')picker.classList.remove('open');});
+  document.getElementById('reset').addEventListener('click',()=>{
+    Object.keys(selected).forEach(pos=>selected[pos]=null);
+    document.getElementById('result').classList.remove('show');
+    render();
+  });
+  simulate.addEventListener('click',()=>{
+    const chosen=Object.values(selected).map(id=>players.find(p=>p.id===id));
+    if(chosen.some(p=>!p))return;
+    const average=chosen.reduce((sum,p)=>sum+p.ovr,0)/5;
+    const variance=chosen.reduce((sum,p)=>sum+Math.pow(p.ovr-average,2),0)/5;
+    const balanceBonus=Math.max(0,2.2-Math.sqrt(variance)/5);
+    const randomSwing=Math.random()*5-2.5;
+    const wins=Math.max(0,Math.min(82,Math.round(32+(average-75)*2.1+balanceBonus+randomSwing)));
+    const losses=82-wins;
+    document.getElementById('record').textContent=wins+'–'+losses;
+    document.getElementById('resultText').textContent=wins===82?'PERFECT SEASON! You built an 82–0 team.':wins>=75?'Elite roster. You came close to a perfect season.':wins>=65?'Great team. A few upgrades could push it further.':'Keep tweaking your five and run it back.';
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
