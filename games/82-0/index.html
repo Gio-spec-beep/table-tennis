@@ -416,6 +416,7 @@ function reset(){
  $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');$('simBoard').classList.remove('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simulate').textContent='SIMULATE SEASON';
  say('Tap a player from the list, then tap a highlighted seat to draft him.');renderRoster();
 }
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='g'||e.repeat||spinning||combo||POS.some(p=>roster[p])||round!==1)return;godMode=true;players.forEach(p=>p._ovr=99);renderRoster();});
 $('spin').addEventListener('click',drawPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);
 $('search').addEventListener('input',renderPool);
 $('groupFilters').addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;groupFilter=b.dataset.group;$('groupFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderPool();});
