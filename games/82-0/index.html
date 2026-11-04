@@ -383,7 +383,19 @@ async function calculateResult(){
  $('simBoard').classList.add('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simBar').style.width='0%';$('simRecord').textContent='0–0';$('result').classList.remove('show');$('simulate').disabled=true;$('simulate').textContent='SEASON IN PROGRESS…';
  $('simNow').innerHTML='<div class="sim-game-label">SEASON TIP-OFF</div><div class="sim-matchup">The season is underway.</div><div class="sim-detail">Wins count up live. Each loss pauses for a matchup recap.</div>';
  let wins=0,losses=0;
- for(const g of games){if(g.win)wins++;else losses++;$('simRecord').textContent=wins+'–'+losses;$('simBar').style.width=(g.game/82*100)+'%';$('simNow').innerHTML='<div class="sim-game-label">GAME '+g.game+' / 82 · '+(g.win?'WIN':'LOSS')+'</div><div class="sim-matchup">'+(g.win?'Defeated ':'Lost to ')+g.opp+'</div><div class="sim-score"><span class="'+(g.win?'won':'lost')+'">'+g.team+'</span> – '+g.other+'</div><div class="sim-detail">'+g.leader+' led your team · record '+wins+'–'+losses+'</div>';addStory(g);if(!g.win){showLoss(g,wins+'–'+losses,list);await wait(2200);}else await wait(110);}
+ // The entire 82-game season is paced across a fixed ~2-second timeline.
+ // Loss recaps briefly interrupt the live display, but never add extra time.
+ const simStart=performance.now(),simDuration=2000;
+ for(const g of games){
+  if(g.win)wins++;else losses++;
+  $('simRecord').textContent=wins+'–'+losses;
+  $('simBar').style.width=(g.game/82*100)+'%';
+  $('simNow').innerHTML='<div class="sim-game-label">GAME '+g.game+' / 82 · '+(g.win?'WIN':'LOSS')+'</div><div class="sim-matchup">'+(g.win?'Defeated ':'Lost to ')+g.opp+'</div><div class="sim-score"><span class="'+(g.win?'won':'lost')+'">'+g.team+'</span> – '+g.other+'</div><div class="sim-detail">'+g.leader+' led your team · record '+wins+'–'+losses+'</div>';
+  addStory(g);
+  if(!g.win)showLoss(g,wins+'–'+losses,list);
+  const target=simStart+(g.game/82)*simDuration;
+  await wait(Math.max(0,target-performance.now()));
+ }
  const record=wins+'–'+losses;$('simNow').innerHTML='<div class="sim-game-label">FINAL · GAME 82</div><div class="sim-matchup">Season complete</div><div class="sim-score">'+record+'</div><div class="sim-detail">82 games finished · '+losses+' loss recap(s)</div>';$('simFinal').hidden=false;$('simFinal').innerHTML='<h3>SEASON SUMMARY</h3><div class="big-record">'+record+'</div><p>Team OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC SEASON':wins>=62?'DYNASTY SEASON':wins>=50?'PLAYOFF SEASON':'REBUILD SEASON')+'</p>';$('record').textContent=record;$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+wins+' wins and '+losses+' losses';$('result').classList.add('show');$('simAgain').hidden=false;$('simulate').disabled=false;$('simulate').textContent='SIMULATE SEASON AGAIN';
 }
 function reset(){
