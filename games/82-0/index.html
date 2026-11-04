@@ -199,7 +199,7 @@ function playerOvr(p){
  let score=0,weight=0;
  for(const [field,cap,w] of fields){if(p[field]!=null&&Number.isFinite(Number(p[field]))){score+=Math.min(Number(p[field])/ce[cap],1.15)*w;weight+=w;}}
  const normalized=weight?score/weight:0;
- return Math.max(45,Math.min(99,Math.round((58+42*normalized+Math.max(0,(p.pos||[]).length-1)*1.5)*10)/10));
+ return Math.max(45,Math.min(99,Math.round((48+45*normalized+Math.max(0,(p.pos||[]).length-1)*1.2)*10)/10));
 }
 function badges(p){
  const b=[],low=p.n.toLowerCase();
