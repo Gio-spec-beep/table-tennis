@@ -191,7 +191,6 @@ function openPositions(p){return allowedPositions(p).filter(pos=>!roster[pos]);}
 function category(p){const poss=allowedPositions(p);if(poss.includes('C')&&poss.length===1)return 'C';if(poss.some(x=>x==='PG'||x==='SG'))return 'G';if(poss.some(x=>x==='SF'||x==='PF'))return 'F';return 'C';}
 function eraStart(e){return Number(e.slice(0,4));}
 function playerOvr(p){
- if(godMode)return 99;
  const ce=CEIL[eraStart(p.e)]||CEIL[2020];
  // Database fields are pts/reb/ast/stl/blk; previous code looked for absent ppg/rpg/etc.
  const fields=[['pts','ppg',.46],['reb','rpg',.25],['ast','apg',.18],['stl','spg',.07],['blk','bpg',.04]];
@@ -202,7 +201,7 @@ function playerOvr(p){
 }
 function badges(p){
  const b=[],low=p.n.toLowerCase();
- if(godMode)b.push(['GOD MODE','gold']);
+ 
  if(LEGENDS.has(low))b.push(['LEGEND','gold']);
  if(p.pts>=22)b.push(['ELITE SCORER','gold']);
  if(p.ast>=7)b.push(['PLAYMAKER','blue']);
@@ -410,13 +409,13 @@ async function calculateResult(){
  const record=wins+'–'+losses;$('simNow').innerHTML='<div class="sim-game-label">FINAL · GAME 82</div><div class="sim-matchup">Season complete</div><div class="sim-score">'+record+'</div><div class="sim-detail">82 games finished · '+losses+' loss recap(s)</div>';$('simFinal').hidden=false;$('simFinal').innerHTML='<h3>SEASON SUMMARY</h3><div class="big-record">'+record+'</div><p>Team OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC SEASON':wins>=62?'DYNASTY SEASON':wins>=50?'PLAYOFF SEASON':'REBUILD SEASON')+'</p>';$('record').textContent=record;$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+wins+' wins and '+losses+' losses';$('result').classList.add('show');$('simAgain').hidden=false;$('simulate').disabled=false;$('simulate').textContent='SIMULATE SEASON AGAIN';
 }
 function reset(){
- roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;godMode=false;players.forEach(p=>p._ovr=p._baseOvr||playerOvr(p));
+ roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;godMode=false;
  groupFilter='Any';positionFilter='Any';$('groupFilters').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.group==='Any'));$('positionFilter').value='Any';
  $('eraTeam').textContent='Ready to spin';$('eraYears').textContent='';$('eraSub').textContent='One spin chooses your team and decade';
  $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');$('simBoard').classList.remove('show');$('simStory').innerHTML='';$('simFinal').hidden=true;$('simAgain').hidden=true;$('simulate').textContent='SIMULATE SEASON';
  say('Tap a player from the list, then tap a highlighted seat to draft him.');renderRoster();
 }
-document.addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='g'||e.repeat||spinning||combo||POS.some(p=>roster[p])||round!==1)return;godMode=true;players.forEach(p=>p._ovr=99);renderRoster();});
+document.addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='g'||e.repeat||spinning||combo||POS.some(p=>roster[p])||round!==1)return;godMode=true;renderRoster();});
 $('spin').addEventListener('click',drawPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);
 $('search').addEventListener('input',renderPool);
 $('groupFilters').addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;groupFilter=b.dataset.group;$('groupFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderPool();});
