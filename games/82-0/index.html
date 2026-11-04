@@ -236,11 +236,7 @@ function renderProgress(){
  $('rerollTeam').textContent='↻ RE-ROLL TEAM · '+teamRerolls+' LEFT';
  $('rerollDecade').textContent='↻ RE-ROLL DECADE · '+decadeRerolls+' LEFT';
 }
-function teamOVR(list){
- const sum=s=>list.reduce((n,p)=>n+(Number(p[s])||0),0);
- const adj=s=>{const a=list.filter(p=>p[s]!=null&&Number(p[s])>0);return a.length?a.reduce((n,p)=>n+Number(p[s]),0)*5/a.length:0;};
- return Math.round(100*(sum('pts')/BENCH.ppg*WEIGHTS.ppg+sum('reb')/BENCH.rpg*WEIGHTS.rpg+sum('ast')/BENCH.apg*WEIGHTS.apg+adj('stl')/BENCH.spg*WEIGHTS.spg+adj('blk')/BENCH.bpg*WEIGHTS.bpg)*10)/10;
-}
+function teamOVR(list){if(!list.length)return 0;const ratings=list.map(p=>Number.isFinite(Number(p._ovr))?Number(p._ovr):playerOvr(p));return Math.round(Math.max(0,Math.min(99,ratings.reduce((sum,r)=>sum+r,0)/ratings.length))*10)/10;}
 function renderRoster(){
  for(const seat of document.querySelectorAll('.seat')){
   const pos=seat.dataset.pos,p=roster[pos],posLabel=seat.querySelector('.seat-position');
