@@ -65,7 +65,7 @@ main{width:min(900px,calc(100% - 32px));margin:30px auto 64px}.hero{text-align:c
 </main>
 <script>
 (function(){
-const P=(name,pos,ovr)=>({name,pos:Array.isArray(pos)?pos:[pos],ovr});
+const P=(name,pos,ovr)=>({name,pos:Array.isArray(pos)?pos:String(pos).split('/'),ovr});
 const DATA={
 ATL:{name:'Atlanta Hawks',d:{
 '1970s':[P('Pete Maravich','PG',96),P('Lou Hudson','SF',95)],
