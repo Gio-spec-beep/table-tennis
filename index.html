@@ -80,7 +80,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
   </section>
   <section id="gamesPanel">
     <div class="section-head">
-      <div><h2>AVAILABLE GAMES</h2><p id="countText">3 games available</p></div>
+      <div><h2>AVAILABLE GAMES</h2><p id="countText">4 games available</p></div>
       <label class="search"><input id="searchInput" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"></label>
     </div>
     <div class="grid" id="gameGrid">
@@ -108,6 +108,14 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
           <div class="card-foot"><span class="category">SPORTS · BILLIARDS</span><button class="play" onclick="openGame('games/8-ball-pool/index.html','8-BALL POOL')">PLAY NOW ↗</button></div>
         </div>
       </article>
+      <article class="card" data-search="82-0 basketball nba roster builder draft legends perfect season team">
+        <div class="art"><span class="tag">BASKETBALL</span><div class="game-icon" aria-hidden="true">🏀</div></div>
+        <div class="card-body">
+          <h3>82-0</h3>
+          <p>Draft an all-time NBA starting five, build a balanced roster, and see whether you can win all 82 games.</p>
+          <div class="card-foot"><span class="category">SPORTS · BASKETBALL</span><button class="play" onclick="openGame('https://www.82-0.com/','82-0 NBA CHALLENGE')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
     </div>
     <div class="empty" id="emptyState">No games match that search.</div>
   </section>
@@ -118,6 +126,13 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
       <h3 id="versionHistoryTitle" style="margin:0 0 14px;color:var(--bright);letter-spacing:.1em;font-size:.85rem">VERSION HISTORY</h3>
       <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
         <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
+        <strong>Version 1.0.11 · November 4, 2026</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;color:var(--muted)">
+          <li>Added 82-0, an NBA roster-building challenge, to the game collection.</li>
+          <li>Added in-hub play and an open-in-new-tab fallback.</li>
+        </ul>
+      </article>
+      <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
         <strong>Version 1.0.8 · October 30, 2026</strong>
         <ul style="margin:8px 0 0;padding-left:20px;color:var(--muted)">
           <li>Added a Gladihoppers mod menu toggled with /.</li>
@@ -166,7 +181,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
     <button class="play" onclick="showTab('games')">BACK TO GAMES</button>
   </section>
 </main>
-<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.10</span></footer>
+<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.11</span></footer>
 <div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game player">
   <div class="game-bar">
     <div class="game-title" id="gameTitle">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
