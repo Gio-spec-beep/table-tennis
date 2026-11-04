@@ -97,8 +97,13 @@
         started=false;retry.disabled=false;return;
       }
       window.addEventListener('error',event=>{
-      row('JavaScript error','bad',(event.message||'unknown error')+(event.filename?' · '+event.filename.split('/').pop()+':'+event.lineno:''));
-      summary.textContent='A browser error stopped Unity startup. See the JavaScript error row above.';
+      const err=event.error;
+      const stack=err&&err.stack?err.stack:'';
+      const detail=(event.message||'unknown error')+
+        (event.filename?' · '+event.filename.split('/').pop()+':'+event.lineno:'')+
+        (stack?' · stack: '+stack:'');
+      row('JavaScript error','bad',detail);
+      summary.textContent='A browser error stopped Unity startup. The full error stack is shown above.';
       box.classList.remove('minimized');
     });
     window.addEventListener('unhandledrejection',event=>{
