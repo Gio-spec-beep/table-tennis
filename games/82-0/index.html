@@ -3,204 +3,360 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#10091c">
+<meta name="theme-color" content="#0d1118">
 <title>82-0 · NBA Draft</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0712;--panel:#171020;--panel2:#211630;--line:rgba(196,181,253,.19);--purple:#a78bfa;--bright:#ddd6fe;--muted:#aa9fbb;--white:#faf7ff;--green:#86efac}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 48% -18%,rgba(124,58,237,.28),transparent 46%),var(--bg);color:var(--white);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}
-.top{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 1120px)/2));background:rgba(10,7,17,.8)}.brand{font-weight:950;letter-spacing:.15em;color:var(--bright);font-size:.95rem}.top a{color:var(--muted);text-decoration:none;font-size:.78rem}.top a:hover{color:white}
-main{width:min(1120px,calc(100% - 34px));margin:22px auto 58px}
-.kicker{display:flex;align-items:center;gap:9px;font-size:.7rem;font-weight:900;letter-spacing:.13em;color:var(--bright);margin-bottom:7px}.kicker .dot{height:7px;width:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 12px #a78bfa}
-.workspace{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(350px,.9fr);gap:14px;align-items:stretch}
-.panel{border:1px solid var(--line);border-radius:15px;background:linear-gradient(150deg,rgba(29,21,48,.96),rgba(17,12,26,.98));box-shadow:0 16px 45px rgba(0,0,0,.13)}
-.spin-panel{padding:19px;min-height:322px;display:flex;flex-direction:column}
-.panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.panel-title{font-size:.72rem;letter-spacing:.16em;font-weight:950;color:var(--bright)}.round{font-size:.67rem;color:var(--muted);border:1px solid var(--line);border-radius:7px;padding:5px 8px;white-space:nowrap}
-h1{font-size:clamp(1.7rem,4vw,2.45rem);line-height:1.04;letter-spacing:-.04em;margin:8px 0 5px}.sub{font-size:.82rem;color:var(--muted);max-width:480px;margin:0}
-.reel{position:relative;margin:18px 0 12px;border:1px solid rgba(196,181,253,.24);border-radius:12px;background:linear-gradient(120deg,#100b18,#211630,#100b18);min-height:104px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:12px}
-.reel:before,.reel:after{content:"";position:absolute;top:0;bottom:0;width:48px;z-index:1;pointer-events:none}.reel:before{left:0;background:linear-gradient(90deg,#130d1f,transparent)}.reel:after{right:0;background:linear-gradient(270deg,#130d1f,transparent)}
-.reel-center{position:relative;z-index:2;text-align:center;width:100%}.reel-label{font-size:.62rem;letter-spacing:.2em;color:#a99bbf;font-weight:900}.reel-value{font-size:1.28rem;font-weight:950;margin:5px 0 1px;line-height:1.15}.reel-decade{font-size:.76rem;color:var(--bright);font-weight:800}.reel.spinning .reel-value{animation:roll .12s linear infinite;filter:blur(.35px)}
-@keyframes roll{0%{transform:translateY(-4px);opacity:.5}100%{transform:translateY(4px);opacity:1}}
-.spin-button{width:100%;border:1px solid #b9a2fb;border-radius:10px;padding:13px 16px;background:linear-gradient(110deg,#8b5cf6,#6d28d9);color:#fff;font-size:.82rem;font-weight:950;letter-spacing:.1em;box-shadow:0 7px 22px rgba(109,40,217,.18)}.spin-button:hover{filter:brightness(1.12)}.spin-button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
-.rerolls{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}.reroll{border:1px solid var(--line);border-radius:8px;background:rgba(167,139,250,.08);color:var(--bright);padding:7px 10px;font-size:.68rem;font-weight:850}.reroll:hover:not(:disabled){background:rgba(167,139,250,.17)}.reroll:disabled{opacity:.35;cursor:not-allowed}
-.status{font-size:.72rem;color:var(--muted);margin-top:auto;padding-top:12px;min-height:33px}.status strong{color:var(--bright)}
-.lineup-panel{padding:18px;display:flex;flex-direction:column}.lineup-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.lineup-head h2{font-size:1rem;margin:0;letter-spacing:.01em}.count{font-size:.7rem;color:var(--bright);font-weight:900;background:rgba(167,139,250,.1);padding:5px 8px;border-radius:7px}
-.lineup-note{color:var(--muted);font-size:.73rem;margin:5px 0 13px}
-.seats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;flex:1}.seat{min-width:0;border:1px solid var(--line);background:rgba(9,6,15,.55);border-radius:10px;padding:9px 7px;min-height:154px;display:flex;flex-direction:column;align-items:center;text-align:center}.seat.filled{border-color:rgba(167,139,250,.55);background:linear-gradient(155deg,rgba(124,58,237,.17),rgba(9,6,15,.6))}
-.seat-pos{color:var(--bright);font-size:.64rem;font-weight:950;letter-spacing:.1em}.seat-number{width:28px;height:28px;border-radius:50%;background:rgba(167,139,250,.12);display:grid;place-items:center;color:#c4b5fd;font-size:.68rem;font-weight:900;margin:12px 0 7px}.seat-name{font-size:.68rem;font-weight:850;line-height:1.2;overflow-wrap:anywhere}.seat-detail{font-size:.59rem;color:var(--muted);margin-top:5px;line-height:1.3}.seat.empty .seat-name{color:#9488a5;font-weight:650}
-.rating-row{border-top:1px solid var(--line);margin-top:13px;padding-top:11px;display:flex;justify-content:space-between;align-items:center;gap:10px}.rating-label{font-size:.7rem;color:var(--muted)}.rating-value{font-size:1.12rem;font-weight:950;color:var(--bright)}.rating-value small{font-size:.6rem;color:var(--muted);letter-spacing:.12em;margin-left:5px}
-.options{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:14px;margin-top:13px;border-top:1px solid var(--line)}.options-label{font-size:.65rem;color:var(--muted);letter-spacing:.12em;font-weight:900}.segmented{display:flex;gap:3px;padding:3px;border:1px solid var(--line);background:#0f0a18;border-radius:8px}.segmented button{border:0;border-radius:6px;background:transparent;color:var(--muted);padding:6px 9px;font-size:.65rem;font-weight:850}.segmented button.active{background:#6d28d9;color:white}
-.roster-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:21px 0 9px}.roster-tools h2{margin:0;font-size:.91rem;letter-spacing:.08em}.pool-count{font-size:.68rem;color:var(--muted)}
-.pick-panel{padding:16px}.pick-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.pick-head h3{margin:0;font-size:.82rem;letter-spacing:.08em}.search{max-width:260px;width:46%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#0d0815;color:white;font-size:.74rem;outline:none}.search:focus{border-color:var(--purple)}
-.player-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:470px;overflow:auto;padding:2px 4px 2px 0}.player{min-width:0;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px;border:1px solid var(--line);border-radius:9px;background:rgba(9,6,15,.52);color:white}.player:hover:not(:disabled){border-color:#a78bfa;background:#251936}.player:disabled{opacity:.38;cursor:not-allowed}.player strong{font-size:.73rem;display:block;line-height:1.2}.player .sub{font-size:.62rem;color:var(--muted);display:block;margin-top:4px}.stats{font-size:.6rem;color:#c8bdd8;text-align:right;white-space:nowrap;line-height:1.5}.stats b{color:var(--bright);font-size:.67rem}.pool-empty{padding:23px;text-align:center;color:var(--muted);font-size:.78rem}
-.choose-box{display:none;margin-top:12px;border:1px solid #8060b4;background:rgba(124,58,237,.1);border-radius:10px;padding:12px}.choose-box.show{display:block}.choose-box strong{font-size:.76rem;display:block;margin-bottom:8px}.position-buttons{display:flex;gap:7px;flex-wrap:wrap}.position-buttons button{border:1px solid #9b7af0;border-radius:7px;background:#6d28d9;color:white;padding:8px 12px;font-size:.72rem;font-weight:900}
-.bottom-actions{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:13px}.small-action{border:1px solid var(--line);border-radius:8px;background:rgba(167,139,250,.08);color:var(--bright);padding:8px 11px;font-size:.68rem;font-weight:850}.small-action.primary{background:#6d28d9;border-color:#aa8cf0;color:white}.small-action:disabled{opacity:.4;cursor:not-allowed}
-.result{display:none;margin-top:13px;border:1px solid #9471dc;border-radius:13px;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));padding:19px;text-align:center}.result.show{display:block}.result-kicker{font-size:.65rem;color:var(--bright);font-weight:900;letter-spacing:.16em}.record{font-size:clamp(2.6rem,8vw,3.8rem);font-weight:1000;line-height:1.1;margin:7px 0}.result p{color:var(--muted);margin:0;font-size:.78rem}
-.footnote{text-align:center;color:#837795;font-size:.63rem;margin:15px 0}.loading,.error{padding:24px;text-align:center;color:var(--muted);font-size:.8rem}.error{color:#fda4af}
-@media(max-width:850px){.workspace{grid-template-columns:1fr}.spin-panel{min-height:0}.lineup-panel{min-height:0}.status{min-height:0}.player-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){main{width:calc(100% - 22px);margin-top:15px}.spin-panel,.lineup-panel,.pick-panel{padding:13px}.seats{gap:5px}.seat{min-height:130px;padding:7px 4px}.seat-name{font-size:.61rem}.seat-detail{font-size:.54rem}.seat-number{margin:9px 0 6px;width:24px;height:24px}.player-list{grid-template-columns:1fr;max-height:420px}.pick-head{align-items:stretch;flex-direction:column}.search{max-width:none;width:100%}.roster-tools{margin-top:16px}.panel-title{font-size:.66rem}}
+:root{color-scheme:dark;--bg:#0d1118;--panel:#1b2430;--panel2:#202b39;--line:#364457;--blue:#3478f6;--blue2:#1d4ed8;--gold:#f3bd55;--text:#edf2fa;--muted:#97a4b7;--faint:#657287}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 25% -15%,rgba(44,75,125,.19),transparent 48%),var(--bg);color:var(--text);font:14px/1.4 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select{font:inherit}button{cursor:pointer}
+.topbar{height:54px;border-bottom:1px solid #252f3c;background:#0b0f15;display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 1180px)/2))}
+.brand{font-size:.82rem;font-weight:950;letter-spacing:.16em;color:#dce8fb}.brand span{color:#5c91f4}
+.top-actions{display:flex;align-items:center;gap:8px}.top-actions a,.top-actions button{color:#aebbd0;background:#172232;border:1px solid #3a4a63;border-radius:18px;padding:7px 12px;text-decoration:none;font-size:.7rem;font-weight:850}
+main{width:min(1180px,calc(100% - 34px));margin:17px auto 48px}
+.workspace{display:grid;grid-template-columns:minmax(0,1.42fr) minmax(350px,1fr);gap:17px;align-items:start}
+.panel{background:linear-gradient(160deg,#1b2430,#18212c);border:1px solid #354359;border-radius:15px;box-shadow:0 9px 28px rgba(0,0,0,.18)}
+.draft-panel{padding:12px 13px 15px;min-width:0}
+.roundline{height:27px;display:flex;align-items:center;justify-content:space-between;gap:9px;border-bottom:1px solid #303c4e;padding:0 1px 8px;margin-bottom:10px}
+.round-label{font-size:.62rem;letter-spacing:.12em;color:#9aa8bc;font-weight:900;white-space:nowrap}.round-label b{color:#5b94ff;font-size:.88rem}
+.round-dots{display:flex;align-items:center;gap:5px}.round-dots i{display:block;height:7px;width:18px;border-radius:8px;background:#334156}.round-dots i.done{background:#527fea}.round-dots i.current{background:linear-gradient(90deg,#3478f6,#1b4ac2);box-shadow:0 0 9px rgba(52,120,246,.45)}
+.reroll-count{font-size:.6rem;letter-spacing:.1em;color:#8e9aae;font-weight:900;white-space:nowrap}
+.era-bar{min-height:56px;border:1px solid #385071;border-radius:14px;background:linear-gradient(105deg,#222d3b,#1b2430);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 14px;margin-bottom:10px;box-shadow:0 3px 12px #0002}
+.era-copy{min-width:0}.era-team{font-size:clamp(1.25rem,3vw,1.8rem);font-weight:950;letter-spacing:-.035em;line-height:1.08}.era-years{font-size:.83rem;color:#a8b2c2;font-weight:800;letter-spacing:.06em;margin-left:7px;white-space:nowrap}.era-sub{font-size:.63rem;color:#8593a8;margin-top:3px}
+.spin{flex:0 0 auto;border:1px solid #6799fa;border-radius:9px;background:#2357b8;color:white;font-weight:950;font-size:.67rem;letter-spacing:.06em;padding:10px 13px;box-shadow:0 3px 12px #1d4ed833}
+.spin:hover{background:#2f6edb}.spin:disabled{opacity:.45;cursor:not-allowed}
+.filters{display:flex;align-items:center;gap:7px;flex-wrap:wrap;border:1px solid #303e51;background:#141c27;border-radius:12px;padding:7px;margin-bottom:12px}
+.filter-set{display:flex;gap:3px}.filter{border:1px solid transparent;background:transparent;color:#9eacbf;border-radius:7px;padding:8px 12px;font-size:.72rem;font-weight:900}
+.filter.active{background:#1c3458;border-color:#315994;color:#68a0ff}
+.position-select{margin-left:auto;min-width:112px;border:1px solid #46546a;border-radius:9px;background:#1b2532;color:#d5e0ef;padding:8px 10px;font-size:.72rem;font-weight:800;outline:none}
+.search{width:145px;min-width:110px;border:1px solid #34445a;border-radius:8px;background:#101721;color:white;padding:8px 10px;font-size:.7rem;outline:none}
+.search:focus,.position-select:focus{border-color:#5790f3}
+.pool{max-height:calc(100vh - 260px);min-height:230px;overflow-y:auto;padding-right:3px;scrollbar-width:thin;scrollbar-color:#44556e #19222e}
+.group{margin:0 2px 8px}.group-title{display:flex;align-items:center;gap:9px;color:#7895c8;font-size:.62rem;font-weight:950;letter-spacing:.15em;padding:3px 2px 6px;border-bottom:1px solid #2d3b4f;margin-bottom:6px}
+.group-title:after{content:"";height:1px;flex:1;background:#304057}
+.player-card{position:relative;display:grid;grid-template-columns:minmax(155px,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;border:1px solid #3b4a5f;border-radius:12px;background:linear-gradient(110deg,#202b39,#1b2430);color:var(--text);padding:7px 10px;margin-bottom:6px;min-height:57px;box-shadow:0 2px 7px #0002;transition:border-color .12s,background .12s,transform .12s}
+.player-card:hover:not(:disabled){border-color:#6383b7;background:linear-gradient(110deg,#243247,#1d2938);transform:translateY(-1px)}
+.player-card.selected{border:2px solid #367ce8;background:linear-gradient(110deg,#223650,#1b2a3d);padding:6px 9px}
+.player-card:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.55)}
+.identity{min-width:0}.identity-top{display:flex;align-items:center;gap:7px;margin-bottom:4px}
+.pos-badge{display:inline-grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:6px;border:1px solid #34588e;background:#1c3453;color:#7eb2ff;font-size:.59rem;font-weight:950}
+.season-tag{font-size:.6rem;color:#91a0b5;font-weight:800;letter-spacing:.06em}
+.player-name{font-size:.91rem;line-height:1.12;font-weight:900;white-space:normal;overflow-wrap:anywhere}
+.name-badges{display:inline-flex;gap:4px;flex-wrap:wrap;margin-left:5px;vertical-align:middle}
+.badge{display:inline-block;border-radius:10px;background:#dca63f;color:#2a1c06;padding:2px 6px;font-size:.53rem;font-weight:950;line-height:1.2;white-space:nowrap}
+.badge.blue{background:#244b7b;color:#b9d7ff}.badge.purple{background:#544187;color:#e5d8ff}.badge.green{background:#285846;color:#c7ffe2}
+.stats{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(29px,1fr);gap:7px;align-items:center}
+.stat{text-align:center;min-width:30px}.stat-value{font:850 .83rem/1.05 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e0e6ef;white-space:nowrap}
+.stat-value.leader{color:#f1b847}.stat-value .star{color:#ffbd45;font-size:.7rem;margin-left:1px}
+.stat-label{font-size:.52rem;color:#88a0c2;font-weight:900;letter-spacing:.05em;margin-top:4px}
+.ovr{color:#a8c5ff}
+.selected-extra{grid-column:1/-1;border-top:1px solid #384b65;padding-top:7px;margin-top:1px;display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap}
+.extra-stats{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.extra-stat{font:850 .76rem ui-monospace,monospace;color:#e0e6ef}.extra-stat small{display:block;font:800 .5rem system-ui;color:#86a0c8;text-align:center;margin-top:2px}
+.badge-row{display:flex;gap:5px;flex-wrap:wrap}
+.draft-hint{padding:24px 12px;text-align:center;color:#8c9bb0;font-size:.77rem;border:1px dashed #394a61;border-radius:10px;margin:5px 0}
+.reroll-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}
+.reroll{border:1px solid #405574;background:#1b2b41;color:#b9d3fa;border-radius:8px;padding:7px 9px;font-size:.62rem;font-weight:900}
+.reroll:disabled{opacity:.35;cursor:not-allowed}
+.lineup-panel{padding:12px 13px 14px;position:sticky;top:12px}
+.lineup-head{display:flex;align-items:center;justify-content:space-between;gap:8px}.lineup-head h2{font-size:.76rem;letter-spacing:.14em;color:#aab8cb;margin:0;font-weight:950}
+.counter{color:#78a9ff;background:#203653;border-radius:14px;padding:5px 9px;font-size:.64rem;font-weight:950}
+.progress-track{height:6px;background:#303d50;border-radius:8px;overflow:hidden;margin:7px 0 6px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#2867df,#4d8cff);border-radius:8px;transition:width .2s}
+.lineup-instruction{font-size:.65rem;color:#99a8bb;margin:0 0 10px}
+.small-label{font-size:.58rem;color:#8493a8;letter-spacing:.13em;font-weight:900;margin-bottom:6px}
+.seats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.seat{min-width:0;min-height:54px;border:1px solid #3b495d;border-radius:11px;background:#151d28;color:#aab8ca;padding:8px 9px;text-align:left;display:flex;flex-direction:column;justify-content:center;position:relative}
+.seat .seat-position{font-size:.64rem;font-weight:950;color:#8f9db1;letter-spacing:.07em}
+.seat .multiplier{font:800 .54rem ui-monospace,monospace;color:#6c9de7;margin-left:3px}
+.seat .seat-player{font-size:.69rem;color:#e2e9f3;font-weight:850;line-height:1.15;margin-top:2px;overflow-wrap:anywhere}
+.seat .seat-year{position:absolute;right:8px;top:7px;font-size:.52rem;color:#8d9bb0;font-weight:850}
+.seat.empty .seat-player{color:#657388}
+.seat.filled{background:linear-gradient(135deg,#202c3b,#182330);border-color:#496180}
+.seat.target{border:2px solid #e6b64f;background:linear-gradient(135deg,#403a2c,#302b23);box-shadow:0 0 0 2px #d6a13a22;padding:7px 8px}
+.seat.target .seat-position,.seat.target .seat-player{color:#ffcf72}
+.seat.moving{border:2px solid #438cfb;background:#1e3859;padding:7px 8px}
+.seat.selected-player{border-left:3px solid #e7b94e}
+.seat:nth-child(4){grid-column:1}.seat:nth-child(5){grid-column:2}
+.lineup-rating{display:flex;align-items:center;justify-content:space-between;border-top:1px solid #303d4f;margin-top:11px;padding-top:9px}.lineup-rating span{font-size:.63rem;color:#91a0b5;font-weight:850}.lineup-rating strong{font:950 1rem ui-monospace,monospace;color:#c4d8ff}
+.lineup-footer{margin-top:10px;display:flex;justify-content:space-between;align-items:center;gap:7px}
+.position-toggle{display:flex;align-items:center;gap:5px;font-size:.6rem;color:#96a4b8}.toggle{border:1px solid #40516a;border-radius:8px;background:#111a25;color:#9aabc1;padding:5px 7px;font-size:.57rem;font-weight:900}.toggle.active{background:#234779;border-color:#477ed0;color:white}
+.action-row{display:flex;gap:7px;margin-top:10px}
+.action{flex:1;border:1px solid #446ca6;background:#1e4a89;color:white;border-radius:8px;padding:9px 10px;font-size:.65rem;font-weight:950}
+.action.secondary{background:#151e2a;border-color:#3a4a60;color:#aabbd2}
+.action:disabled{opacity:.38;cursor:not-allowed}
+.result{display:none;margin-top:10px;padding:13px;border-radius:11px;border:1px solid #9a793e;background:#342d20;text-align:center}.result.show{display:block}.record{font:950 2rem ui-monospace,monospace;color:#ffcc67}.result p{font-size:.68rem;color:#d9cba9;margin:2px 0 0}
+.footnote{text-align:center;color:#68778d;font-size:.58rem;margin:15px 0}
+@media(max-width:820px){.workspace{grid-template-columns:1fr}.lineup-panel{position:static;grid-row:1}.draft-panel{grid-row:2}.pool{max-height:none}.seats{grid-template-columns:repeat(5,minmax(0,1fr))}.seat:nth-child(4),.seat:nth-child(5){grid-column:auto}}
+@media(max-width:560px){main{width:calc(100% - 18px);margin:9px auto 30px}.topbar{height:48px;padding:0 10px}.draft-panel,.lineup-panel{padding:9px}.player-card{grid-template-columns:minmax(115px,1fr) auto;gap:5px;padding:7px}.stats{gap:3px;grid-auto-columns:minmax(24px,1fr)}.stat{min-width:23px}.stat-value{font-size:.68rem}.stat-label{font-size:.45rem}.player-name{font-size:.78rem}.seats{gap:4px}.seat{padding:6px 5px;min-height:57px}.seat .seat-position{font-size:.55rem}.seat .seat-player{font-size:.58rem}.seat .multiplier{font-size:.48rem}.filters{gap:4px}.filter{padding:7px 9px}.search{width:100%;order:3}.position-select{margin-left:auto;min-width:95px}}
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">82—0 <span style="color:#8b5cf6">/</span> NBA DRAFT</div><a href="../../index.html">← HOME</a></header>
+<header class="topbar"><div class="brand">82—0 <span> / </span>NBA DRAFT</div><div class="top-actions"><a href="../../index.html">GAME HUB</a><button id="startOverTop" type="button">↻ START OVER</button></div></header>
 <main>
-  <div class="kicker"><span class="dot"></span><span id="roundKicker">ROUND 01</span><span style="color:#736781">·</span><span>QUICK SPIN</span></div>
-  <div class="workspace">
-    <section class="panel spin-panel">
-      <div class="panel-heading"><div class="panel-title">RANDOM FRANCHISE ERA</div><div class="round" id="roundBadge">PICK 1 OF 5</div></div>
-      <h1>SPIN THE ERA</h1>
-      <p class="sub">One spin deals a team and decade. Draft one player from that exact squad.</p>
-      <div class="reel" id="reel"><div class="reel-center"><div class="reel-label" id="reelLabel">READY WHEN YOU ARE</div><div class="reel-value" id="reelTeam">Your next team</div><div class="reel-decade" id="reelDecade">Team + decade will appear here</div></div></div>
-      <button class="spin-button" id="spin">SPIN THE ERA</button>
-      <div class="rerolls">
-        <button class="reroll" id="rerollTeam" hidden>↻ Team re-roll · 1 left</button>
-        <button class="reroll" id="rerollDecade" hidden>↻ Decade re-roll · 1 left</button>
-      </div>
-      <div class="status" id="status" aria-live="polite">Each round: spin once, then choose one player from the squad list.</div>
-    </section>
-    <section class="panel lineup-panel">
-      <div class="lineup-head"><h2>Your five</h2><span class="count" id="count">0 / 5</span></div>
-      <p class="lineup-note">Your starting five · tap a player in the squad list to draft them.</p>
-      <div class="seats">
-        <article class="seat empty" data-pos="PG"><span class="seat-pos">PG</span><span class="seat-number">01</span><span class="seat-name">Point Guard</span><span class="seat-detail">Open spot</span></article>
-        <article class="seat empty" data-pos="SG"><span class="seat-pos">SG</span><span class="seat-number">02</span><span class="seat-name">Shooting Guard</span><span class="seat-detail">Open spot</span></article>
-        <article class="seat empty" data-pos="SF"><span class="seat-pos">SF</span><span class="seat-number">03</span><span class="seat-name">Small Forward</span><span class="seat-detail">Open spot</span></article>
-        <article class="seat empty" data-pos="PF"><span class="seat-pos">PF</span><span class="seat-number">04</span><span class="seat-name">Power Forward</span><span class="seat-detail">Open spot</span></article>
-        <article class="seat empty" data-pos="C"><span class="seat-pos">C</span><span class="seat-number">05</span><span class="seat-name">Center</span><span class="seat-detail">Open spot</span></article>
-      </div>
-      <div class="rating-row"><span class="rating-label">Team rating</span><span class="rating-value" id="average">— <small>OVR</small></span></div>
-      <div class="options">
-        <span class="options-label">BOARD SETUP</span>
-        <div style="display:flex;align-items:center;gap:8px"><span class="options-label">MODE</span><div class="segmented" id="modeControl"><button class="active" data-mode="classic">Classic</button><button data-mode="blind">Blind</button></div></div>
-        <div style="display:flex;align-items:center;gap:8px"><span class="options-label">POSITION CHANGES</span><div class="segmented" id="positionControl"><button class="active" data-flex="on">On</button><button data-flex="off">Off</button></div></div>
-      </div>
-    </section>
+<div class="workspace">
+<section class="panel draft-panel">
+  <div class="roundline">
+    <span class="round-label">ROUND <b id="roundNum">01</b> / 5</span>
+    <div class="round-dots" id="roundDots"><i class="current"></i><i></i><i></i><i></i><i></i></div>
+    <span class="reroll-count" id="rerollCount">2 RE-ROLLS</span>
   </div>
-  <div class="roster-tools"><h2 id="poolHeading">PLAYER POOL</h2><span class="pool-count" id="poolCount">Spin to reveal a squad</span></div>
-  <section class="panel pick-panel" id="pool">
-    <div class="pick-head"><h3 id="poolTitle">YOUR DRAW WILL APPEAR HERE</h3><input class="search" id="search" type="search" placeholder="Search players…" autocomplete="off" disabled></div>
-    <div class="player-list" id="playerList"><div class="pool-empty">Press SPIN THE ERA to reveal a team and decade, then draft from its complete player list.</div></div>
-    <div class="choose-box" id="chooseBox"><strong id="choosePrompt">Choose a position for this player</strong><div class="position-buttons" id="positionButtons"></div></div>
-  </section>
-  <div class="bottom-actions"><button class="small-action" id="restart">START OVER</button><button class="small-action primary" id="simulate" hidden>SIMULATE 82-GAME SEASON →</button></div>
-  <section class="result" id="result" aria-live="polite"><div class="result-kicker">YOUR 82-GAME SEASON</div><div class="record" id="record">82–0</div><p id="resultText">Your season result will appear here.</p></section>
-  <p class="footnote">All player entries include per-game stats from their team and decade. Ratings and season projections follow the classic 82-0 scoring formula.</p>
+  <div class="era-bar">
+    <div class="era-copy"><div><span class="era-team" id="eraTeam">Ready to spin</span><span class="era-years" id="eraYears"></span></div><div class="era-sub" id="eraSub">One spin chooses your team and decade</div></div>
+    <button class="spin" id="spin">SPIN THE ERA</button>
+  </div>
+  <div class="filters">
+    <div class="filter-set" id="groupFilters">
+      <button class="filter active" data-group="Any">Any</button><button class="filter" data-group="G">G</button><button class="filter" data-group="F">F</button><button class="filter" data-group="C">C</button>
+    </div>
+    <select class="position-select" id="positionFilter" aria-label="Filter by position">
+      <option value="Any">Position</option><option>PG</option><option>SG</option><option>SF</option><option>PF</option><option>C</option>
+    </select>
+    <input class="search" id="search" type="search" placeholder="Search players…" aria-label="Search players" disabled>
+  </div>
+  <div class="pool" id="pool">
+    <div class="draft-hint" id="poolHint">Spin to reveal a team and decade. Then choose from its full player list.</div>
+    <div id="playerGroups"></div>
+  </div>
+  <div class="reroll-actions" id="rerollActions" hidden>
+    <button class="reroll" id="rerollTeam">↻ RE-ROLL TEAM · 1 LEFT</button>
+    <button class="reroll" id="rerollDecade">↻ RE-ROLL DECADE · 1 LEFT</button>
+  </div>
+</section>
+<aside class="panel lineup-panel">
+  <div class="lineup-head"><h2>YOUR FIVE</h2><span class="counter" id="count">0 / 5</span></div>
+  <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+  <p class="lineup-instruction" id="instruction">Tap a player from the list, then tap a highlighted seat to draft him.</p>
+  <div class="small-label">Starting five</div>
+  <div class="seats">
+    <button class="seat empty" data-pos="PG"><span class="seat-position">PG <span class="multiplier">×1.15</span></span><span class="seat-player">SELECT</span></button>
+    <button class="seat empty" data-pos="SG"><span class="seat-position">SG</span><span class="seat-player">SELECT</span></button>
+    <button class="seat empty" data-pos="SF"><span class="seat-position">SF</span><span class="seat-player">SELECT</span></button>
+    <button class="seat empty" data-pos="PF"><span class="seat-position">PF</span><span class="seat-player">SELECT</span></button>
+    <button class="seat empty" data-pos="C"><span class="seat-position">C <span class="multiplier">×1.1</span></span><span class="seat-player">SELECT</span></button>
+  </div>
+  <div class="lineup-rating"><span>TEAM OVR</span><strong id="teamOvr">—</strong></div>
+  <div class="lineup-footer">
+    <span class="position-toggle">Position changes <button class="toggle active" id="flexOn">ON</button><button class="toggle" id="flexOff">OFF</button></span>
+    <span class="position-toggle" id="moveHint">Tap a filled seat to move</span>
+  </div>
+  <div class="action-row"><button class="action secondary" id="clearSelection">CLEAR SELECTION</button><button class="action" id="simulate" disabled>SIMULATE SEASON</button></div>
+  <section class="result" id="result"><div class="record" id="record">82–0</div><p id="resultText"></p></section>
+</aside>
+</div>
+<p class="footnote">Stats are per-game averages in the selected franchise decade. Stars and player tags are game highlights based on this player pool—not official award counts.</p>
 </main>
 <script>
 (async function(){
-const $=id=>document.getElementById(id),POS=['PG','SG','SF','PF','C'],DECADES=['1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
-const TEAM_NAMES={ATL:'Atlanta Hawks',BOS:'Boston Celtics',BKN:'Brooklyn Nets',CHA:'Charlotte Hornets',CHI:'Chicago Bulls',CLE:'Cleveland Cavaliers',DAL:'Dallas Mavericks',DEN:'Denver Nuggets',DET:'Detroit Pistons',GSW:'Golden State Warriors',HOU:'Houston Rockets',IND:'Indiana Pacers',LAC:'LA Clippers',LAL:'Los Angeles Lakers',MEM:'Memphis Grizzlies',MIA:'Miami Heat',MIL:'Milwaukee Bucks',MIN:'Minnesota Timberwolves',NOP:'New Orleans Pelicans',NYK:'New York Knicks',OKC:'Oklahoma City Thunder / Seattle SuperSonics',ORL:'Orlando Magic',PHI:'Philadelphia 76ers',PHX:'Phoenix Suns',POR:'Portland Trail Blazers',SAC:'Sacramento Kings',SAS:'San Antonio Spurs',TOR:'Toronto Raptors',UTA:'Utah Jazz',WAS:'Washington Wizards / Baltimore Bullets'};
+const $=id=>document.getElementById(id);
+const POS=['PG','SG','SF','PF','C'],DECADES=['1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
+const TEAM_NAMES={ATL:'Atlanta',BOS:'Boston',BKN:'Brooklyn',CHA:'Charlotte',CHI:'Chicago',CLE:'Cleveland',DAL:'Dallas',DEN:'Denver',DET:'Detroit',GSW:'Golden State',HOU:'Houston',IND:'Indiana',LAC:'LA Clippers',LAL:'LA Lakers',MEM:'Memphis',MIA:'Miami',MIL:'Milwaukee',MIN:'Minnesota',NOP:'New Orleans',NYK:'New York',OKC:'Oklahoma City / Seattle',ORL:'Orlando',PHI:'Philadelphia',PHX:'Phoenix',POR:'Portland',SAC:'Sacramento',SAS:'San Antonio',TOR:'Toronto',UTA:'Utah',WAS:'Washington'};
+const CEIL={1960:{ppg:30,rpg:18,apg:8,spg:1.8,bpg:1.8},1970:{ppg:28,rpg:13,apg:9,spg:2,bpg:2},1980:{ppg:28,rpg:11,apg:11,spg:2.2,bpg:2},1990:{ppg:27,rpg:11,apg:9,spg:2,bpg:2},2000:{ppg:27,rpg:11,apg:9,spg:2,bpg:2},2010:{ppg:28,rpg:11,apg:9,spg:1.8,bpg:1.8},2020:{ppg:28,rpg:11,apg:9,spg:1.8,bpg:1.8}};
+const LEGENDS=new Set(['larry bird','tim duncan','kevin durant','magic johnson',"shaquille o'neal",'hakeem olajuwon','bill russell','kobe bryant','oscar robertson','karl malone','kevin garnett','isiah thomas','tony parker','manu ginobili','draymond green','scottie pippen','dennis rodman','stephen curry','nikola jokic','dirk nowitzki','michael jordan','kareem abdul-jabbar','wilt chamberlain','lebron james','julius erving','jerry west','dwyane wade']);
 const WEIGHTS={ppg:.46,rpg:.25,apg:.18,spg:.07,bpg:.04},BENCH={ppg:133.4,rpg:39.7,apg:29.3,spg:6.1,bpg:3.2};
-let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map(),roster={PG:null,SG:null,SF:null,PF:null,C:null};
-let combo=null,teamRerolls=1,decadeRerolls=1,round=1,mode='classic',flexible=true,spinning=false;
-const choose=a=>a[Math.floor(Math.random()*a.length)];
-const k=(t,e)=>t+'|'+e;
-function say(t){$('status').textContent=t;}
-function availablePositions(p){const pos=flexible?p.pos:[p.pos[0]];return (pos||[]).filter(x=>POS.includes(x)&&!roster[x]);}
-function isUsed(p){return Object.values(roster).some(x=>x&&x.id===p.id);}
-function fmt(v){return v==null||!Number.isFinite(Number(v))?'—':Number(v).toFixed(1);}
-function indexData(){players.forEach(p=>{const key=k(p.t,p.e);if(!comboIndex.has(key))comboIndex.set(key,[]);comboIndex.get(key).push(p);if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());eraTeams.get(p.e).add(p.t);if(!teamEras.has(p.t))teamEras.set(p.t,new Set());teamEras.get(p.t).add(p.e);});for(const pool of comboIndex.values())pool.sort((a,b)=>a.n.localeCompare(b.n));}
-function usable(pool){return pool.filter(p=>!isUsed(p)&&availablePositions(p).length>0);}
-function validEras(){return DECADES.filter(e=>[...(eraTeams.get(e)||[])].some(t=>usable(comboIndex.get(k(t,e))||[]).length));}
-function validTeams(e,exclude){return [...(eraTeams.get(e)||[])].filter(t=>t!==exclude&&usable(comboIndex.get(k(t,e))||[]).length);}
-function validDecades(t,exclude){return [...(teamEras.get(t)||[])].filter(e=>e!==exclude&&usable(comboIndex.get(k(t,e))||[]).length);}
-function updateControls(){
- const done=Object.values(roster).filter(Boolean).length;
- $('count').textContent=done+' / 5';
- $('roundKicker').textContent='ROUND '+String(Math.min(round,5)).padStart(2,'0');
- $('roundBadge').textContent='PICK '+Math.min(round,5)+' OF 5';
+let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map();
+let roster={PG:null,SG:null,SF:null,PF:null,C:null},combo=null,selectedPlayer=null,movingFrom=null;
+let teamRerolls=1,decadeRerolls=1,round=1,groupFilter='Any',positionFilter='Any',flexible=true,spinning=false;
+const rand=a=>a[Math.floor(Math.random()*a.length)],key=(t,e)=>t+'|'+e;
+function say(v){$('instruction').textContent=v;}
+function nameOf(t){return TEAM_NAMES[t]||t;}
+function format(v){return v==null||!Number.isFinite(Number(v))?'—':Number(v).toFixed(1);}
+function identity(p){return p.id||p.n.toLowerCase();}
+function isUsed(p){return POS.some(pos=>roster[pos]&&identity(roster[pos])===identity(p));}
+function allowedPositions(p){let poss=flexible?(p.pos||[]):(p.pos||[]).slice(0,1);return poss.filter(pos=>POS.includes(pos));}
+function openPositions(p){return allowedPositions(p).filter(pos=>!roster[pos]);}
+function category(p){const poss=allowedPositions(p);if(poss.includes('C')&&poss.length===1)return 'C';if(poss.some(x=>x==='PG'||x==='SG'))return 'G';if(poss.some(x=>x==='SF'||x==='PF'))return 'F';return 'C';}
+function eraStart(e){return Number(e.slice(0,4));}
+function playerOvr(p){
+ const ce=CEIL[eraStart(p.e)]||CEIL[2020];
+ let n=0;for(const s of ['ppg','rpg','apg','spg','bpg'])if(p[s]!=null)n+=Number(p[s])/ce[s];
+ return Math.min(100,Math.round((60+40*n+Math.max(0,(p.pos||[]).length-1)*2)*10)/10);
+}
+function badges(p){
+ const b=[],low=p.n.toLowerCase();
+ if(LEGENDS.has(low))b.push(['LEGEND','gold']);
+ if(p.pts>=22)b.push(['ELITE SCORER','gold']);
+ if(p.ast>=7)b.push(['PLAYMAKER','blue']);
+ if(p.reb>=11)b.push(['BOARD FORCE','green']);
+ if((p.stl||0)+(p.blk||0)>=3)b.push(['TWO-WAY','blue']);
+ if((p.pos||[]).length>=2)b.push(['VERSATILE','purple']);
+ if(playerOvr(p)>=96&&!b.some(x=>x[0]==='LEGEND'))b.push(['STAR','gold']);
+ return b.slice(0,4);
+}
+function buildIndexes(){
+ for(const p of players){p._ovr=playerOvr(p);const k=key(p.t,p.e);if(!comboIndex.has(k))comboIndex.set(k,[]);comboIndex.get(k).push(p);if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());eraTeams.get(p.e).add(p.t);if(!teamEras.has(p.t))teamEras.set(p.t,new Set());teamEras.get(p.t).add(p.e);}
+}
+function usedOrEligible(p){return !isUsed(p)&&openPositions(p).length>0;}
+function usable(pool){return pool.filter(usedOrEligible);}
+function validEras(){return DECADES.filter(e=>[...(eraTeams.get(e)||[])].some(t=>usable(comboIndex.get(key(t,e))||[]).length));}
+function validTeams(e,exclude){return [...(eraTeams.get(e)||[])].filter(t=>t!==exclude&&usable(comboIndex.get(key(t,e))||[]).length);}
+function validDecades(t,exclude){return [...(teamEras.get(t)||[])].filter(e=>e!==exclude&&usable(comboIndex.get(key(t,e))||[]).length);}
+function renderProgress(){
+ const done=POS.filter(p=>roster[p]).length;
+ $('roundNum').textContent=String(Math.min(done+1,5)).padStart(2,'0');
+ [...$('roundDots').children].forEach((dot,i)=>{dot.className=i<done?'done':i===done?'current':'';});
+ $('count').textContent=done+' / 5';$('progress').style.width=(done/5*100)+'%';
+ $('rerollCount').textContent=(teamRerolls+decadeRerolls)+' RE-ROLLS';
+ $('simulate').disabled=done!==5;
  $('spin').disabled=spinning||done===5||!!combo;
- $('spin').textContent=done===5?'DRAFT COMPLETE':combo?'CHOOSE A PLAYER TO CONTINUE':'SPIN THE ERA';
- $('rerollTeam').hidden=!combo||done===5;$('rerollDecade').hidden=!combo||done===5;
+ $('spin').textContent=done===5?'DRAFT COMPLETE':combo?'PICK A PLAYER':'SPIN THE ERA';
+ $('rerollActions').hidden=!combo||done===5;
  $('rerollTeam').disabled=spinning||teamRerolls<=0||validTeams(combo?.e,combo?.t).length===0;
  $('rerollDecade').disabled=spinning||decadeRerolls<=0||validDecades(combo?.t,combo?.e).length===0;
- $('simulate').hidden=done!==5;
+ $('rerollTeam').textContent='↻ RE-ROLL TEAM · '+teamRerolls+' LEFT';
+ $('rerollDecade').textContent='↻ RE-ROLL DECADE · '+decadeRerolls+' LEFT';
+}
+function teamOVR(list){
+ const sum=s=>list.reduce((n,p)=>n+(Number(p[s])||0),0);
+ const adj=s=>{const a=list.filter(p=>p[s]!=null&&Number(p[s])>0);return a.length?a.reduce((n,p)=>n+Number(p[s]),0)*5/a.length:0;};
+ return Math.round(100*(sum('pts')/BENCH.ppg*WEIGHTS.ppg+sum('reb')/BENCH.rpg*WEIGHTS.rpg+sum('ast')/BENCH.apg*WEIGHTS.apg+adj('stl')/BENCH.spg*WEIGHTS.spg+adj('blk')/BENCH.bpg*WEIGHTS.bpg)*10)/10;
 }
 function renderRoster(){
- const chosen=Object.values(roster).filter(Boolean);
- document.querySelectorAll('.seat').forEach(el=>{const p=roster[el.dataset.pos];el.classList.toggle('filled',!!p);el.classList.toggle('empty',!p);el.querySelector('.seat-number').textContent=String(POS.indexOf(el.dataset.pos)+1).padStart(2,'0');el.querySelector('.seat-name').textContent=p?p.n:({PG:'Point Guard',SG:'Shooting Guard',SF:'Small Forward',PF:'Power Forward',C:'Center'}[el.dataset.pos]);el.querySelector('.seat-detail').textContent=p?(p.pts.toFixed(1)+' PPG · '+p.t+' '+p.e):'Open spot';});
- $('average').innerHTML=(chosen.length?calculateTeamOVR(chosen).toFixed(1):'—')+' <small>OVR</small>';
- updateControls();
+ for(const seat of document.querySelectorAll('.seat')){
+  const pos=seat.dataset.pos,p=roster[pos],posLabel=seat.querySelector('.seat-position');
+  seat.classList.toggle('filled',!!p);seat.classList.toggle('empty',!p);seat.classList.toggle('target',!!selectedPlayer&&!p&&openPositions(selectedPlayer).includes(pos));seat.classList.toggle('moving',movingFrom===pos);seat.classList.toggle('selected-player',!!p&&selectedPlayer&&identity(p)===identity(selectedPlayer));
+  const mult=pos==='PG'?' <span class="multiplier">×1.15</span>':pos==='C'?' <span class="multiplier">×1.1</span>':'';
+  posLabel.innerHTML=pos+mult;
+  seat.querySelector('.seat-player').textContent=p?p.n:(selectedPlayer&&openPositions(selectedPlayer).includes(pos)?'SELECT':'');
+  let yr=seat.querySelector('.seat-year');if(yr)yr.remove();
+  if(p){const y=document.createElement('span');y.className='seat-year';y.textContent=p.e.slice(2,4);seat.append(y);}
+ }
+ const list=POS.map(p=>roster[p]).filter(Boolean);
+ $('teamOvr').textContent=list.length?teamOVR(list).toFixed(1):'—';
+ $('instruction').textContent=movingFrom?'Choose another highlighted seat to move '+roster[movingFrom].n+'.':selectedPlayer?'Choose one of the highlighted seats to draft '+selectedPlayer.n+'.':'Tap a player in the list, then tap a highlighted seat. Tap a seated player to move him.';
+ renderProgress();
 }
-function setDraw(team,era,source){
- combo={t:team,e:era};
- $('reel').classList.remove('spinning');$('reelLabel').textContent='YOUR DRAW';$('reelTeam').textContent=TEAM_NAMES[team]||team;$('reelDecade').textContent=era;
- $('poolHeading').textContent='PLAYER POOL';$('poolTitle').textContent=(TEAM_NAMES[team]||team).toUpperCase()+' · '+era;
- $('poolCount').textContent=(comboIndex.get(k(team,era))||[]).length+' PLAYERS';
- $('search').disabled=false;$('search').value='';
- renderPlayers();$('chooseBox').classList.remove('show');
- say(source==='team'?'New team rolled. The decade stayed the same.':source==='decade'?'New decade rolled. The team stayed the same.':'Pick one player from the full team-and-decade roster.');
- updateControls();
-}
-function rollPair(){
- if(spinning||combo||Object.values(roster).filter(Boolean).length===5)return;
- const eras=validEras();if(!eras.length){say('No eligible team-and-decade draws remain. Start over to draft again.');return;}
- const era=choose(eras),team=choose(validTeams(era));
+function drawPair(){
+ if(spinning||combo||POS.every(p=>roster[p]))return;
+ const eras=validEras();if(!eras.length){say('No more eligible team-and-decade draws. Start over to draft again.');return;}
+ const era=rand(eras),team=rand([...eraTeams.get(era)].filter(t=>usable(comboIndex.get(key(t,era))||[]).length));
  animateDraw(team,era,'spin');
 }
 function animateDraw(team,era,source){
- spinning=true;$('spin').disabled=true;$('reel').classList.add('spinning');$('reelLabel').textContent='SPINNING…';say('Finding your franchise era…');
- let n=0;const timer=setInterval(()=>{const e=choose(validEras());const t=choose(validTeams(e));$('reelTeam').textContent=TEAM_NAMES[t]||t;$('reelDecade').textContent=e;n++;if(n>=15){clearInterval(timer);setDraw(team,era,source);spinning=false;updateControls();}},75);
+ spinning=true;renderProgress();$('eraBar')?.classList.add('spinning');
+ $('eraTeam').textContent='SPINNING';$('eraYears').textContent='…';$('eraSub').textContent='Finding your franchise era…';
+ let n=0;const timer=setInterval(()=>{const e=rand(validEras());const t=rand([...eraTeams.get(e)].filter(x=>usable(comboIndex.get(key(x,e))||[]).length));$('eraTeam').textContent=nameOf(t);$('eraYears').textContent=e;$('eraSub').textContent='RANDOM TEAM + DECADE';n++;if(n>=14){clearInterval(timer);combo={t:team,e:era};selectedPlayer=null;movingFrom=null;$('eraTeam').textContent=nameOf(team);$('eraYears').textContent=era;$('eraSub').textContent='TEAM + DECADE LOCKED IN';$('search').disabled=false;$('search').value='';renderPool();say(source==='team'?'Team re-rolled. The decade stayed the same.':source==='decade'?'Decade re-rolled. The team stayed the same.':'Select a player from this exact team and decade.');spinning=false;renderRoster();}},65);
 }
-function renderPlayers(){
+function statsLeaders(pool){
+ const fields=['pts','ast','reb','stl','blk'],max={};
+ fields.forEach(s=>{max[s]=Math.max(...pool.map(p=>p[s]==null?-Infinity:Number(p[s])));});
+ return max;
+}
+function makeStat(val,label,isLeader){
+ const wrap=document.createElement('div');wrap.className='stat';
+ const v=document.createElement('div');v.className='stat-value'+(isLeader?' leader':'');v.textContent=format(val);
+ if(isLeader){const star=document.createElement('span');star.className='star';star.textContent='★';v.append(star);}
+ const l=document.createElement('div');l.className='stat-label';l.textContent=label;wrap.append(v,l);return wrap;
+}
+function statGrid(p,leaders){
+ const box=document.createElement('div');box.className='stats';
+ box.append(makeStat(p.pts,'PPG',p.pts!=null&&p.pts===leaders.pts));
+ box.append(makeStat(p.ast,'APG',p.ast!=null&&p.ast===leaders.ast));
+ box.append(makeStat(p.reb,'RPG',p.reb!=null&&p.reb===leaders.reb));
+ box.append(makeStat(p.stl,'SPG',p.stl!=null&&p.stl===leaders.stl));
+ box.append(makeStat(p.blk,'BPG',p.blk!=null&&p.blk===leaders.blk));
+ box.append(makeStat(p._ovr,'OVR',false));
+ return box;
+}
+function addBadges(parent,p){
+ const row=document.createElement('div');row.className='badge-row';
+ badges(p).forEach(([name,color])=>{const b=document.createElement('span');b.className='badge '+color;b.textContent=name;row.append(b);});
+ parent.append(row);
+}
+function renderPool(){
  if(!combo)return;
- const pool=comboIndex.get(k(combo.t,combo.e))||[],q=$('search').value.trim().toLowerCase();
- const list=pool.filter(p=>!q||p.n.toLowerCase().includes(q)||p.pos.join(' ').toLowerCase().includes(q));
- $('poolCount').textContent=list.length+' / '+pool.length+' PLAYERS';
- const root=$('playerList');root.innerHTML='';
- if(!list.length){root.innerHTML='<div class="pool-empty">No players match your search.</div>';return;}
- list.forEach(p=>{
-  const open=availablePositions(p),used=isUsed(p),b=document.createElement('button');b.type='button';b.className='player';b.disabled=used||open.length===0;
-  const left=document.createElement('span'),strong=document.createElement('strong'),sub=document.createElement('span');strong.textContent=p.n;sub.className='sub';sub.textContent=used?'ALREADY DRAFTED':open.length?'POSITION '+p.pos.join(' / '):'NO OPEN POSITION';left.append(strong,sub);
-  const stats=document.createElement('span');stats.className='stats';stats.innerHTML=mode==='blind'?'STATS HIDDEN':'<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST<br>'+fmt(p.stl)+' STL · '+fmt(p.blk)+' BLK';
-  b.append(left,stats);b.addEventListener('click',()=>showPositions(p));root.append(b);
+ const pool=comboIndex.get(key(combo.t,combo.e))||[],leaders=statsLeaders(pool);
+ const q=$('search').value.trim().toLowerCase();
+ const filtered=pool.filter(p=>{
+  const group=category(p),posOK=positionFilter==='Any'||(p.pos||[]).includes(positionFilter),groupOK=groupFilter==='Any'||group===groupFilter;
+  return posOK&&groupOK&&(!q||p.n.toLowerCase().includes(q)||p.pos.join(' ').toLowerCase().includes(q));
+ });
+ $('poolHint').hidden=true;
+ $('eraSub').textContent=nameOf(combo.t)+' · '+combo.e+' PLAYER POOL';
+ const groups=[['G',filtered.filter(p=>category(p)==='G')],['F',filtered.filter(p=>category(p)==='F')],['C',filtered.filter(p=>category(p)==='C')]];
+ const root=$('playerGroups');root.innerHTML='';
+ if(!filtered.length){const e=document.createElement('div');e.className='draft-hint';e.textContent='No players match this filter. Try another position.';root.append(e);return;}
+ groups.forEach(([g,arr])=>{
+  if(!arr.length)return;
+  const section=document.createElement('section');section.className='group';
+  const heading=document.createElement('div');heading.className='group-title';heading.textContent=g+' · '+arr.length;section.append(heading);
+  arr.forEach(p=>{
+   const available=openPositions(p),used=isUsed(p),btn=document.createElement('button');btn.type='button';btn.className='player-card'+(selectedPlayer&&identity(selectedPlayer)===identity(p)?' selected':'');btn.disabled=used||available.length===0;
+   const identityBox=document.createElement('div');identityBox.className='identity';
+   const itop=document.createElement('div');itop.className='identity-top';
+   const pb=document.createElement('span');pb.className='pos-badge';pb.textContent=category(p);
+   const season=document.createElement('span');season.className='season-tag';season.textContent=p.e;
+   itop.append(pb,season);
+   const nm=document.createElement('div');nm.className='player-name';nm.textContent=p.n;
+   const chips=document.createElement('span');chips.className='name-badges';badges(p).slice(0,1).forEach(([txt,color])=>{const b=document.createElement('span');b.className='badge '+color;b.textContent=txt;chips.append(b);});nm.append(chips);
+   identityBox.append(itop,nm);
+   btn.append(identityBox,statGrid(p,leaders));
+   if(selectedPlayer&&identity(selectedPlayer)===identity(p)){
+    const extra=document.createElement('div');extra.className='selected-extra';
+    const extStats=document.createElement('div');extStats.className='extra-stats';
+    [['PPG',p.pts],['APG',p.ast],['RPG',p.reb],['SPG',p.stl],['BPG',p.blk]].forEach(([label,val])=>{const a=document.createElement('div');a.className='extra-stat';a.textContent=format(val);const sm=document.createElement('small');sm.textContent=label;a.append(sm);extStats.append(a);});
+    extra.append(extStats);addBadges(extra,p);btn.append(extra);
+   }
+   btn.addEventListener('click',()=>{selectedPlayer=selectedPlayer&&identity(selectedPlayer)===identity(p)?null:p;movingFrom=null;renderPool();renderRoster();});
+   section.append(btn);
+  });
+  root.append(section);
  });
 }
-function showPositions(p){
- const open=availablePositions(p),box=$('chooseBox'),buttons=$('positionButtons');buttons.innerHTML='';$('choosePrompt').textContent='DRAFT '+p.n+' AT:';
- open.forEach(pos=>{const b=document.createElement('button');b.type='button';b.textContent=pos;b.addEventListener('click',()=>draft(p,pos));buttons.append(b);});
- box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});
-}
-function draft(p,pos){
- if(roster[pos]||isUsed(p))return;
- roster[pos]={...p};combo=null;round=Object.values(roster).filter(Boolean).length+1;
- $('chooseBox').classList.remove('show');$('pool').style.opacity='.55';$('pool').style.pointerEvents='none';
- $('reelLabel').textContent='PICK LOCKED';$('reelTeam').textContent='Next round';$('reelDecade').textContent='Spin again for another team + decade';
- $('spin').textContent=round>5?'DRAFT COMPLETE':'SPIN FOR NEXT ERA';say(p.n+' drafted at '+pos+'.');
- renderRoster();
- if(round>5){$('poolTitle').textContent='YOUR STARTING FIVE IS COMPLETE';$('poolCount').textContent='5 PICKS';$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';$('playerList').innerHTML='<div class="pool-empty">Your starting five is complete. Simulate your 82-game season.</div>';}
- else{$('poolTitle').textContent='NEXT DRAW';$('poolCount').textContent='ROUND '+String(round).padStart(2,'0');$('playerList').innerHTML='<div class="pool-empty">Spin again to reveal your next team and decade.</div>';$('search').disabled=true;$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';}
-}
 function rerollTeam(){
- if(!combo||teamRerolls<=0||spinning)return;const list=validTeams(combo.e,combo.t);if(!list.length)return;
- teamRerolls--;const t=choose(list);$('rerollTeam').textContent='↻ Team re-roll · '+teamRerolls+' left';animateDraw(t,combo.e,'team');
+ if(!combo||teamRerolls<=0||spinning)return;const options=validTeams(combo.e,combo.t);if(!options.length)return;teamRerolls--;animateDraw(rand(options),combo.e,'team');
 }
 function rerollDecade(){
- if(!combo||decadeRerolls<=0||spinning)return;const list=validDecades(combo.t,combo.e);if(!list.length)return;
- decadeRerolls--;const e=choose(list);$('rerollDecade').textContent='↻ Decade re-roll · '+decadeRerolls+' left';animateDraw(combo.t,e,'decade');
+ if(!combo||decadeRerolls<=0||spinning)return;const options=validDecades(combo.t,combo.e);if(!options.length)return;decadeRerolls--;animateDraw(combo.t,rand(options),'decade');
 }
-function calculateTeamOVR(list){
- const adj=stat=>{const valid=list.filter(p=>p[stat]!=null&&Number(p[stat])>0);return valid.length?valid.reduce((s,p)=>s+Number(p[stat]),0)*5/valid.length:0;};
- return Math.round(100*(list.reduce((s,p)=>s+(p.pts||0),0)/133.4*.46+list.reduce((s,p)=>s+(p.reb||0),0)/39.7*.25+list.reduce((s,p)=>s+(p.ast||0),0)/29.3*.18+adj('stl')/6.1*.07+adj('blk')/3.2*.04)*10)/10;
+function clickSeat(pos){
+ if(selectedPlayer){
+  if(!openPositions(selectedPlayer).includes(pos)||roster[pos])return;
+  roster[pos]={...selectedPlayer};selectedPlayer=null;combo=null;movingFrom=null;round=POS.filter(x=>roster[x]).length+1;$('search').disabled=true;$('search').value='';$('playerGroups').innerHTML='';$('poolHint').hidden=false;$('poolHint').textContent=round<=5?'Player drafted. Spin again for the next team and decade.':'Your starting five is complete.';
+  $('eraTeam').textContent=round<=5?'Next draw':'Draft complete';$('eraYears').textContent='';$('eraSub').textContent=round<=5?'Ready for the next team + decade':'All five positions filled';
+  $('rerollActions').hidden=true;$('result').classList.remove('show');renderRoster();
+  return;
+ }
+ if(movingFrom){
+  if(movingFrom===pos){movingFrom=null;renderRoster();return;}
+  const mover=roster[movingFrom],target=roster[pos];
+  if(!allowedPositions(mover).includes(pos))return;
+  if(target&&!allowedPositions(target).includes(movingFrom))return;
+  roster[pos]=mover;roster[movingFrom]=target||null;movingFrom=null;renderRoster();return;
+ }
+ if(roster[pos]){movingFrom=pos;renderRoster();}
 }
-function simulate(){
- const list=Object.values(roster).filter(Boolean);if(list.length!==5)return;
- const ovr=calculateTeamOVR(list),wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
- $('record').textContent=wins+'–'+(82-wins);$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON! You went 82–0.':wins>=72?'Historic roster.':wins>=62?'Dynasty-level team.':wins>=57?'Contender.':wins>=50?'Playoff team.':'Keep drafting and try another combination.');
- $('result').classList.add('show');$('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+function calculateResult(){
+ const list=POS.map(pos=>roster[pos]).filter(Boolean);
+ const sum=s=>list.reduce((n,p)=>n+(Number(p[s])||0),0);
+ const adjusted=s=>{const a=list.filter(p=>p[s]!=null&&Number(p[s])>0);return a.length?a.reduce((n,p)=>n+Number(p[s]),0)*5/a.length:0;};
+ const ovr=teamOVR(list),wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
+ $('record').textContent=wins+'–'+(82-wins);$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON':wins>=72?'HISTORIC':wins>=62?'DYNASTY':wins>=57?'CONTENDER':wins>=50?'PLAYOFF TEAM':'LOTTERY');
+ $('result').classList.add('show');
 }
 function reset(){
- roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;
- $('rerollTeam').textContent='↻ Team re-roll · 1 left';$('rerollDecade').textContent='↻ Decade re-roll · 1 left';$('result').classList.remove('show');$('chooseBox').classList.remove('show');$('pool').classList.remove('show');$('playerList').innerHTML='<div class="pool-empty">Press SPIN THE ERA to reveal a team and decade, then draft from its complete player list.</div>';$('poolTitle').textContent='YOUR DRAW WILL APPEAR HERE';$('poolCount').textContent='Spin to reveal a squad';$('search').value='';$('search').disabled=true;
- $('reel').classList.remove('spinning');$('reelLabel').textContent='READY WHEN YOU ARE';$('reelTeam').textContent='Your next team';$('reelDecade').textContent='Team + decade will appear here';$('spin').textContent='SPIN THE ERA';$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';
- say('Each round: spin once, then choose one player from the squad list.');renderRoster();
+ roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;selectedPlayer=null;movingFrom=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;
+ groupFilter='Any';positionFilter='Any';$('groupFilters').querySelectorAll('button').forEach(b=>b.classList.toggle('active',b.dataset.group==='Any'));$('positionFilter').value='Any';
+ $('eraTeam').textContent='Ready to spin';$('eraYears').textContent='';$('eraSub').textContent='One spin chooses your team and decade';
+ $('poolHint').hidden=false;$('poolHint').textContent='Spin to reveal a team and decade. Then choose from its full player list.';$('playerGroups').innerHTML='';$('search').value='';$('search').disabled=true;$('rerollActions').hidden=true;$('result').classList.remove('show');
+ say('Tap a player from the list, then tap a highlighted seat to draft him.');renderRoster();
 }
-$('spin').addEventListener('click',rollPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);$('search').addEventListener('input',renderPlayers);$('restart').addEventListener('click',reset);$('simulate').addEventListener('click',simulate);
-$('modeControl').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(!b)return;mode=b.dataset.mode;$('modeControl').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));if(combo)renderPlayers();});
-$('positionControl').addEventListener('click',e=>{const b=e.target.closest('button[data-flex]');if(!b)return;flexible=b.dataset.flex==='on';$('positionControl').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));if(combo)renderPlayers();});
+$('spin').addEventListener('click',drawPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);
+$('search').addEventListener('input',renderPool);
+$('groupFilters').addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;groupFilter=b.dataset.group;$('groupFilters').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));renderPool();});
+$('positionFilter').addEventListener('change',()=>{positionFilter=$('positionFilter').value;renderPool();});
+document.querySelectorAll('.seat').forEach(seat=>seat.addEventListener('click',()=>clickSeat(seat.dataset.pos)));
+$('clearSelection').addEventListener('click',()=>{selectedPlayer=null;movingFrom=null;if(combo)renderPool();renderRoster();});
+$('flexOn').addEventListener('click',()=>{flexible=true;$('flexOn').classList.add('active');$('flexOff').classList.remove('active');if(combo)renderPool();renderRoster();});
+$('flexOff').addEventListener('click',()=>{flexible=false;$('flexOff').classList.add('active');$('flexOn').classList.remove('active');if(combo)renderPool();renderRoster();});
+$('simulate').addEventListener('click',calculateResult);$('startOverTop').addEventListener('click',reset);
 try{
  const response=await fetch('players.json',{cache:'force-cache'});if(!response.ok)throw new Error('Player database returned HTTP '+response.status);
- players=await response.json();indexData();$('status').textContent=players.length.toLocaleString()+' players loaded across '+comboIndex.size+' team-and-decade squads. Spin to begin.';renderRoster();reset();
-}catch(e){$('spin').disabled=true;$('spin').textContent='PLAYER DATABASE NOT AVAILABLE';say('Could not load the player database: '+e.message);}
+ players=await response.json();buildIndexes();
+ $('spin').disabled=false;
+ $('poolCount').textContent=players.length.toLocaleString()+' PLAYER ENTRIES AVAILABLE';
+ say(players.length.toLocaleString()+' players loaded. Spin once to roll a team and decade.');
+ renderRoster();
+}catch(e){$('spin').disabled=true;$('spin').textContent='PLAYER DATABASE UNAVAILABLE';$('poolHint').textContent='Could not load the player database: '+e.message;}
 })();
 </script>
 </body>
