@@ -175,7 +175,7 @@ function renderPlayerPool(){
     sub.textContent=p.pos.join(' / ')+(isUsed(p)?' · ALREADY DRAFTED':open.length?' · Can play '+open.join(', '):' · No open position');
     left.append(strong,sub);
     const stats=document.createElement('span');stats.className='statline';
-    stats.innerHTML='<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST';
+    stats.innerHTML='<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST<br>'+fmt(p.stl)+' STL · '+fmt(p.blk)+' BLK';
     b.append(left,stats);
     b.disabled=isUsed(p)||open.length===0;
     b.addEventListener('click',()=>choosePlayer(p));
