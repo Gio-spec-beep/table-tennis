@@ -6,277 +6,201 @@
 <meta name="theme-color" content="#10091c">
 <title>82-0 · NBA Draft</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0712;--panel:#171020;--panel2:#211630;--line:rgba(196,181,253,.2);--purple:#a78bfa;--bright:#ddd6fe;--muted:#b7abc9;--white:#faf7ff}
-*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -15%,rgba(124,58,237,.3),transparent 48%),var(--bg);color:var(--white);font:15px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}
-.top{height:60px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 980px)/2))}.brand{font-weight:950;letter-spacing:.16em;color:var(--bright)}.top a{color:var(--muted);text-decoration:none;font-size:.82rem}
-main{width:min(980px,calc(100% - 32px));margin:27px auto 60px}.hero{text-align:center;margin-bottom:21px}.eyebrow{font-size:.7rem;letter-spacing:.18em;color:var(--purple);font-weight:900}h1{font-size:clamp(2rem,6vw,3rem);line-height:1.05;margin:9px 0}.subtitle{color:var(--muted);margin:0 auto;max-width:560px}
-.progress{display:flex;align-items:center;gap:12px;margin:19px 0 12px}.track{height:7px;flex:1;background:#2b2039;border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:linear-gradient(90deg,#7c3aed,#c4b5fd);transition:width .2s}#progressText{font-size:.78rem;color:var(--muted);font-weight:850;white-space:nowrap}
-.roster{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}.slot{min-height:105px;background:linear-gradient(150deg,#20162e,#15101f);border:1px solid var(--line);border-radius:12px;padding:11px;display:flex;flex-direction:column}.slot .pos{color:var(--purple);font-size:.68rem;font-weight:950;letter-spacing:.1em}.slot .name{font-size:.84rem;font-weight:850;margin-top:10px;line-height:1.2}.slot .detail{font-size:.66rem;color:var(--muted);margin-top:4px}.slot.filled{border-color:rgba(167,139,250,.65);background:linear-gradient(150deg,#2b1c42,#181020)}
-.draft{margin-top:15px;background:linear-gradient(150deg,#1d142b,#130e1b);border:1px solid var(--line);border-radius:16px;padding:17px}
-.draw-head{display:flex;align-items:center;justify-content:space-between;gap:12px}.draw-head h2{margin:0;font-size:1rem}.badge{font-size:.68rem;font-weight:900;letter-spacing:.1em;color:var(--bright);border:1px solid var(--line);border-radius:8px;padding:5px 8px;white-space:nowrap}
-.combo{display:none;margin-top:13px;padding:12px 14px;border:1px solid #8661c1;background:rgba(124,58,237,.13);border-radius:12px}.combo.show{display:block}.combo-team{font-size:1.05rem;font-weight:950}.combo-decade{color:var(--bright);font-size:.78rem;font-weight:800;margin-top:2px}
-.spin-wrap{margin-top:12px}.spin{width:100%;padding:15px;border:1px solid #b39af5;border-radius:11px;background:linear-gradient(110deg,#8b5cf6,#6d28d9);color:#fff;font-size:.92rem;font-weight:950;letter-spacing:.06em}.spin:hover{filter:brightness(1.12)}.spin:disabled{opacity:.45;cursor:not-allowed}
-.rerolls{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}.reroll{border:1px solid var(--line);border-radius:9px;background:#21182e;color:var(--bright);padding:8px 11px;font-size:.72rem;font-weight:850}.reroll:disabled{opacity:.35;cursor:not-allowed}
-.pool{display:none;margin-top:15px}.pool.show{display:block}.pool-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:9px}.pool-head h3{margin:0;font-size:.86rem;letter-spacing:.08em}.pool-count{font-size:.7rem;color:var(--muted)}
-.search{width:100%;padding:11px 12px;margin-bottom:9px;border-radius:9px;border:1px solid var(--line);background:#0e0916;color:white;outline:none}.search:focus{border-color:var(--purple)}
-.player-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;max-height:440px;overflow:auto;padding:2px 4px 2px 0}
-.player{display:flex;align-items:center;justify-content:space-between;gap:10px;text-align:left;width:100%;border:1px solid var(--line);border-radius:10px;background:#21182e;color:white;padding:10px}.player:hover{border-color:#a78bfa;background:#302043}.player:disabled{opacity:.35;cursor:not-allowed}.player strong{font-size:.82rem;display:block}.player .sub{display:block;color:var(--muted);font-size:.65rem;margin-top:2px}.statline{font-size:.62rem;color:#c8bdd8;white-space:nowrap;text-align:right;line-height:1.45}.statline b{color:var(--bright);font-size:.72rem}
-.position-choice{display:none;margin-top:12px;padding:12px;border:1px solid #8661c1;border-radius:12px;background:rgba(124,58,237,.1)}.position-choice.show{display:block}.position-choice strong{display:block;font-size:.8rem;margin-bottom:9px}.pos-buttons{display:flex;gap:7px;flex-wrap:wrap}.pos-button{border:1px solid #9b7af0;background:#6d28d9;color:white;padding:9px 14px;border-radius:8px;font-size:.78rem;font-weight:900}.pos-button:disabled{opacity:.35;cursor:not-allowed}
-.status{font-size:.73rem;color:var(--muted);margin-top:9px;min-height:17px}.summary{margin-top:14px;display:flex;justify-content:space-between;gap:15px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(167,139,250,.07)}.summary strong{font-size:.86rem}.summary span{font-size:.72rem;color:var(--muted)}.rating{text-align:right;font-size:1.4rem;color:var(--bright);font-weight:950;line-height:1}.rating small{display:block;font-size:.56rem;letter-spacing:.13em;color:var(--muted);margin-top:4px}
-.controls{display:flex;gap:8px;margin-top:12px}.action{border:1px solid var(--line);border-radius:9px;background:#21182e;color:var(--bright);padding:10px 12px;font-size:.74rem;font-weight:900}.action.primary{flex:1;background:linear-gradient(110deg,#8b5cf6,#6d28d9);border-color:#b39af5;color:white}.action:disabled{opacity:.4;cursor:not-allowed}
-.result{display:none;margin-top:15px;padding:21px;border-radius:14px;border:1px solid #9471dc;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));text-align:center}.result.show{display:block}.result-label{font-size:.67rem;letter-spacing:.16em;color:var(--bright);font-weight:900}.record{font-size:clamp(2.8rem,9vw,4rem);font-weight:1000;line-height:1.1;margin:8px 0}.result p{color:var(--muted);margin:0}.footnote{text-align:center;color:#9588a8;font-size:.66rem;margin:14px 0}
-.loading,.error{padding:20px;text-align:center;color:var(--muted);font-size:.83rem}.error{color:#fda4af}
-@media(max-width:650px){main{margin-top:21px}.roster{grid-template-columns:repeat(3,minmax(0,1fr))}.slot:nth-child(4),.slot:nth-child(5){grid-column:span 1}.player-list{grid-template-columns:1fr}.draft{padding:13px}}
-@media(max-width:390px){.roster{grid-template-columns:repeat(2,minmax(0,1fr))}.slot:last-child{grid-column:1/-1}.controls{flex-wrap:wrap}.action.primary{flex-basis:100%}}
+:root{color-scheme:dark;--bg:#0b0712;--panel:#171020;--panel2:#211630;--line:rgba(196,181,253,.19);--purple:#a78bfa;--bright:#ddd6fe;--muted:#aa9fbb;--white:#faf7ff;--green:#86efac}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 48% -18%,rgba(124,58,237,.28),transparent 46%),var(--bg);color:var(--white);font:15px/1.45 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}button,input{font:inherit}button{cursor:pointer}
+.top{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 max(18px,calc((100% - 1120px)/2));background:rgba(10,7,17,.8)}.brand{font-weight:950;letter-spacing:.15em;color:var(--bright);font-size:.95rem}.top a{color:var(--muted);text-decoration:none;font-size:.78rem}.top a:hover{color:white}
+main{width:min(1120px,calc(100% - 34px));margin:22px auto 58px}
+.kicker{display:flex;align-items:center;gap:9px;font-size:.7rem;font-weight:900;letter-spacing:.13em;color:var(--bright);margin-bottom:7px}.kicker .dot{height:7px;width:7px;border-radius:50%;background:#a78bfa;box-shadow:0 0 12px #a78bfa}
+.workspace{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(350px,.9fr);gap:14px;align-items:stretch}
+.panel{border:1px solid var(--line);border-radius:15px;background:linear-gradient(150deg,rgba(29,21,48,.96),rgba(17,12,26,.98));box-shadow:0 16px 45px rgba(0,0,0,.13)}
+.spin-panel{padding:19px;min-height:322px;display:flex;flex-direction:column}
+.panel-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}.panel-title{font-size:.72rem;letter-spacing:.16em;font-weight:950;color:var(--bright)}.round{font-size:.67rem;color:var(--muted);border:1px solid var(--line);border-radius:7px;padding:5px 8px;white-space:nowrap}
+h1{font-size:clamp(1.7rem,4vw,2.45rem);line-height:1.04;letter-spacing:-.04em;margin:8px 0 5px}.sub{font-size:.82rem;color:var(--muted);max-width:480px;margin:0}
+.reel{position:relative;margin:18px 0 12px;border:1px solid rgba(196,181,253,.24);border-radius:12px;background:linear-gradient(120deg,#100b18,#211630,#100b18);min-height:104px;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:12px}
+.reel:before,.reel:after{content:"";position:absolute;top:0;bottom:0;width:48px;z-index:1;pointer-events:none}.reel:before{left:0;background:linear-gradient(90deg,#130d1f,transparent)}.reel:after{right:0;background:linear-gradient(270deg,#130d1f,transparent)}
+.reel-center{position:relative;z-index:2;text-align:center;width:100%}.reel-label{font-size:.62rem;letter-spacing:.2em;color:#a99bbf;font-weight:900}.reel-value{font-size:1.28rem;font-weight:950;margin:5px 0 1px;line-height:1.15}.reel-decade{font-size:.76rem;color:var(--bright);font-weight:800}.reel.spinning .reel-value{animation:roll .12s linear infinite;filter:blur(.35px)}
+@keyframes roll{0%{transform:translateY(-4px);opacity:.5}100%{transform:translateY(4px);opacity:1}}
+.spin-button{width:100%;border:1px solid #b9a2fb;border-radius:10px;padding:13px 16px;background:linear-gradient(110deg,#8b5cf6,#6d28d9);color:#fff;font-size:.82rem;font-weight:950;letter-spacing:.1em;box-shadow:0 7px 22px rgba(109,40,217,.18)}.spin-button:hover{filter:brightness(1.12)}.spin-button:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.rerolls{display:flex;gap:8px;margin-top:9px;flex-wrap:wrap}.reroll{border:1px solid var(--line);border-radius:8px;background:rgba(167,139,250,.08);color:var(--bright);padding:7px 10px;font-size:.68rem;font-weight:850}.reroll:hover:not(:disabled){background:rgba(167,139,250,.17)}.reroll:disabled{opacity:.35;cursor:not-allowed}
+.status{font-size:.72rem;color:var(--muted);margin-top:auto;padding-top:12px;min-height:33px}.status strong{color:var(--bright)}
+.lineup-panel{padding:18px;display:flex;flex-direction:column}.lineup-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.lineup-head h2{font-size:1rem;margin:0;letter-spacing:.01em}.count{font-size:.7rem;color:var(--bright);font-weight:900;background:rgba(167,139,250,.1);padding:5px 8px;border-radius:7px}
+.lineup-note{color:var(--muted);font-size:.73rem;margin:5px 0 13px}
+.seats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:7px;flex:1}.seat{min-width:0;border:1px solid var(--line);background:rgba(9,6,15,.55);border-radius:10px;padding:9px 7px;min-height:154px;display:flex;flex-direction:column;align-items:center;text-align:center}.seat.filled{border-color:rgba(167,139,250,.55);background:linear-gradient(155deg,rgba(124,58,237,.17),rgba(9,6,15,.6))}
+.seat-pos{color:var(--bright);font-size:.64rem;font-weight:950;letter-spacing:.1em}.seat-number{width:28px;height:28px;border-radius:50%;background:rgba(167,139,250,.12);display:grid;place-items:center;color:#c4b5fd;font-size:.68rem;font-weight:900;margin:12px 0 7px}.seat-name{font-size:.68rem;font-weight:850;line-height:1.2;overflow-wrap:anywhere}.seat-detail{font-size:.59rem;color:var(--muted);margin-top:5px;line-height:1.3}.seat.empty .seat-name{color:#9488a5;font-weight:650}
+.rating-row{border-top:1px solid var(--line);margin-top:13px;padding-top:11px;display:flex;justify-content:space-between;align-items:center;gap:10px}.rating-label{font-size:.7rem;color:var(--muted)}.rating-value{font-size:1.12rem;font-weight:950;color:var(--bright)}.rating-value small{font-size:.6rem;color:var(--muted);letter-spacing:.12em;margin-left:5px}
+.options{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding-top:14px;margin-top:13px;border-top:1px solid var(--line)}.options-label{font-size:.65rem;color:var(--muted);letter-spacing:.12em;font-weight:900}.segmented{display:flex;gap:3px;padding:3px;border:1px solid var(--line);background:#0f0a18;border-radius:8px}.segmented button{border:0;border-radius:6px;background:transparent;color:var(--muted);padding:6px 9px;font-size:.65rem;font-weight:850}.segmented button.active{background:#6d28d9;color:white}
+.roster-tools{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:21px 0 9px}.roster-tools h2{margin:0;font-size:.91rem;letter-spacing:.08em}.pool-count{font-size:.68rem;color:var(--muted)}
+.pick-panel{padding:16px}.pick-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.pick-head h3{margin:0;font-size:.82rem;letter-spacing:.08em}.search{max-width:260px;width:46%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#0d0815;color:white;font-size:.74rem;outline:none}.search:focus{border-color:var(--purple)}
+.player-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;max-height:470px;overflow:auto;padding:2px 4px 2px 0}.player{min-width:0;text-align:left;display:flex;align-items:center;justify-content:space-between;gap:7px;padding:10px;border:1px solid var(--line);border-radius:9px;background:rgba(9,6,15,.52);color:white}.player:hover:not(:disabled){border-color:#a78bfa;background:#251936}.player:disabled{opacity:.38;cursor:not-allowed}.player strong{font-size:.73rem;display:block;line-height:1.2}.player .sub{font-size:.62rem;color:var(--muted);display:block;margin-top:4px}.stats{font-size:.6rem;color:#c8bdd8;text-align:right;white-space:nowrap;line-height:1.5}.stats b{color:var(--bright);font-size:.67rem}.pool-empty{padding:23px;text-align:center;color:var(--muted);font-size:.78rem}
+.choose-box{display:none;margin-top:12px;border:1px solid #8060b4;background:rgba(124,58,237,.1);border-radius:10px;padding:12px}.choose-box.show{display:block}.choose-box strong{font-size:.76rem;display:block;margin-bottom:8px}.position-buttons{display:flex;gap:7px;flex-wrap:wrap}.position-buttons button{border:1px solid #9b7af0;border-radius:7px;background:#6d28d9;color:white;padding:8px 12px;font-size:.72rem;font-weight:900}
+.bottom-actions{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:13px}.small-action{border:1px solid var(--line);border-radius:8px;background:rgba(167,139,250,.08);color:var(--bright);padding:8px 11px;font-size:.68rem;font-weight:850}.small-action.primary{background:#6d28d9;border-color:#aa8cf0;color:white}.small-action:disabled{opacity:.4;cursor:not-allowed}
+.result{display:none;margin-top:13px;border:1px solid #9471dc;border-radius:13px;background:linear-gradient(135deg,rgba(109,40,217,.22),rgba(23,16,32,.95));padding:19px;text-align:center}.result.show{display:block}.result-kicker{font-size:.65rem;color:var(--bright);font-weight:900;letter-spacing:.16em}.record{font-size:clamp(2.6rem,8vw,3.8rem);font-weight:1000;line-height:1.1;margin:7px 0}.result p{color:var(--muted);margin:0;font-size:.78rem}
+.footnote{text-align:center;color:#837795;font-size:.63rem;margin:15px 0}.loading,.error{padding:24px;text-align:center;color:var(--muted);font-size:.8rem}.error{color:#fda4af}
+@media(max-width:850px){.workspace{grid-template-columns:1fr}.spin-panel{min-height:0}.lineup-panel{min-height:0}.status{min-height:0}.player-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){main{width:calc(100% - 22px);margin-top:15px}.spin-panel,.lineup-panel,.pick-panel{padding:13px}.seats{gap:5px}.seat{min-height:130px;padding:7px 4px}.seat-name{font-size:.61rem}.seat-detail{font-size:.54rem}.seat-number{margin:9px 0 6px;width:24px;height:24px}.player-list{grid-template-columns:1fr;max-height:420px}.pick-head{align-items:stretch;flex-direction:column}.search{max-width:none;width:100%}.roster-tools{margin-top:16px}.panel-title{font-size:.66rem}}
 </style>
 </head>
 <body>
-<header class="top"><div class="brand">82—0</div><a href="../../index.html">← Back to Game Hub</a></header>
+<header class="top"><div class="brand">82—0 <span style="color:#8b5cf6">/</span> NBA DRAFT</div><a href="../../index.html">← HOME</a></header>
 <main>
-<section class="hero"><div class="eyebrow">THE ALL-TIME NBA DRAFT</div><h1>Spin. Pick. Go 82–0.</h1><p class="subtitle">Spin once to get a random NBA team and decade. Then pick one player from that exact roster. Repeat five times.</p></section>
-<div class="progress"><div class="track"><div class="fill" id="progressFill"></div></div><div id="progressText">0 / 5 PICKS</div></div>
-<section class="roster" aria-label="Your lineup">
-  <article class="slot" data-pos="PG"><span class="pos">PG · POINT GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
-  <article class="slot" data-pos="SG"><span class="pos">SG · SHOOTING GUARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
-  <article class="slot" data-pos="SF"><span class="pos">SF · SMALL FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
-  <article class="slot" data-pos="PF"><span class="pos">PF · POWER FORWARD</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
-  <article class="slot" data-pos="C"><span class="pos">C · CENTER</span><div class="name">Open spot</div><div class="detail">Waiting for a pick</div></article>
-</section>
-<section class="draft">
-  <div class="draw-head"><h2 id="draftTitle">Ready for your first spin?</h2><span class="badge" id="roundBadge">ROUND 1 / 5</span></div>
-  <div class="combo" id="combo"><div class="combo-team" id="teamValue"></div><div class="combo-decade" id="decadeValue"></div></div>
-  <div class="spin-wrap"><button class="spin" id="spin">🎰 SPIN FOR TEAM + DECADE</button></div>
-  <div class="rerolls">
-    <button class="reroll" id="rerollTeam" hidden>Re-roll team · 1 left</button>
-    <button class="reroll" id="rerollDecade" hidden>Re-roll decade · 1 left</button>
+  <div class="kicker"><span class="dot"></span><span id="roundKicker">ROUND 01</span><span style="color:#736781">·</span><span>QUICK SPIN</span></div>
+  <div class="workspace">
+    <section class="panel spin-panel">
+      <div class="panel-heading"><div class="panel-title">RANDOM FRANCHISE ERA</div><div class="round" id="roundBadge">PICK 1 OF 5</div></div>
+      <h1>SPIN THE ERA</h1>
+      <p class="sub">One spin deals a team and decade. Draft one player from that exact squad.</p>
+      <div class="reel" id="reel"><div class="reel-center"><div class="reel-label" id="reelLabel">READY WHEN YOU ARE</div><div class="reel-value" id="reelTeam">Your next team</div><div class="reel-decade" id="reelDecade">Team + decade will appear here</div></div></div>
+      <button class="spin-button" id="spin">SPIN THE ERA</button>
+      <div class="rerolls">
+        <button class="reroll" id="rerollTeam" hidden>↻ Team re-roll · 1 left</button>
+        <button class="reroll" id="rerollDecade" hidden>↻ Decade re-roll · 1 left</button>
+      </div>
+      <div class="status" id="status" aria-live="polite">Each round: spin once, then choose one player from the squad list.</div>
+    </section>
+    <section class="panel lineup-panel">
+      <div class="lineup-head"><h2>Your five</h2><span class="count" id="count">0 / 5</span></div>
+      <p class="lineup-note">Your starting five · tap a player in the squad list to draft them.</p>
+      <div class="seats">
+        <article class="seat empty" data-pos="PG"><span class="seat-pos">PG</span><span class="seat-number">01</span><span class="seat-name">Point Guard</span><span class="seat-detail">Open spot</span></article>
+        <article class="seat empty" data-pos="SG"><span class="seat-pos">SG</span><span class="seat-number">02</span><span class="seat-name">Shooting Guard</span><span class="seat-detail">Open spot</span></article>
+        <article class="seat empty" data-pos="SF"><span class="seat-pos">SF</span><span class="seat-number">03</span><span class="seat-name">Small Forward</span><span class="seat-detail">Open spot</span></article>
+        <article class="seat empty" data-pos="PF"><span class="seat-pos">PF</span><span class="seat-number">04</span><span class="seat-name">Power Forward</span><span class="seat-detail">Open spot</span></article>
+        <article class="seat empty" data-pos="C"><span class="seat-pos">C</span><span class="seat-number">05</span><span class="seat-name">Center</span><span class="seat-detail">Open spot</span></article>
+      </div>
+      <div class="rating-row"><span class="rating-label">Team rating</span><span class="rating-value" id="average">— <small>OVR</small></span></div>
+      <div class="options">
+        <span class="options-label">BOARD SETUP</span>
+        <div style="display:flex;align-items:center;gap:8px"><span class="options-label">MODE</span><div class="segmented" id="modeControl"><button class="active" data-mode="classic">Classic</button><button data-mode="blind">Blind</button></div></div>
+        <div style="display:flex;align-items:center;gap:8px"><span class="options-label">POSITION CHANGES</span><div class="segmented" id="positionControl"><button class="active" data-flex="on">On</button><button data-flex="off">Off</button></div></div>
+      </div>
+    </section>
   </div>
-  <section class="pool" id="pool">
-    <div class="pool-head"><h3 id="poolTitle">PLAYERS IN THIS DRAW</h3><span class="pool-count" id="poolCount"></span></div>
-    <input class="search" id="search" type="search" placeholder="Search this roster…" autocomplete="off">
-    <div class="player-list" id="playerList"></div>
-    <div class="position-choice" id="positionChoice"><strong id="positionPrompt">Choose a position for this player</strong><div class="pos-buttons" id="positionButtons"></div></div>
+  <div class="roster-tools"><h2 id="poolHeading">PLAYER POOL</h2><span class="pool-count" id="poolCount">Spin to reveal a squad</span></div>
+  <section class="panel pick-panel">
+    <div class="pick-head"><h3 id="poolTitle">YOUR DRAW WILL APPEAR HERE</h3><input class="search" id="search" type="search" placeholder="Search players…" autocomplete="off" disabled></div>
+    <div class="player-list" id="playerList"><div class="pool-empty">Press SPIN THE ERA to reveal a team and decade, then draft from its complete player list.</div></div>
+    <div class="choose-box" id="chooseBox"><strong id="choosePrompt">Choose a position for this player</strong><div class="position-buttons" id="positionButtons"></div></div>
   </section>
-  <div class="controls">
-    <button class="action" id="restart">Start over</button>
-    <button class="action primary" id="simulate" hidden>SIMULATE 82-GAME SEASON</button>
-  </div>
-  <div class="status" id="status" aria-live="polite">One team re-roll and one decade re-roll are available per game.</div>
-</section>
-<section class="summary"><div><strong>Your team rating</strong><br><span id="summaryText">Draft five players to build your lineup.</span></div><div class="rating" id="average">—<small>TEAM OVR</small></div></section>
-<section class="result" id="result" aria-live="polite"><div class="result-label">YOUR 82-GAME SEASON</div><div class="record" id="record">82–0</div><p id="resultText">A perfect season!</p></section>
-<p class="footnote">The full player pool includes 10,626 team-and-decade player entries from the 1960s through the 2020s. Stats are per-game averages.</p>
+  <div class="bottom-actions"><button class="small-action" id="restart">START OVER</button><button class="small-action primary" id="simulate" hidden>SIMULATE 82-GAME SEASON →</button></div>
+  <section class="result" id="result" aria-live="polite"><div class="result-kicker">YOUR 82-GAME SEASON</div><div class="record" id="record">82–0</div><p id="resultText">Your season result will appear here.</p></section>
+  <p class="footnote">All player entries include per-game stats from their team and decade. Ratings and season projections follow the classic 82-0 scoring formula.</p>
 </main>
 <script>
 (async function(){
-const $=id=>document.getElementById(id);
-const POS=['PG','SG','SF','PF','C'];
-const DECADES=['1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
+const $=id=>document.getElementById(id),POS=['PG','SG','SF','PF','C'],DECADES=['1960s','1970s','1980s','1990s','2000s','2010s','2020s'];
 const TEAM_NAMES={ATL:'Atlanta Hawks',BOS:'Boston Celtics',BKN:'Brooklyn Nets',CHA:'Charlotte Hornets',CHI:'Chicago Bulls',CLE:'Cleveland Cavaliers',DAL:'Dallas Mavericks',DEN:'Denver Nuggets',DET:'Detroit Pistons',GSW:'Golden State Warriors',HOU:'Houston Rockets',IND:'Indiana Pacers',LAC:'LA Clippers',LAL:'Los Angeles Lakers',MEM:'Memphis Grizzlies',MIA:'Miami Heat',MIL:'Milwaukee Bucks',MIN:'Minnesota Timberwolves',NOP:'New Orleans Pelicans',NYK:'New York Knicks',OKC:'Oklahoma City Thunder / Seattle SuperSonics',ORL:'Orlando Magic',PHI:'Philadelphia 76ers',PHX:'Phoenix Suns',POR:'Portland Trail Blazers',SAC:'Sacramento Kings',SAS:'San Antonio Spurs',TOR:'Toronto Raptors',UTA:'Utah Jazz',WAS:'Washington Wizards / Baltimore Bullets'};
-const weights={ppg:0.46,rpg:0.25,apg:0.18,spg:0.07,bpg:0.04};
-const bench={ppg:133.4,rpg:39.7,apg:29.3,spg:6.1,bpg:3.2};
-let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map();
-let roster={PG:null,SG:null,SF:null,PF:null,C:null};
-let combo=null,pending=null,teamRerolls=1,decadeRerolls=1,round=1,mode='spin';
-
-function say(message){$('status').textContent=message;}
-function key(team,era){return team+'|'+era;}
-function identity(p){return p.id||p.n.toLowerCase();}
+const WEIGHTS={ppg:.46,rpg:.25,apg:.18,spg:.07,bpg:.04},BENCH={ppg:133.4,rpg:39.7,apg:29.3,spg:6.1,bpg:3.2};
+let players=[],comboIndex=new Map(),eraTeams=new Map(),teamEras=new Map(),roster={PG:null,SG:null,SF:null,PF:null,C:null};
+let combo=null,teamRerolls=1,decadeRerolls=1,round=1,mode='classic',flexible=true,spinning=false;
+const choose=a=>a[Math.floor(Math.random()*a.length)];
+const k=(t,e)=>t+'|'+e;
+function say(t){$('status').textContent=t;}
+function availablePositions(p){const pos=flexible?p.pos:[p.pos[0]];return (pos||[]).filter(x=>POS.includes(x)&&!roster[x]);}
 function isUsed(p){return Object.values(roster).some(x=>x&&x.id===p.id);}
-function availablePositions(p){return (p.pos||[]).filter(pos=>POS.includes(pos)&&!roster[pos]);}
-function fmt(v){return v===null||v===undefined||!Number.isFinite(Number(v))?'—':Number(v).toFixed(1);}
-function buildIndexes(){
-  for(const p of players){
-    const k=key(p.t,p.e);
-    if(!comboIndex.has(k))comboIndex.set(k,[]);
-    comboIndex.get(k).push(p);
-    if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());
-    eraTeams.get(p.e).add(p.t);
-    if(!teamEras.has(p.t))teamEras.set(p.t,new Set());
-    teamEras.get(p.t).add(p.e);
-  }
-  for(const pool of comboIndex.values())pool.sort((a,b)=>(b.pts||0)-(a.pts||0)||a.n.localeCompare(b.n));
-}
-function eligiblePool(pool){
-  return pool.filter(p=>!isUsed(p)&&availablePositions(p).length>0);
-}
-function allValidEras(){
-  return DECADES.filter(era=>[...(eraTeams.get(era)||[])].some(team=>eligiblePool(comboIndex.get(key(team,era))||[]).length));
-}
-function validTeamsForEra(era,exclude){
-  return [...(eraTeams.get(era)||[])].filter(t=>t!==exclude&&eligiblePool(comboIndex.get(key(t,era))||[]).length);
-}
-function validErasForTeam(team,exclude){
-  return [...(teamEras.get(team)||[])].filter(e=>e!==exclude&&eligiblePool(comboIndex.get(key(team,e))||[]).length);
-}
-function setSpinState(){
-  const done=Object.values(roster).filter(Boolean).length;
-  $('progressFill').style.width=(done/5*100)+'%';
-  $('progressText').textContent=done+' / 5 PICKS';
-  $('roundBadge').textContent='ROUND '+Math.min(round,5)+' / 5';
-  $('spin').disabled=done===5||!!combo;
-  $('spin').textContent=done===5?'DRAFT COMPLETE':done?'🎰 SPIN FOR NEXT TEAM + DECADE':'🎰 SPIN FOR TEAM + DECADE';
-  $('simulate').hidden=done!==5;
-  $('rerollTeam').hidden=!combo||done===5;
-  $('rerollDecade').hidden=!combo||done===5;
-  $('rerollTeam').disabled=teamRerolls<=0||validTeamsForEra(combo?.e,combo?.t).length===0;
-  $('rerollDecade').disabled=decadeRerolls<=0||validErasForTeam(combo?.t,combo?.e).length===0;
+function fmt(v){return v==null||!Number.isFinite(Number(v))?'—':Number(v).toFixed(1);}
+function indexData(){players.forEach(p=>{const key=k(p.t,p.e);if(!comboIndex.has(key))comboIndex.set(key,[]);comboIndex.get(key).push(p);if(!eraTeams.has(p.e))eraTeams.set(p.e,new Set());eraTeams.get(p.e).add(p.t);if(!teamEras.has(p.t))teamEras.set(p.t,new Set());teamEras.get(p.t).add(p.e);});for(const pool of comboIndex.values())pool.sort((a,b)=>a.n.localeCompare(b.n));}
+function usable(pool){return pool.filter(p=>!isUsed(p)&&availablePositions(p).length>0);}
+function validEras(){return DECADES.filter(e=>[...(eraTeams.get(e)||[])].some(t=>usable(comboIndex.get(k(t,e))||[]).length));}
+function validTeams(e,exclude){return [...(eraTeams.get(e)||[])].filter(t=>t!==exclude&&usable(comboIndex.get(k(t,e))||[]).length);}
+function validDecades(t,exclude){return [...(teamEras.get(t)||[])].filter(e=>e!==exclude&&usable(comboIndex.get(k(t,e))||[]).length);}
+function updateControls(){
+ const done=Object.values(roster).filter(Boolean).length;
+ $('count').textContent=done+' / 5';
+ $('roundKicker').textContent='ROUND '+String(Math.min(round,5)).padStart(2,'0');
+ $('roundBadge').textContent='PICK '+Math.min(round,5)+' OF 5';
+ $('spin').disabled=spinning||done===5||!!combo;
+ $('spin').textContent=done===5?'DRAFT COMPLETE':combo?'CHOOSE A PLAYER TO CONTINUE':'SPIN THE ERA';
+ $('rerollTeam').hidden=!combo||done===5;$('rerollDecade').hidden=!combo||done===5;
+ $('rerollTeam').disabled=spinning||teamRerolls<=0||validTeams(combo?.e,combo?.t).length===0;
+ $('rerollDecade').disabled=spinning||decadeRerolls<=0||validDecades(combo?.t,combo?.e).length===0;
+ $('simulate').hidden=done!==5;
 }
 function renderRoster(){
-  const chosen=Object.values(roster).filter(Boolean);
-  document.querySelectorAll('.slot').forEach(slot=>{
-    const pos=slot.dataset.pos,p=roster[pos];
-    slot.classList.toggle('filled',!!p);
-    slot.querySelector('.name').textContent=p?p.n:'Open spot';
-    slot.querySelector('.detail').textContent=p?(p.t+' · '+p.e):'Waiting for a pick';
-  });
-  $('average').innerHTML=(chosen.length?calculateTeamOVR(chosen).toFixed(1):'—')+'<small>TEAM OVR</small>';
-  $('summaryText').textContent=chosen.length===5?'Your five is complete. Simulate your season!':chosen.length+' of 5 players drafted.';
-  setSpinState();
+ const chosen=Object.values(roster).filter(Boolean);
+ document.querySelectorAll('.seat').forEach(el=>{const p=roster[el.dataset.pos];el.classList.toggle('filled',!!p);el.classList.toggle('empty',!p);el.querySelector('.seat-number').textContent=String(POS.indexOf(el.dataset.pos)+1).padStart(2,'0');el.querySelector('.seat-name').textContent=p?p.n:({PG:'Point Guard',SG:'Shooting Guard',SF:'Small Forward',PF:'Power Forward',C:'Center'}[el.dataset.pos]);el.querySelector('.seat-detail').textContent=p?(p.pts.toFixed(1)+' PPG · '+p.t+' '+p.e):'Open spot';});
+ $('average').innerHTML=(chosen.length?calculateTeamOVR(chosen).toFixed(1):'—')+' <small>OVR</small>';
+ updateControls();
 }
-function drawPair(){
-  const eras=allValidEras();
-  if(!eras.length){say('No valid team and decade draws remain. Start over to draft again.');return;}
-  const era=eras[Math.floor(Math.random()*eras.length)];
-  const teams=validTeamsForEra(era);
-  const team=teams[Math.floor(Math.random()*teams.length)];
-  showCombo(team,era,'spin');
+function setDraw(team,era,source){
+ combo={t:team,e:era};
+ $('reel').classList.remove('spinning');$('reelLabel').textContent='YOUR DRAW';$('reelTeam').textContent=TEAM_NAMES[team]||team;$('reelDecade').textContent=era;
+ $('poolHeading').textContent='PLAYER POOL';$('poolTitle').textContent=(TEAM_NAMES[team]||team).toUpperCase()+' · '+era;
+ $('poolCount').textContent=(comboIndex.get(k(team,era))||[]).length+' PLAYERS';
+ $('search').disabled=false;$('search').value='';
+ renderPlayers();$('chooseBox').classList.remove('show');
+ say(source==='team'?'New team rolled. The decade stayed the same.':source==='decade'?'New decade rolled. The team stayed the same.':'Pick one player from the full team-and-decade roster.');
+ updateControls();
 }
-function showCombo(team,era,source){
-  combo={t:team,e:era};
-  pending=null;
-  $('combo').classList.add('show');
-  $('teamValue').textContent=TEAM_NAMES[team]||team;
-  $('decadeValue').textContent=era;
-  $('draftTitle').textContent='Your draw is ready';
-  $('poolTitle').textContent=(TEAM_NAMES[team]||team)+' · '+era;
-  $('search').value='';
-  $('positionChoice').classList.remove('show');
-  renderPlayerPool();
-  $('pool').classList.add('show');
-  $('spin').disabled=true;
-  $('spin').textContent='PICK ONE PLAYER TO CONTINUE';
-  say(source==='team'?'Team re-rolled. The decade stayed the same.':source==='decade'?'Decade re-rolled. The team stayed the same.':'Pick one player from the complete team-and-decade list.');
-  setSpinState();
+function rollPair(){
+ if(spinning||combo||Object.values(roster).filter(Boolean).length===5)return;
+ const eras=validEras();if(!eras.length){say('No eligible team-and-decade draws remain. Start over to draft again.');return;}
+ const era=choose(eras),team=choose(validTeams(era));
+ animateDraw(team,era,'spin');
 }
-function renderPlayerPool(){
-  if(!combo)return;
-  const pool=comboIndex.get(key(combo.t,combo.e))||[];
-  const q=$('search').value.trim().toLowerCase();
-  const filtered=pool.filter(p=>!q||p.n.toLowerCase().includes(q)||p.pos.join(' ').toLowerCase().includes(q));
-  $('poolCount').textContent=filtered.length+' / '+pool.length+' players';
-  const list=$('playerList');list.innerHTML='';
-  if(!filtered.length){list.innerHTML='<div class="loading">No players match that search.</div>';return;}
-  for(const p of filtered){
-    const b=document.createElement('button');b.type='button';b.className='player';
-    const left=document.createElement('span');
-    const strong=document.createElement('strong');strong.textContent=p.n;
-    const sub=document.createElement('span');sub.className='sub';
-    const open=availablePositions(p);
-    sub.textContent=p.pos.join(' / ')+(isUsed(p)?' · ALREADY DRAFTED':open.length?' · Can play '+open.join(', '):' · No open position');
-    left.append(strong,sub);
-    const stats=document.createElement('span');stats.className='statline';
-    stats.innerHTML='<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST<br>'+fmt(p.stl)+' STL · '+fmt(p.blk)+' BLK';
-    b.append(left,stats);
-    b.disabled=isUsed(p)||open.length===0;
-    b.addEventListener('click',()=>choosePlayer(p));
-    list.append(b);
-  }
+function animateDraw(team,era,source){
+ spinning=true;$('spin').disabled=true;$('reel').classList.add('spinning');$('reelLabel').textContent='SPINNING…';say('Finding your franchise era…');
+ let n=0;const timer=setInterval(()=>{const e=choose(validEras());const t=choose(validTeams(e));$('reelTeam').textContent=TEAM_NAMES[t]||t;$('reelDecade').textContent=e;n++;if(n>=15){clearInterval(timer);setDraw(team,era,source);spinning=false;updateControls();}},75);
 }
-function choosePlayer(p){
-  pending=p;
-  $('positionPrompt').textContent='Put '+p.n+' in which position?';
-  const buttons=$('positionButtons');buttons.innerHTML='';
-  const open=availablePositions(p);
-  open.forEach(pos=>{
-    const b=document.createElement('button');b.type='button';b.className='pos-button';b.textContent=pos;
-    b.addEventListener('click',()=>draftPlayer(p,pos));
-    buttons.append(b);
-  });
-  $('positionChoice').classList.add('show');
-  say('Choose an open position for '+p.n+'.');
-  $('positionChoice').scrollIntoView({behavior:'smooth',block:'nearest'});
+function renderPlayers(){
+ if(!combo)return;
+ const pool=comboIndex.get(k(combo.t,combo.e))||[],q=$('search').value.trim().toLowerCase();
+ const list=pool.filter(p=>!q||p.n.toLowerCase().includes(q)||p.pos.join(' ').toLowerCase().includes(q));
+ $('poolCount').textContent=list.length+' / '+pool.length+' PLAYERS';
+ const root=$('playerList');root.innerHTML='';
+ if(!list.length){root.innerHTML='<div class="pool-empty">No players match your search.</div>';return;}
+ list.forEach(p=>{
+  const open=availablePositions(p),used=isUsed(p),b=document.createElement('button');b.type='button';b.className='player';b.disabled=used||open.length===0;
+  const left=document.createElement('span'),strong=document.createElement('strong'),sub=document.createElement('span');strong.textContent=p.n;sub.className='sub';sub.textContent=used?'ALREADY DRAFTED':open.length?'POSITION '+p.pos.join(' / '):'NO OPEN POSITION';left.append(strong,sub);
+  const stats=document.createElement('span');stats.className='stats';stats.innerHTML=mode==='blind'?'STATS HIDDEN':'<b>'+fmt(p.pts)+' PPG</b><br>'+fmt(p.reb)+' REB · '+fmt(p.ast)+' AST<br>'+fmt(p.stl)+' STL · '+fmt(p.blk)+' BLK';
+  b.append(left,stats);b.addEventListener('click',()=>showPositions(p));root.append(b);
+ });
 }
-function draftPlayer(p,pos){
-  if(roster[pos]||isUsed(p))return;
-  roster[pos]={...p,fromTeam:combo.t,fromEra:combo.e};
-  $('positionChoice').classList.remove('show');
-  $('pool').classList.remove('show');
-  $('combo').classList.remove('show');
-  combo=null;pending=null;
-  round=Object.values(roster).filter(Boolean).length+1;
-  $('draftTitle').textContent=round<=5?'Pick '+round+' is ready':'Your starting five is complete';
-  say(p.n+' drafted at '+pos+'.');
-  $('search').value='';
-  renderRoster();
-  if(round>5){$('spin').textContent='DRAFT COMPLETE';say('All five positions are filled. Run your 82-game simulation.');}
-  else $('spin').disabled=false;
+function showPositions(p){
+ const open=availablePositions(p),box=$('chooseBox'),buttons=$('positionButtons');buttons.innerHTML='';$('choosePrompt').textContent='DRAFT '+p.n+' AT:';
+ open.forEach(pos=>{const b=document.createElement('button');b.type='button';b.textContent=pos;b.addEventListener('click',()=>draft(p,pos));buttons.append(b);});
+ box.classList.add('show');box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function draft(p,pos){
+ if(roster[pos]||isUsed(p))return;
+ roster[pos]={...p};combo=null;round=Object.values(roster).filter(Boolean).length+1;
+ $('chooseBox').classList.remove('show');$('pool').style.opacity='.55';$('pool').style.pointerEvents='none';
+ $('reelLabel').textContent='PICK LOCKED';$('reelTeam').textContent='Next round';$('reelDecade').textContent='Spin again for another team + decade';
+ $('spin').textContent=round>5?'DRAFT COMPLETE':'SPIN FOR NEXT ERA';say(p.n+' drafted at '+pos+'.');
+ renderRoster();
+ if(round>5){$('poolTitle').textContent='YOUR STARTING FIVE IS COMPLETE';$('poolCount').textContent='5 PICKS';$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';$('playerList').innerHTML='<div class="pool-empty">Your starting five is complete. Simulate your 82-game season.</div>';}
+ else{$('poolTitle').textContent='NEXT DRAW';$('poolCount').textContent='ROUND '+String(round).padStart(2,'0');$('playerList').innerHTML='<div class="pool-empty">Spin again to reveal your next team and decade.</div>';$('search').disabled=true;$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';}
 }
 function rerollTeam(){
-  if(!combo||teamRerolls<=0)return;
-  const teams=validTeamsForEra(combo.e,combo.t);
-  if(!teams.length){say('No other eligible teams in this decade.');return;}
-  teamRerolls--;
-  const team=teams[Math.floor(Math.random()*teams.length)];
-  $('rerollTeam').textContent='Re-roll team · '+teamRerolls+' left';
-  showCombo(team,combo.e,'team');
+ if(!combo||teamRerolls<=0||spinning)return;const list=validTeams(combo.e,combo.t);if(!list.length)return;
+ teamRerolls--;const t=choose(list);$('rerollTeam').textContent='↻ Team re-roll · '+teamRerolls+' left';animateDraw(t,combo.e,'team');
 }
 function rerollDecade(){
-  if(!combo||decadeRerolls<=0)return;
-  const eras=validErasForTeam(combo.t,combo.e);
-  if(!eras.length){say('No other eligible decades for this team.');return;}
-  decadeRerolls--;
-  const era=eras[Math.floor(Math.random()*eras.length)];
-  $('rerollDecade').textContent='Re-roll decade · '+decadeRerolls+' left';
-  showCombo(combo.t,era,'decade');
+ if(!combo||decadeRerolls<=0||spinning)return;const list=validDecades(combo.t,combo.e);if(!list.length)return;
+ decadeRerolls--;const e=choose(list);$('rerollDecade').textContent='↻ Decade re-roll · '+decadeRerolls+' left';animateDraw(combo.t,e,'decade');
 }
 function calculateTeamOVR(list){
-  const positive=stat=>list.filter(p=>p[stat]!==null&&p[stat]!==undefined&&Number(p[stat])>0);
-  const adj=stat=>{const vals=positive(stat);return vals.length?vals.reduce((s,p)=>s+Number(p[stat]),0)*5/vals.length:0;};
-  return Math.round(100*(list.reduce((s,p)=>s+(p.pts||0),0)/bench.ppg*weights.ppg+
-    list.reduce((s,p)=>s+(p.reb||0),0)/bench.rpg*weights.rpg+
-    list.reduce((s,p)=>s+(p.ast||0),0)/bench.apg*weights.apg+
-    adj('stl')/bench.spg*weights.spg+adj('blk')/bench.bpg*weights.bpg)*10)/10;
+ const adj=stat=>{const valid=list.filter(p=>p[stat]!=null&&Number(p[stat])>0);return valid.length?valid.reduce((s,p)=>s+Number(p[stat]),0)*5/valid.length:0;};
+ return Math.round(100*(list.reduce((s,p)=>s+(p.pts||0),0)/133.4*.46+list.reduce((s,p)=>s+(p.reb||0),0)/39.7*.25+list.reduce((s,p)=>s+(p.ast||0),0)/29.3*.18+adj('stl')/6.1*.07+adj('blk')/3.2*.04)*10)/10;
 }
 function simulate(){
-  const list=Object.values(roster).filter(Boolean);
-  if(list.length!==5)return;
-  const ovr=calculateTeamOVR(list);
-  const wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
-  $('record').textContent=wins+'–'+(82-wins);
-  const grade=wins===82?'PERFECT SEASON! Your roster reached 82–0.':wins>=72?'Historic team. You are right near the top.':wins>=62?'Dynasty-level roster.':wins>=57?'Contender.':wins>=50?'Playoff team.':'Keep drafting and try a different combination.';
-  $('resultText').textContent='Team OVR '+ovr.toFixed(1)+' · '+grade;
-  $('result').classList.add('show');
-  $('result').scrollIntoView({behavior:'smooth',block:'nearest'});
+ const list=Object.values(roster).filter(Boolean);if(list.length!==5)return;
+ const ovr=calculateTeamOVR(list),wins=Math.round(82*Math.pow(Math.min(ovr/110,1),1.15));
+ $('record').textContent=wins+'–'+(82-wins);$('resultText').textContent='TEAM OVR '+ovr.toFixed(1)+' · '+(wins===82?'PERFECT SEASON! You went 82–0.':wins>=72?'Historic roster.':wins>=62?'Dynasty-level team.':wins>=57?'Contender.':wins>=50?'Playoff team.':'Keep drafting and try another combination.');
+ $('result').classList.add('show');$('result').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function reset(){
-  roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;pending=null;teamRerolls=1;decadeRerolls=1;round=1;
-  $('combo').classList.remove('show');$('pool').classList.remove('show');$('positionChoice').classList.remove('show');$('result').classList.remove('show');
-  $('rerollTeam').textContent='Re-roll team · 1 left';$('rerollDecade').textContent='Re-roll decade · 1 left';
-  $('draftTitle').textContent='Ready for your first spin?';$('roundBadge').textContent='ROUND 1 / 5';$('spin').textContent='🎰 SPIN FOR TEAM + DECADE';say('One team re-roll and one decade re-roll are available per game.');
-  renderRoster();
+ roster={PG:null,SG:null,SF:null,PF:null,C:null};combo=null;teamRerolls=1;decadeRerolls=1;round=1;spinning=false;
+ $('rerollTeam').textContent='↻ Team re-roll · 1 left';$('rerollDecade').textContent='↻ Decade re-roll · 1 left';$('result').classList.remove('show');$('chooseBox').classList.remove('show');$('pool').classList.remove('show');$('playerList').innerHTML='<div class="pool-empty">Press SPIN THE ERA to reveal a team and decade, then draft from its complete player list.</div>';$('poolTitle').textContent='YOUR DRAW WILL APPEAR HERE';$('poolCount').textContent='Spin to reveal a squad';$('search').value='';$('search').disabled=true;
+ $('reel').classList.remove('spinning');$('reelLabel').textContent='READY WHEN YOU ARE';$('reelTeam').textContent='Your next team';$('reelDecade').textContent='Team + decade will appear here';$('spin').textContent='SPIN THE ERA';$('pool').style.opacity='1';$('pool').style.pointerEvents='auto';
+ say('Each round: spin once, then choose one player from the squad list.');renderRoster();
 }
-$('spin').addEventListener('click',drawPair);
-$('rerollTeam').addEventListener('click',rerollTeam);
-$('rerollDecade').addEventListener('click',rerollDecade);
-$('search').addEventListener('input',renderPlayerPool);
-$('restart').addEventListener('click',reset);
-$('simulate').addEventListener('click',simulate);
+$('spin').addEventListener('click',rollPair);$('rerollTeam').addEventListener('click',rerollTeam);$('rerollDecade').addEventListener('click',rerollDecade);$('search').addEventListener('input',renderPlayers);$('restart').addEventListener('click',reset);$('simulate').addEventListener('click',simulate);
+$('modeControl').addEventListener('click',e=>{const b=e.target.closest('button[data-mode]');if(!b)return;mode=b.dataset.mode;$('modeControl').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));if(combo)renderPlayers();});
+$('positionControl').addEventListener('click',e=>{const b=e.target.closest('button[data-flex]');if(!b)return;flexible=b.dataset.flex==='on';$('positionControl').querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===b));if(combo)renderPlayers();});
 try{
-  const response=await fetch('players.json',{cache:'force-cache'});
-  if(!response.ok)throw new Error('Player database request failed · HTTP '+response.status);
-  players=await response.json();
-  buildIndexes();
-  const total=[...comboIndex.values()].reduce((n,a)=>n+a.length,0);
-  $('spin').disabled=false;
-  $('spin').textContent='🎰 SPIN FOR TEAM + DECADE';
-  $('status').textContent=total.toLocaleString()+' player entries loaded across '+comboIndex.size+' team-and-decade combinations. Spin to begin.';
-  renderRoster();
-}catch(error){
-  $('spin').disabled=true;
-  $('spin').textContent='PLAYER DATABASE NOT AVAILABLE';
-  say('Could not load the player database: '+error.message+'. Refresh the page to try again.');
-  $('playerList').innerHTML='<div class="error">The player list could not be loaded.</div>';
-}
+ const response=await fetch('players.json',{cache:'force-cache'});if(!response.ok)throw new Error('Player database returned HTTP '+response.status);
+ players=await response.json();indexData();$('status').textContent=players.length.toLocaleString()+' players loaded across '+comboIndex.size+' team-and-decade squads. Spin to begin.';renderRoster();reset();
+}catch(e){$('spin').disabled=true;$('spin').textContent='PLAYER DATABASE NOT AVAILABLE';say('Could not load the player database: '+e.message);}
 })();
 </script>
 </body>
