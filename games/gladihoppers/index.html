@@ -1,202 +1,52 @@
-<!doctype html>
-<html lang="en">
+
+<!DOCTYPE html>
+<html>
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Gladihoppers · Modded</title>
-  <style>
-    *{box-sizing:border-box}
-    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#05030a;color:#fff;font-family:system-ui,sans-serif}
-    #unity-container{position:absolute;inset:0;width:100%;height:100%;touch-action:none}#unity-container canvas{touch-action:none}
-    #gh-status{position:fixed;z-index:20;left:12px;right:12px;bottom:12px;max-height:48vh;overflow:auto;padding:14px;background:rgba(12,8,22,.96);border:1px solid #7050a8;border-radius:12px;box-shadow:0 8px 35px #000b;font-size:13px}
-    #gh-status h2{font-size:15px;margin:0 0 8px;color:#c4b5fd}
-    #gh-status p{margin:5px 0;color:#ddd6fe}
-    #gh-checks{display:grid;gap:5px;margin:10px 0}
-    .gh-check{padding:7px 9px;border-radius:7px;background:#ffffff0d;overflow-wrap:anywhere}
-    .gh-check b{color:#fff}
-    .gh-check.ok{border-left:3px solid #34d399}
-    .gh-check.bad{border-left:3px solid #fb7185}
-    .gh-check.wait{border-left:3px solid #fbbf24}
-    #gh-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
-    #gh-actions button{border:1px solid #a78bfa;border-radius:8px;background:#6d28d9;color:#fff;padding:8px 12px;font-weight:700;cursor:pointer}
-    #gh-actions button:disabled{opacity:.5;cursor:wait}
-    #gh-note{color:#bdb2d1!important;font-size:11px}
-    #gh-status.minimized{max-height:none;left:auto;width:auto;max-width:calc(100vw - 24px);padding:8px 12px}
-    #gh-status.minimized #gh-checks,#gh-status.minimized p,#gh-status.minimized #gh-actions{display:none}
-  </style>
-<!-- Fresh GitHub Pages deployment trigger -->
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Gladihoppers</title>
+
+    <!-- Load game files directly from GitHub -->
+    <base href="https://raw.githubusercontent.com/bubbls/UGS-Assets/main/gladihoppper/">
+
+    <script>
+        window.fileMergerConfig = {
+            files: [
+                { name: 'Gladihoppers.data.unityweb', parts: 2 },
+                { name: 'Gladihoppers.wasm.code.unityweb', parts: 2 }
+            ],
+            basePath: 'https://raw.githubusercontent.com/bubbls/UGS-Assets/main/gladihoppper/Build/',
+            debug: true
+        };
+    </script>
+
+    <!-- Replace jsDelivr with raw GitHub -->
+    <script src="https://raw.githubusercontent.com/bubbls/UGS-Assets/main/gladihoppper/merge.js"></script>
+
+    <script>
+        window.config = {
+            loader: 'unity',
+            debug: false,
+            maxRatio: 16 / 9,
+            minRatio: 9 / 16,
+
+            title: 'Gladihoppers',
+            thumbnail: 'patch/png/null.png',
+            numScreenshots: 5,
+
+            unityVersion: '2019.3.13f1',
+            unityWebglBuildUrl: 'Build/Gladihoppers.json',
+
+            fileSize: 23,
+            cachedDecompressedFileSizes: {
+                'Gladihoppers.data.unityweb': 17409938,
+                'Gladihoppers.wasm.code.unityweb': 6410659,
+                'Gladihoppers.wasm.framework.unityweb': 91463
+            }
+        };
+    </script>
 </head>
 <body>
-  <div id="unity-container"></div>
-  <section id="gh-status" role="status" aria-live="polite">
-    <h2>GLADIHOPPERS CONNECTION CHECK</h2>
-    <p id="gh-summary">Checking whether the game files can be reached…</p>
-    <div id="gh-checks"></div>
-    <div id="gh-actions">
-      <button id="gh-retry" type="button">RUN CHECK AGAIN</button>
-      <button id="gh-hide" type="button">MINIMIZE</button>
-    </div>
-    <p id="gh-note">This check does not require Developer Tools. If a check fails, its row will show the exact stage and error.</p>
-  </section>
-  <script>
-  (() => {
-    const LOADER_URL=new URL('UnityLoader.2019.2.js',location.href).href;
-    // Keep the Unity configuration in this page so the browser does not need
-    // to request a separate .json file (some school filters return HTTP 403).
-    const GAME_CONFIG={companyName:'Dreamon Studios',productName:'Gladihoppers',productVersion:'3.0.1',dataUrl:'https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.data.unityweb',wasmCodeUrl:'https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.wasm.code.unityweb',wasmFrameworkUrl:'https://rawcdn.githack.com/genizy/gh/gh-pages/Build/Gladihoppers.wasm.framework.unityweb',graphicsAPI:['WebGL 2.0','WebGL 1.0'],webglContextAttributes:{preserveDrawingBuffer:false},splashScreenStyle:'Dark',backgroundColor:'#231F20',cacheControl:{default:'must-revalidate'},developmentBuild:false,multithreading:false,unityVersion:'2019.3.13f1',cachedDecompressedFileSizes:{'Gladihoppers.data.unityweb':17409938,'Gladihoppers.wasm.code.unityweb':6410659,'Gladihoppers.wasm.framework.unityweb':91463}};
-    const JSON_URL=URL.createObjectURL(new Blob([JSON.stringify(GAME_CONFIG)],{type:'application/json'}));
-    const box=document.getElementById('gh-status');
-    const checks=document.getElementById('gh-checks');
-    const summary=document.getElementById('gh-summary');
-    const retry=document.getElementById('gh-retry');
-    let started=false;
-    let touchBridgeInstalled=false;
-    // Older Unity WebGL touch callbacks can abort inside the Gladihoppers
-    // build on some touch-enabled browsers. Convert one-finger gestures to
-    // mouse events before Unity sees the native touch events.
-    function installTouchMouseBridge(){
-      if(touchBridgeInstalled)return;
-      const container=document.getElementById('unity-container');
-      const translate={touchstart:'mousedown',touchmove:'mousemove',touchend:'mouseup',touchcancel:'mouseup'};
-      function handleTouch(event){
-        if(!container||!container.contains(event.target))return;
-        const touch=(event.changedTouches&&event.changedTouches[0])||(event.touches&&event.touches[0]);
-        if(!touch)return;
-        const canvas=container.querySelector('canvas');
-        if(!canvas)return;
-        event.preventDefault();
-        event.stopPropagation();
-        event.stopImmediatePropagation();
-        const type=translate[event.type];
-        if(!type)return;
-        canvas.dispatchEvent(new MouseEvent(type,{
-          bubbles:true,cancelable:true,view:window,detail:1,
-          screenX:touch.screenX,screenY:touch.screenY,
-          clientX:touch.clientX,clientY:touch.clientY,
-          button:0,buttons:(type==='mouseup'?0:1)
-        }));
-      }
-      ['touchstart','touchmove','touchend','touchcancel'].forEach(type=>{
-        document.addEventListener(type,handleTouch,{capture:true,passive:false});
-      });
-      touchBridgeInstalled=true;
-      row('Touch compatibility','ok','single-finger taps and drags are forwarded as mouse input; native Unity touch callbacks are blocked');
-    }
-
-    function row(name,state,detail){
-      let el=document.getElementById('gh-'+name.replace(/[^a-z0-9]/gi,'-'));
-      if(!el){el=document.createElement('div');el.id='gh-'+name.replace(/[^a-z0-9]/gi,'-');el.className='gh-check';checks.append(el);}
-      el.className='gh-check '+state;
-      el.innerHTML='<b>'+name+':</b> '+String(detail).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-    }
-    async function headCheck(name,url){
-      row(name,'wait','checking host response…');
-      const controller=new AbortController();
-      const timer=setTimeout(()=>controller.abort(),12000);
-      try{
-        const response=await fetch(url,{method:'HEAD',cache:'no-store',mode:'cors',signal:controller.signal});
-        if(!response.ok)throw new Error('HTTP '+response.status+' '+response.statusText);
-        const size=response.headers.get('content-length');
-        row(name,'ok','reachable · HTTP '+response.status+(size?' · '+Math.round(Number(size)/1048576*10)/10+' MB':''));
-        return true;
-      }catch(error){
-        const message=error.name==='AbortError'?'timed out after 12 seconds':error.message||'network/CORS error';
-        row(name,'bad',message+' · '+new URL(url).hostname);
-        return false;
-      }finally{clearTimeout(timer);}
-    }
-    async function loadLoader(){
-      row('Unity loader','wait','downloading loader script…');
-      await new Promise((resolve,reject)=>{
-        const script=document.createElement('script');
-        script.src=LOADER_URL;
-        script.onload=resolve;
-        script.onerror=()=>reject(new Error('Script could not load (blocked host or network error)'));
-        document.head.append(script);
-      });
-      if(!window.UnityLoader)throw new Error('Script loaded but UnityLoader was not defined');
-      row('Unity loader','ok','loaded successfully');
-    }
-    async function startGame(){
-      if(started)return;
-      installTouchMouseBridge();
-      started=true;retry.disabled=true;checks.innerHTML='';
-      summary.textContent='Testing the game host before starting Unity…';
-      try{
-        await loadLoader();
-      }catch(error){
-        row('Unity loader','bad',error.message);
-        summary.textContent='The Unity loader cannot be reached. The game cannot start until this host is accessible.';
-        started=false;retry.disabled=false;return;
-      }
-      window.addEventListener('error',event=>{
-      const err=event.error;
-      const stack=err&&err.stack?err.stack:'';
-      const detail=(event.message||'unknown error')+
-        (event.filename?' · '+event.filename.split('/').pop()+':'+event.lineno:'')+
-        (stack?' · stack: '+stack:'');
-      row('JavaScript error','bad',detail);
-      summary.textContent='A browser error stopped Unity startup. The full error stack is shown above.';
-      box.classList.remove('minimized');
-    });
-    window.addEventListener('unhandledrejection',event=>{
-      const reason=event.reason;
-      row('Startup promise error','bad',reason&&reason.message?reason.message:String(reason||'unknown rejection'));
-      summary.textContent='A startup operation failed. See the error row above.';
-      box.classList.remove('minimized');
-    });
-    const config=GAME_CONFIG;
-      // UnityLoader 2019.2 reads this global while calculating download progress.
-      // The original host defines it before loading Unity; our embedded config must do the same.
-      window.config=config;
-      row('Game configuration','ok','loaded from the page · Unity '+config.unityVersion);
-      const assets=[
-        ['Game data',config.dataUrl],
-        ['WebAssembly code',config.wasmCodeUrl],
-        ['WebAssembly framework',config.wasmFrameworkUrl]
-      ];
-      const results=await Promise.all(assets.map(([name,url])=>headCheck(name,url)));
-      if(results.some(ok=>!ok)){
-        summary.textContent='At least one required game file is unreachable from this browser. This is why loading stays at 0%.';
-        started=false;retry.disabled=false;return;
-      }
-      summary.textContent='All files are reachable. Starting Gladihoppers…';
-      try{
-        const idle=()=>{};
-        window.PokiSDK={init:()=>Promise.resolve(),commercialBreak:()=>Promise.resolve(),rewardedBreak:()=>Promise.resolve(false)};
-        for(const method of ['customEvent','destroyAd','displayAd','gameInteractive','gameLoadingFinished','gameLoadingProgress','gameLoadingStart','gameplayStart','gameplayStop','happyTime','roundEnd','roundStart','setPlayerAge','togglePlayerAdvertisingConsent'])window.PokiSDK[method]=idle;
-        window.initPokiBridge=function(name){
-          const send=(method,value)=>window.unityGame&&window.unityGame.SendMessage(name,method,value);
-          window.commercialBreak=()=>Promise.resolve().then(()=>send('commercialBreakCompleted'));
-          window.rewardedBreak=()=>Promise.resolve().then(()=>send('rewardedBreakCompleted','false'));
-          if(window.unityGame)send('ready');
-          else window.addEventListener('load',()=>send('ready'),{once:true});
-        };
-        window.unityGame=window.gameInstance=UnityLoader.instantiate('unity-container',JSON_URL,{
-          onProgress(instance,value){
-            summary.textContent='Loading Gladihoppers… '+Math.round(value*100)+'%';
-            if(value>=1){box.classList.add('minimized');}
-          },
-          onerror(error){
-            row('Unity runtime','bad',error&&error.message?error.message:String(error||'unknown Unity error'));
-            summary.textContent='Unity reported an error while starting the game.';
-            box.classList.remove('minimized');
-          }
-        });
-        row('Unity runtime','wait','game files passed checks; waiting for Unity to initialize');
-        // Diagnostic isolation: keep the custom mod-menu script out of Unity startup.
-        // It can be re-enabled after the unmodified game is confirmed to initialize.
-        row('Mod menu','wait','temporarily disabled while testing the Unity startup crash');
-      }catch(error){
-        row('Unity runtime','bad',error.message||String(error));
-        summary.textContent='The Unity game could not be started.';
-        started=false;retry.disabled=false;
-      }
-    }
-    retry.addEventListener('click',()=>{started=false;startGame();});
-    document.getElementById('gh-hide').addEventListener('click',()=>box.classList.toggle('minimized'));
-    startGame();
-  })();
-  </script>
+    <script src="patch/js/poki-master-loader.js"></script>
 </body>
 </html>
