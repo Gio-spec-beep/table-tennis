@@ -39,6 +39,14 @@
   let classes = null;
   let lastScan = 0;
   let player = null;
+  let messageUntil = 0;
+
+  // Show a result message and keep the background status check from
+  // overwriting it for a few seconds.
+  function say(text) {
+    status.textContent = text;
+    messageUntil = Date.now() + 4000;
+  }
 
   function textAt(m, ptr) {
     if (!ptr || ptr >= m.HEAPU8.length) return '';
@@ -129,15 +137,15 @@
 
   function applyStats() {
     const m = getRuntime();
-    if (!m) { status.textContent = 'The game is still loading. Try again after the fight starts.'; return; }
+    if (!m) { say('The game is still loading. Try again after the fight starts.'); return; }
     const now = Date.now();
     if (!classes || now - lastScan > 3000) {
       classes = resolveClasses(m);
       lastScan = now;
     }
-    if (!classes) { status.textContent = 'This game build did not expose the expected player stats.'; return; }
+    if (!classes) { say('This game build did not expose the expected player stats.'); return; }
     player = findPlayer(m);
-    if (!player) { status.textContent = 'No single-player fighter found. Start a single-player fight first.'; return; }
+    if (!player) { say('No single-player fighter found. Start a single-player fight first.'); return; }
 
     const health = Math.max(0, Number(panel.querySelector('#gh-health').value) || 0);
     const damage = Math.max(0, Number(panel.querySelector('#gh-damage').value) || 0);
@@ -155,12 +163,12 @@
     for (const [address, type, amount, cap] of changes) {
       if (amount > 0 && saveAndAdd(m, address, type, amount, cap)) applied++;
     }
-    status.textContent = applied ? 'Stats added to your single-player fighter. Apply again to add more.' : 'Enter an amount greater than zero.';
+    say(applied ? 'Stats added to your single-player fighter. Apply again to add more.' : 'Enter an amount greater than zero.');
   }
 
   function resetStats() {
     const m = getRuntime();
-    if (!m) { status.textContent = 'Game runtime is not ready.'; return; }
+    if (!m) { say('Game runtime is not ready.'); return; }
     let restored = 0;
     for (const [address, saved] of originals) {
       const heap = saved.type === 'float' ? m.HEAPF32 : m.HEAP32;
@@ -170,7 +178,7 @@
       }
     }
     originals.clear();
-    status.textContent = restored ? 'Your original stats have been restored.' : 'No modified stats to reset.';
+    say(restored ? 'Your original stats have been restored.' : 'No modified stats to reset.');
   }
 
   panel.querySelector('#gh-apply').addEventListener('click', applyStats);
@@ -193,7 +201,7 @@
   }, true);
 
   setInterval(() => {
-    if (panel.classList.contains('open')) {
+    if (panel.classList.contains('open') && Date.now() > messageUntil) {
       const m = getRuntime();
       if (!m) { status.textContent = 'Loading Gladihoppers…'; return; }
       const now = Date.now();
