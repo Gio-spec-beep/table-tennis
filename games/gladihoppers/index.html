@@ -66,7 +66,8 @@
             });
 
             // Same chain poki-master-loader.js used, but from this repo's copies.
-            var scripts = ['merge.js', 'patch/js/poki-sdk.js', 'patch/js/poki-unity.js'];
+            // mod-menu.js reads window.unityGame (set by poki-unity.js); toggle with "/".
+            var scripts = ['merge.js', 'patch/js/poki-sdk.js', 'patch/js/poki-unity.js', 'mod-menu.js'];
             (function next(i) {
                 if (i >= scripts.length) return;
                 var s = document.createElement('script');
