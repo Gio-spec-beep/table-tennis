@@ -1,52 +1,76 @@
+// Gladihoppers career mod menu.
+// Edits your saved career gladiator (GameMaster.cPlayerStats) and saves it with
+// the game's own GameMaster.SaveCurrentCareer(), so upgrades last between fights
+// and page reloads. Toggle with "/" or the site's MOD MENU button.
 (() => {
   'use strict';
 
   const style = document.createElement('style');
   style.textContent = `
     #gh-mod-panel,#gh-mod-panel *{box-sizing:border-box}
-    #gh-mod-panel{position:fixed;top:16px;right:16px;z-index:2147483647;width:310px;max-width:calc(100vw - 24px);max-height:calc(100vh - 32px);overflow:auto;display:none;color:#f5f3ff;background:rgba(15,10,27,.97);border:1px solid #8b5cf6;border-radius:14px;box-shadow:0 16px 55px #000a;padding:16px;font:14px/1.4 system-ui,sans-serif}
+    #gh-mod-panel{position:fixed;top:12px;right:12px;z-index:2147483647;width:360px;max-width:calc(100vw - 24px);max-height:calc(100vh - 24px);overflow:auto;display:none;color:#f5f3ff;background:rgba(15,10,27,.97);border:1px solid #8b5cf6;border-radius:14px;box-shadow:0 16px 55px #000a;padding:14px 16px;font:13px/1.35 system-ui,sans-serif}
     #gh-mod-panel.open{display:block}
-    #gh-mod-panel h2{font-size:17px;margin:0 0 5px;color:#c4b5fd}
-    #gh-mod-panel p{font-size:12px;color:#c4bdd3;margin:5px 0 13px}
-    #gh-mod-panel .gh-row{display:grid;grid-template-columns:1fr 105px;gap:12px;align-items:center;margin:10px 0}
+    #gh-mod-panel h2{font-size:16px;margin:0 0 3px;color:#c4b5fd}
+    #gh-mod-panel h3{font-size:12px;margin:14px 0 4px;color:#a78bfa;letter-spacing:.06em}
+    #gh-mod-panel p{font-size:11.5px;color:#c4bdd3;margin:3px 0 8px}
+    #gh-mod-panel .gh-row{display:grid;grid-template-columns:110px 1fr;gap:10px;align-items:center;margin:6px 0}
     #gh-mod-panel label{font-weight:650}
-    #gh-mod-panel input{width:100%;min-width:0;border:1px solid #51416e;border-radius:8px;background:#090611;color:white;padding:8px}
-    #gh-mod-panel button{border:1px solid #a78bfa;border-radius:9px;background:#6d28d9;color:white;padding:9px 12px;font-weight:750;cursor:pointer}
+    #gh-mod-panel input,#gh-mod-panel select{width:100%;min-width:0;border:1px solid #51416e;border-radius:7px;background:#090611;color:white;padding:6px 7px;font:inherit}
+    #gh-mod-panel button{border:1px solid #a78bfa;border-radius:9px;background:#6d28d9;color:white;padding:9px 12px;font-weight:750;cursor:pointer;font:inherit;font-weight:750}
+    #gh-mod-panel button.gh-secondary{background:transparent}
     #gh-mod-panel button:hover{filter:brightness(1.15)}
-    #gh-mod-panel .gh-actions{display:flex;gap:8px;margin-top:14px}
+    #gh-mod-panel button:disabled{opacity:.5;cursor:not-allowed}
+    #gh-mod-panel .gh-actions{display:flex;gap:8px;margin-top:12px}
     #gh-mod-panel .gh-actions button{flex:1}
-    #gh-mod-panel #gh-status{margin:12px 0 0;padding:9px;border-radius:8px;background:#ffffff0c;color:#ddd6fe;min-height:36px}
+    #gh-mod-panel #gh-status{margin:10px 0 0;padding:8px;border-radius:8px;background:#ffffff0c;color:#ddd6fe;min-height:34px}
     #gh-mod-panel .gh-hotkey{color:#a78bfa;font-weight:800}
   `;
   document.head.append(style);
+
+  const SLOTS = [
+    // [CharacterStats field, ItemManager array, item class, required fields, stat to show]
+    ['weapon', 'weapon', 'Weapon', ['mat', 'melee', 'range'], 'melee', 'dmg'],
+    ['shield', 'shield', 'Shield', ['radius', 'health', 'broken'], 'health', 'hp'],
+    ['armor', 'armor', 'Armor', ['armor', 'weight', 'special'], 'armor', 'armor'],
+    ['helmet', 'helmet', 'Helmet', ['armor', 'weight', 'special'], 'armor', 'armor'],
+    ['gloves', 'gloves', 'Gloves', ['armor', 'weight', 'special'], 'armor', 'armor'],
+    ['pants', 'pants', 'Pants', ['armor', 'weight', 'special'], 'armor', 'armor'],
+    ['shoes', 'shoes', 'Shoes', ['armor', 'weight', 'special'], 'armor', 'armor']
+  ];
+  const label = s => s[0].toUpperCase() + s.slice(1);
 
   const panel = document.createElement('section');
   panel.id = 'gh-mod-panel';
   panel.setAttribute('aria-label', 'Gladihoppers mod menu');
   panel.innerHTML = `
     <h2>GLADIHOPPERS MOD MENU</h2>
-    <p>Single-player stat editor · Toggle with <span class="gh-hotkey">/</span></p>
-    <div class="gh-row"><label for="gh-health">Add health</label><input id="gh-health" type="number" min="0" max="100000" step="10" value="100"></div>
-    <div class="gh-row"><label for="gh-damage">Add melee damage</label><input id="gh-damage" type="number" min="0" max="5000" step="1" value="5"></div>
-    <div class="gh-row"><label for="gh-speed">Add movement speed</label><input id="gh-speed" type="number" min="0" max="100" step="0.1" value="1"></div>
-    <div class="gh-row"><label for="gh-reach">Add weapon reach</label><input id="gh-reach" type="number" min="0" max="50" step="0.1" value="0.5"></div>
-    <div class="gh-actions"><button id="gh-apply" type="button">APPLY STATS</button><button id="gh-reset" type="button">RESET</button></div>
-    <div id="gh-status" role="status">Waiting for a single-player fight…</div>
+    <p>Upgrades your saved career gladiator. Changes are saved and carry over to every fight. Toggle with <span class="gh-hotkey">/</span></p>
+    <h3>STATS</h3>
+    <div class="gh-row"><label for="gh-strength">Strength</label><input id="gh-strength" type="number" min="1" max="100" step="1"></div>
+    <div class="gh-row"><label for="gh-endurance">Endurance</label><input id="gh-endurance" type="number" min="1" max="100" step="1"></div>
+    <div class="gh-row"><label for="gh-maxHealth">Max health</label><input id="gh-maxHealth" type="number" min="1" max="100000" step="10"></div>
+    <div class="gh-row"><label for="gh-gold">Gold</label><input id="gh-gold" type="number" min="0" max="10000000" step="100"></div>
+    <div class="gh-row"><label for="gh-skillPoints">Skill points</label><input id="gh-skillPoints" type="number" min="0" max="1000" step="1"></div>
+    <h3>EQUIPMENT</h3>
+    ${SLOTS.map(([k]) => `<div class="gh-row"><label for="gh-${k}">${label(k)}</label><select id="gh-${k}"></select></div>`).join('')}
+    <div class="gh-actions"><button id="gh-save" type="button">SAVE UPGRADES</button><button id="gh-reload" class="gh-secondary" type="button">RELOAD</button></div>
+    <div id="gh-status" role="status">Loading Gladihoppers…</div>
   `;
   document.body.append(panel);
 
-  const status = panel.querySelector('#gh-status');
-  const originals = new Map();
-  let classes = null;
-  let lastScan = 0;
-  let player = null;
+  const $ = id => panel.querySelector('#gh-' + id);
+  const status = $('status');
   let messageUntil = 0;
-
-  // Show a result message and keep the background status check from
-  // overwriting it for a few seconds.
-  function say(text) {
+  function say(text, hold) {
     status.textContent = text;
-    messageUntil = Date.now() + 4000;
+    messageUntil = hold ? Date.now() + 5000 : 0;
+  }
+
+  // ---- reading Unity IL2CPP memory -------------------------------------
+  function getRuntime() {
+    const runtime = window.unityGame || window.gameInstance;
+    const m = runtime && runtime.Module;
+    return m && m.HEAPU32 && m.HEAPU8 && m.HEAP32 && m.HEAPF32 ? m : null;
   }
 
   function textAt(m, ptr) {
@@ -56,6 +80,16 @@
     return out;
   }
 
+  function csString(m, ptr) {
+    if (!ptr || ptr + 12 >= m.HEAPU8.length) return '';
+    const len = m.HEAP32[(ptr + 8) >>> 2];
+    if (len < 0 || len > 200) return '';
+    let out = '';
+    for (let i = 0; i < len; i++) out += String.fromCharCode(m.HEAPU16[((ptr + 12) >>> 1) + i]);
+    return out;
+  }
+
+  // Finds an IL2CPP class by name and returns its field offsets.
   function findClass(m, name, required) {
     const u = m.HEAPU32, bytes = m.HEAPU8, first = name.charCodeAt(0);
     for (let i = 2; i < u.length - 32; i++) {
@@ -65,133 +99,168 @@
       const fields = u[(klass + 64) >>> 2];
       if (!fields || fields > bytes.length - 20) continue;
       const offsets = {};
-      for (let j = 0; j < 100; j++) {
+      for (let j = 0; j < 200; j++) {
         const f = fields + j * 20;
         if (f + 20 > bytes.length || u[(f + 8) >>> 2] !== klass) break;
-        offsets[textAt(m, u[f >>> 2])] = u[(f + 12) >>> 2];
+        const fname = textAt(m, u[f >>> 2]), off = u[(f + 12) >>> 2];
+        if (!/^[A-Za-z_<][\w<>.$`]*$/.test(fname) || off > 0xffff) break; // ran past the field list
+        offsets[fname] = off;
       }
       if (required.every(key => Number.isInteger(offsets[key]))) return { klass, offsets };
     }
     return null;
   }
 
-  function resolveClasses(m) {
-    const definitions = {
-      CharacterStats: ['cMaster', 'health', 'maxHealth', 'melee'],
-      CharacterMaster: ['isMultiplayer', 'cStats', 'cMotor', 'battleInput'],
-      BattleInput: ['cMaster', 'isP1'],
-      CharacterMotor: ['cMaster', 'alive', 'maxVel', 'weaponRange']
-    };
-    const found = {};
-    for (const [name, fields] of Object.entries(definitions)) {
-      found[name] = findClass(m, name, fields);
-      if (!found[name]) return null;
+  function fieldsOf(m, klass) {
+    const u = m.HEAPU32, fields = u[(klass + 64) >>> 2], offsets = {};
+    if (!fields || fields > m.HEAPU8.length - 20) return offsets;
+    for (let j = 0; j < 200; j++) {
+      const f = fields + j * 20;
+      if (u[(f + 8) >>> 2] !== klass) break;
+      const fname = textAt(m, u[f >>> 2]), off = u[(f + 12) >>> 2];
+      if (!/^[A-Za-z_<][\w<>.$`]*$/.test(fname) || off > 0xffff) break; // ran past the field list
+      offsets[fname] = off;
     }
-    return found;
+    return offsets;
   }
 
-  function isObject(m, address, type) {
-    return Number.isInteger(address) && address > 0 && address + 16 < m.HEAPU8.length &&
-      address % 4 === 0 && m.HEAPU32[address >>> 2] === classes[type].klass &&
-      m.HEAPU32[(address + 8) >>> 2] !== 0;
+  let C = null; // resolved classes
+  function resolve(m) {
+    if (C) return C;
+    const GM = findClass(m, 'GameMaster', ['cPlayerStats', 'gold', 'cSkillPoints', 'careerStage']);
+    const CS = findClass(m, 'CharacterStats', ['strength', 'endurance', 'maxHealth', 'health', 'shield', 'weapon', 'name']);
+    const IM = findClass(m, 'ItemManager', ['shield', 'weapon', 'helmet', 'armor']);
+    if (!GM || !CS || !IM) return null;
+    C = { GM, CS, IM };
+    return C;
   }
 
-  function field(m, address, type, name) {
-    return address + classes[type].offsets[name];
-  }
+  // Static singleton: klass->static_fields (offset 92 on 32-bit IL2CPP), field 0 = instance.
+  const singleton = (m, cls) => {
+    const statics = m.HEAPU32[(cls.klass + 92) >>> 2];
+    const inst = statics && m.HEAPU32[statics >>> 2];
+    return inst && m.HEAPU32[inst >>> 2] === cls.klass ? inst : 0;
+  };
 
-  function findPlayer(m) {
-    const u = m.HEAPU32;
-    for (let i = 0; i < u.length; i++) {
-      if (u[i] !== classes.CharacterStats.klass) continue;
-      const stats = i * 4;
-      const master = u[field(m, stats, 'CharacterStats', 'cMaster') >>> 2];
-      if (!isObject(m, master, 'CharacterMaster')) continue;
-      const input = u[field(m, master, 'CharacterMaster', 'battleInput') >>> 2];
-      const motor = u[field(m, master, 'CharacterMaster', 'cMotor') >>> 2];
-      if (!isObject(m, input, 'BattleInput') || !isObject(m, motor, 'CharacterMotor')) continue;
-      if (u[field(m, master, 'CharacterMaster', 'cStats') >>> 2] !== stats) continue;
-      if (u[field(m, input, 'BattleInput', 'cMaster') >>> 2] !== master) continue;
-      if (u[field(m, motor, 'CharacterMotor', 'cMaster') >>> 2] !== master) continue;
-      if (m.HEAPU8[field(m, master, 'CharacterMaster', 'isMultiplayer')] !== 0) continue;
-      if (m.HEAPU8[field(m, input, 'BattleInput', 'isP1')] !== 1) continue;
-      return { stats, master, input, motor };
+  function itemList(m, im, arrName, required, statName) {
+    const arr = m.HEAPU32[(im + C.IM.offsets[arrName]) >>> 2];
+    if (!arr) return [];
+    const count = m.HEAPU32[(arr + 12) >>> 2];
+    // The array's own class names its element type (Il2CppClass.element_class at +32).
+    const elemKlass = m.HEAPU32[(m.HEAPU32[arr >>> 2] + 32) >>> 2];
+    const cls = { offsets: fieldsOf(m, elemKlass) };
+    if (!['name', 'secret', statName].concat(required).every(k => Number.isInteger(cls.offsets[k]))) return [];
+    // Items are structs stored inline; field offsets include the 8-byte object header.
+    const lastOff = Math.max(...Object.values(cls.offsets));
+    const stride = lastOff + 4 - 8;
+    const list = [];
+    for (let i = 0; i < count && i < 500; i++) {
+      const base = arr + 16 + i * stride - 8;
+      const name = csString(m, m.HEAPU32[(base + cls.offsets.name) >>> 2]) || ('Item ' + i);
+      const stat = m.HEAP32[(base + cls.offsets[statName]) >>> 2];
+      const secret = m.HEAPU8[base + cls.offsets.secret];
+      list.push({ id: i, name, stat, secret });
     }
-    return null;
+    return list;
   }
 
-  function getRuntime() {
-    const runtime = window.unityGame || window.gameInstance;
-    const m = runtime && runtime.Module;
-    return m && m.HEAPU32 && m.HEAPU8 && m.HEAP32 && m.HEAPF32 ? m : null;
+  function getCareer(m) {
+    if (!resolve(m)) return null;
+    const gm = singleton(m, C.GM);
+    if (!gm) return null;
+    const ps = m.HEAPU32[(gm + C.GM.offsets.cPlayerStats) >>> 2];
+    if (!ps || m.HEAPU32[ps >>> 2] !== C.CS.klass) return null;
+    const im = singleton(m, C.IM);
+    const name = csString(m, m.HEAPU32[(ps + C.CS.offsets.name) >>> 2]);
+    return { gm, ps, im, name };
   }
 
-  function saveAndAdd(m, address, type, amount, cap) {
-    const index = address >>> 2;
-    const heap = type === 'float' ? m.HEAPF32 : m.HEAP32;
-    const current = heap[index];
-    if (!Number.isFinite(current)) return false;
-    if (!originals.has(address)) originals.set(address, { type, value: current });
-    heap[index] = Math.max(0, Math.min(cap, current + amount));
+  // ---- UI ----------------------------------------------------------------
+  let filled = false;
+  function fill() {
+    const m = getRuntime();
+    if (!m) { say('Loading Gladihoppers…'); return false; }
+    const c = getCareer(m);
+    if (!c) { say('Connecting to the game…'); return false; }
+    const I = (base, off) => m.HEAP32[(base + off) >>> 2];
+    $('strength').value = I(c.ps, C.CS.offsets.strength);
+    $('endurance').value = I(c.ps, C.CS.offsets.endurance);
+    $('maxHealth').value = I(c.ps, C.CS.offsets.maxHealth);
+    $('gold').value = I(c.gm, C.GM.offsets.gold);
+    $('skillPoints').value = I(c.gm, C.GM.offsets.cSkillPoints);
+    for (const [field, arr, , required, statName, statLabel] of SLOTS) {
+      const sel = $(field);
+      const list = c.im ? itemList(m, c.im, arr, required, statName) : [];
+      const current = I(c.ps, C.CS.offsets[field]);
+      sel.innerHTML = '';
+      for (const it of list) {
+        const o = document.createElement('option');
+        o.value = it.id;
+        o.textContent = it.name + (it.stat ? ` (${it.stat} ${statLabel})` : '') + (it.secret ? ' ★' : '');
+        sel.append(o);
+      }
+      if (!list.some(it => it.id === current)) {
+        const o = document.createElement('option');
+        o.value = current; o.textContent = 'Item ' + current;
+        sel.append(o);
+      }
+      sel.value = current;
+    }
+    filled = true;
+    say(c.name
+      ? `Editing ${c.name}. Change anything, then SAVE UPGRADES.`
+      : 'No career gladiator yet. Start a Career first, then open this menu.');
+    $('save').disabled = !c.name;
     return true;
   }
 
-  function applyStats() {
+  function save() {
     const m = getRuntime();
-    if (!m) { say('The game is still loading. Try again after the fight starts.'); return; }
-    const now = Date.now();
-    if (!classes || now - lastScan > 3000) {
-      classes = resolveClasses(m);
-      lastScan = now;
+    const c = m && getCareer(m);
+    if (!c) { say('The game is still loading. Try again in a moment.', true); return; }
+    if (!c.name) { say('Start a Career first, then save upgrades.', true); return; }
+    const num = (id, lo, hi) => Math.max(lo, Math.min(hi, Math.round(Number($(id).value) || 0)));
+    const W = (base, off, v) => { m.HEAP32[(base + off) >>> 2] = v; };
+    const maxHealth = num('maxHealth', 1, 100000);
+    W(c.ps, C.CS.offsets.strength, num('strength', 1, 100));
+    W(c.ps, C.CS.offsets.endurance, num('endurance', 1, 100));
+    W(c.ps, C.CS.offsets.maxHealth, maxHealth);
+    W(c.ps, C.CS.offsets.health, maxHealth); // start at full health
+    W(c.gm, C.GM.offsets.gold, num('gold', 0, 10000000));
+    W(c.gm, C.GM.offsets.cSkillPoints, num('skillPoints', 0, 1000));
+    for (const [field] of SLOTS) W(c.ps, C.CS.offsets[field], Math.max(0, Number($(field).value) || 0));
+    try {
+      const game = window.unityGame || window.gameInstance;
+      game.SendMessage('GameMaster', 'SaveCurrentCareer');
+      game.SendMessage('GameMaster', 'SaveGold');
+      say(`Saved! ${c.name}'s upgrades apply from your next fight and stay after reloading.`, true);
+    } catch (e) {
+      say('Changed in this session, but saving failed: ' + e.message, true);
     }
-    if (!classes) { say('This game build did not expose the expected player stats.'); return; }
-    player = findPlayer(m);
-    if (!player) { say('No single-player fighter found. Start a single-player fight first.'); return; }
-
-    const health = Math.max(0, Number(panel.querySelector('#gh-health').value) || 0);
-    const damage = Math.max(0, Number(panel.querySelector('#gh-damage').value) || 0);
-    const speed = Math.max(0, Number(panel.querySelector('#gh-speed').value) || 0);
-    const reach = Math.max(0, Number(panel.querySelector('#gh-reach').value) || 0);
-
-    const changes = [
-      [field(m, player.stats, 'CharacterStats', 'maxHealth'), 'int', health, 100000],
-      [field(m, player.stats, 'CharacterStats', 'health'), 'int', health, 100000],
-      [field(m, player.stats, 'CharacterStats', 'melee'), 'int', damage, 50000],
-      [field(m, player.motor, 'CharacterMotor', 'maxVel'), 'float', speed, 1000],
-      [field(m, player.motor, 'CharacterMotor', 'weaponRange'), 'float', reach, 1000]
-    ];
-    let applied = 0;
-    for (const [address, type, amount, cap] of changes) {
-      if (amount > 0 && saveAndAdd(m, address, type, amount, cap)) applied++;
-    }
-    say(applied ? 'Stats added to your single-player fighter. Apply again to add more.' : 'Enter an amount greater than zero.');
   }
 
-  function resetStats() {
-    const m = getRuntime();
-    if (!m) { say('Game runtime is not ready.'); return; }
-    let restored = 0;
-    for (const [address, saved] of originals) {
-      const heap = saved.type === 'float' ? m.HEAPF32 : m.HEAP32;
-      if (address + 4 <= m.HEAPU8.length) {
-        heap[address >>> 2] = saved.value;
-        restored++;
-      }
-    }
-    originals.clear();
-    say(restored ? 'Your original stats have been restored.' : 'No modified stats to reset.');
+  $('save').addEventListener('click', save);
+  $('reload').addEventListener('click', () => { filled = false; fill(); });
+
+  function togglePanel() {
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) { filled = false; fill(); }
   }
-
-  panel.querySelector('#gh-apply').addEventListener('click', applyStats);
-  panel.querySelector('#gh-reset').addEventListener('click', resetStats);
-
-  function togglePanel() { panel.classList.toggle('open'); }
 
   window.addEventListener('message', event => {
     if (event.data && event.data.type === 'GH_TOGGLE_MOD_MENU') togglePanel();
   });
 
+  // Unity grabs every key (and cancels it) so the game can use it. While typing
+  // in the menu, stop key events before Unity's listeners see them. This is
+  // registered on window in the capture phase, before Unity starts, so it runs first.
+  const shield = event => {
+    if (event.target && panel.contains(event.target) && event.key !== 'Escape') event.stopImmediatePropagation();
+  };
+  ['keydown', 'keypress', 'keyup'].forEach(type => window.addEventListener(type, shield, true));
+
   document.addEventListener('keydown', event => {
+    if (event.target && panel.contains(event.target) && event.key !== 'Escape') return;
     const slashKey = event.code === 'Slash' || event.key === '/' || event.key === '?';
     if (slashKey && !event.ctrlKey && !event.altKey && !event.metaKey) {
       event.preventDefault();
@@ -201,20 +270,8 @@
     if (event.key === 'Escape' && panel.classList.contains('open')) panel.classList.remove('open');
   }, true);
 
+  // Keep retrying until the game is ready while the panel is open.
   setInterval(() => {
-    if (panel.classList.contains('open') && Date.now() > messageUntil) {
-      const m = getRuntime();
-      if (!m) { status.textContent = 'Loading Gladihoppers…'; return; }
-      const now = Date.now();
-      if (!classes || now - lastScan > 3000) {
-        classes = resolveClasses(m);
-        lastScan = now;
-      }
-      if (classes) {
-        player = findPlayer(m);
-        if (player) status.textContent = 'Single-player fighter detected. Ready to apply stats.';
-        else status.textContent = 'Start a single-player fight to enable stat editing.';
-      } else status.textContent = 'Connecting to the game…';
-    }
+    if (panel.classList.contains('open') && !filled && Date.now() > messageUntil) fill();
   }, 1200);
 })();
