@@ -3,6 +3,7 @@
 
   const style = document.createElement('style');
   style.textContent = `
+    #gh-mod-panel,#gh-mod-panel *{box-sizing:border-box}
     #gh-mod-panel{position:fixed;top:16px;right:16px;z-index:2147483647;width:310px;max-width:calc(100vw - 24px);max-height:calc(100vh - 32px);overflow:auto;display:none;color:#f5f3ff;background:rgba(15,10,27,.97);border:1px solid #8b5cf6;border-radius:14px;box-shadow:0 16px 55px #000a;padding:16px;font:14px/1.4 system-ui,sans-serif}
     #gh-mod-panel.open{display:block}
     #gh-mod-panel h2{font-size:17px;margin:0 0 5px;color:#c4b5fd}
