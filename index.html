@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#8b5cf6">
-<meta name="description" content="A purple-themed tutoring hub with a growing collection of games, study tools, and learning resources.">
+<meta name="description" content="A purple-themed game hub with a growing collection of browser games.">
 <title>Game Hub</title>
 <style>
 :root{color-scheme:dark;--bg:#090611;--panel:#151020;--panel2:#1d1530;--purple:#a78bfa;--bright:#c4b5fd;--line:rgba(196,181,253,.22);--muted:#b6accb;--white:#faf7ff}
@@ -80,7 +80,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
   </section>
   <section id="gamesPanel">
     <div class="section-head">
-      <div><h2>AVAILABLE GAMES</h2><p id="countText">4 games available</p></div>
+      <div><h2>AVAILABLE GAMES</h2><p id="countText">12 games available</p></div>
       <label class="search"><input id="searchInput" type="search" placeholder="Search games..." autocomplete="off" aria-label="Search games"></label>
     </div>
     <div class="grid" id="gameGrid">
@@ -116,6 +116,70 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
           <div class="card-foot"><span class="category">SPORTS · BASKETBALL</span><button class="play" onclick="openGame('games/82-0/index.html','82-0 · BUILD YOUR ROSTER')">PLAY NOW ↗</button></div>
         </div>
       </article>
+      <article class="card" data-search="snake arcade · classic classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🐍</div></div>
+        <div class="card-body">
+          <h3>Snake</h3>
+          <p>Eat, grow, and avoid your own tail in this classic arcade game.</p>
+          <div class="card-foot"><span class="category">ARCADE · CLASSIC</span><button class="play" onclick="openGame('games/more/snake/index.html','SNAKE')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="tic tac toe board · strategy classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">⭕</div></div>
+        <div class="card-body">
+          <h3>Tic Tac Toe</h3>
+          <p>Challenge an AI opponent or play locally with a friend.</p>
+          <div class="card-foot"><span class="category">BOARD · STRATEGY</span><button class="play" onclick="openGame('games/more/tic-tac-toe/index.html','TIC TAC TOE')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="connect four board · strategy classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🔴</div></div>
+        <div class="card-body">
+          <h3>Connect Four</h3>
+          <p>Drop discs, plan ahead, and connect four before your opponent.</p>
+          <div class="card-foot"><span class="category">BOARD · STRATEGY</span><button class="play" onclick="openGame('games/more/connect-four/index.html','CONNECT FOUR')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="2048 puzzle · logic classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🔢</div></div>
+        <div class="card-body">
+          <h3>2048</h3>
+          <p>Slide matching number tiles together and build your way to 2048.</p>
+          <div class="card-foot"><span class="category">PUZZLE · LOGIC</span><button class="play" onclick="openGame('games/more/2048/index.html','2048')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="minesweeper puzzle · logic classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">💣</div></div>
+        <div class="card-body">
+          <h3>Minesweeper</h3>
+          <p>Clear the board using number clues, flags, and careful deduction.</p>
+          <div class="card-foot"><span class="category">PUZZLE · LOGIC</span><button class="play" onclick="openGame('games/more/minesweeper/index.html','MINESWEEPER')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="breakout arcade · action classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🧱</div></div>
+        <div class="card-body">
+          <h3>Breakout</h3>
+          <p>Control the paddle, bounce the ball, and smash through every brick.</p>
+          <div class="card-foot"><span class="category">ARCADE · ACTION</span><button class="play" onclick="openGame('games/more/breakout/index.html','BREAKOUT')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="air hockey sports · arcade classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🏒</div></div>
+        <div class="card-body">
+          <h3>Air Hockey</h3>
+          <p>Take on the computer in a fast-paced tabletop hockey match.</p>
+          <div class="card-foot"><span class="category">SPORTS · ARCADE</span><button class="play" onclick="openGame('games/more/air-hockey/index.html','AIR HOCKEY')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
+      <article class="card" data-search="memory match puzzle · memory classic browser game">
+        <div class="art"><span class="tag">NEW</span><div class="game-icon" aria-hidden="true">🃏</div></div>
+        <div class="card-body">
+          <h3>Memory Match</h3>
+          <p>Flip cards, remember their locations, and clear every matching pair.</p>
+          <div class="card-foot"><span class="category">PUZZLE · MEMORY</span><button class="play" onclick="openGame('games/more/memory-match/index.html','MEMORY MATCH')">PLAY NOW ↗</button></div>
+        </div>
+      </article>
     </div>
     <div class="empty" id="emptyState">No games match that search.</div>
   </section>
@@ -124,6 +188,13 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
     <p>Game Hub brings games and study resources together in one organized place. More learning sections can be added as they are built.</p>
     <section aria-labelledby="versionHistoryTitle" style="margin:22px 0;padding:18px;border:1px solid var(--line);border-radius:12px;background:rgba(167,139,250,.06)">
       <h3 id="versionHistoryTitle" style="margin:0 0 14px;color:var(--bright);letter-spacing:.1em;font-size:.85rem">VERSION HISTORY</h3>
+      <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
+        <strong>Version 1.0.17 · November 10, 2026</strong>
+        <ul style="margin:8px 0 0;padding-left:20px;color:var(--muted)">
+          <li>Added Snake, Tic Tac Toe, Connect Four, 2048, Minesweeper, Breakout, Air Hockey, and Memory Match.</li>
+          <li>Imported the games from the MIT-licensed mashukui/web-games project and included its license notice.</li>
+        </ul>
+      </article>
       <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
         <article style="padding:0 0 14px;border-bottom:1px solid var(--line);margin-bottom:14px">
         <strong>Version 1.0.11 · November 4, 2026</strong>
@@ -221,7 +292,7 @@ footer{border-top:1px solid var(--line);padding:22px 24px;text-align:center;colo
     <button class="play" onclick="showTab('games')">BACK TO GAMES</button>
   </section>
 </main>
-<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.16</span></footer>
+<footer>© 2026 · GAME HUB <span style="color:#a78bfa">/</span> Built for playing. <span class="site-version">VERSION 1.0.17</span></footer>
 <div class="game-overlay" id="gameOverlay" role="dialog" aria-modal="true" aria-label="Game player">
   <div class="game-bar">
     <div class="game-title" id="gameTitle">🏓 &nbsp; TABLE TENNIS WORLD TOUR <span style="color:#a78bfa">· MODDED</span></div>
